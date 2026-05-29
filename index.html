@@ -2494,6 +2494,38 @@ function updBadges(){
 // ============================================================
 // DASHBOARD
 // ============================================================
+
+// ── Variables restauradas de V46 ──────────────────
+var COLS_TIPO=['#2CA096','#3b82f6','#8b5cf6','#f59e0b','#ef4444','#22c55e',
+var FEV_ITEMS = ['OBJETIVO','ALCANCE','DEFINICIONES Y SIGLAS','RESPONSABLES','DESARROLLO','RELACIÓN DE ANEXOS','AUTORIZACIONES','DOCUMENTOS RELACIONADOS','TABLA DE RETENCIÓN DE REGISTROS','REFERENCIAS'];
+var FEV_SUBPROC = ['DESARROLLO','AUTORIZACIONES'];
+var FEV_TIPOS = ['SOP','INST','DP','NI','DA','POL','MAN','SUB','PLN','LM'];
+var RB_COLS = [
+var _etiqRegistros=[];      // todos los registros del código buscado
+var _etiqSeleccion=[];      // índices seleccionados
+var _etiqUbicacion='';      // ubicación física ingresada
+var _etiqZPLActual='';      // ZPL generado
+var _moDelCallback = null;
+var _odGuardando=false;
+var _odPendienteGuardar=false;
+var _origGuardarDoc = null;
+var _pdfbc_previewUrl=null;
+var _rbCache=null; // cache del mapa de solicitudes por código
+var _rbCacheLen=-1;
+var _rbFechaDocAccion = ''; // 'oficializar' | 'anular'
+var _rbOficIdx=-1;
+var _renderCfgOD=null;
+var codigosNuevos = []; // {tipo, corporativo, prefijo, consecutivo} de hoja Codigo_Doc_Nuevos
+var colaboradores = []; // {nombre, cargo, correo} de hoja Listado de Colaboradores
+var rl_memoria=[];    // array de {codigo, nombre, ocurrencias, variaciones}
+var rl_parrafos=[];    // [{texto, pagina, idx}] con página real del docx
+var rl_texto='';       // texto extraído del doc cargado
+var solicitudes = []; // array global
+
+//  FILTRO DE ÁREAS DEL DASHBOARD 
+var _dashAreasExcluidas = new Set();
+var _dashPanelAbierto = false;
+
 function renderDash(){
   //  KPIs — excluir Obsoletos de todos los cálculos 
   // Un doc es obsoleto si: estado==='Obsoleto' O campo obsoleto es X/Si
