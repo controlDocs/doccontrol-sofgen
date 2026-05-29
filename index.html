@@ -15313,7 +15313,11 @@ function etiqEnviarBrowserPrintHTTP(){
     };
     xhr.onerror=function(){resolve(false);};
     xhr.ontimeout=function(){resolve(false);};
-    xhr.send(async function etiqEnviarFallbackviarFallback(){
+    xhr.send();
+  });
+}
+
+function etiqEnviarFallback(){
   // Si ningún método automático funciona: descargar .ZPL
   var blob=new Blob([_etiqZPLActual],{type:'application/octet-stream'});
   var url=URL.createObjectURL(blob);
@@ -15326,7 +15330,7 @@ function etiqEnviarBrowserPrintHTTP(){
   toast('[ZPL] Archivo .ZPL descargado — ábrelo desde el Explorador de Windows para imprimir directamente en la Zebra ZD421','ok');
 }
 
-function etiqEnviarImpresora(){
+async function etiqEnviarImpresora(){
   if(!_etiqZPLActual){ toast('Primero genera el ZPL con el botón Imprimir seleccionados','er'); return; }
 
   // Método 1: Zebra Browser Print (instalado en el PC — localhost:9100)
