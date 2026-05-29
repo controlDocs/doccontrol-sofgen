@@ -2139,10 +2139,16 @@ function initApp(){
     if(cfg.inactividadMinutos) _inactividadMinutos=cfg.inactividadMinutos;
     mstInfo=loadObj('mst',{fecha:null,archivo:null,registros:0});
 
-    renderDash();updBadges();populateFiltros();renderTablaProg();checkInspAlerts();renderDashInsp();
-
-    // Todo viene de OneDrive — iniciar carga del Excel
+    // Primero mostrar la pantalla de carpeta/Excel
     odAutoCargar();
+
+    // Luego renderizar el dashboard (en try-catch para que no bloquee si falla)
+    try{ renderDash(); }catch(e){ console.warn('renderDash error:',e); }
+    try{ updBadges(); }catch(e){}
+    try{ populateFiltros(); }catch(e){}
+    try{ renderTablaProg(); }catch(e){}
+    try{ checkInspAlerts(); }catch(e){}
+    try{ renderDashInsp(); }catch(e){}
   });
 }
 
@@ -15317,7 +15323,7 @@ function etiqEnviarBrowserPrintHTTP(){
   document.body.removeChild(a);
   setTimeout(function(){URL.revokeObjectURL(url);},1000);
   // Mostrar instrucciones
-  toast('⬇️ Archivo .ZPL descargado — ábrelo desde el Explorador de Windows para imprimir directamente en la Zebra ZD421','ok');
+  toast('[ZPL] Archivo .ZPL descargado — ábrelo desde el Explorador de Windows para imprimir directamente en la Zebra ZD421','ok');
 }
 
 function etiqEnviarImpresora(){
