@@ -2497,9 +2497,86 @@ function updBadges(){
   if(bi){bi.textContent=nUrgente;bi.className='nb '+(nUrgente>0?'r':'t');}
 }
 
+
+// ── Global variables (from V46) ─────────────────────
+var _renderCfgOD=null;
+var _odPendienteGuardar=false;
+var FEV_TIPOS = ['SOP','INST','DP','NI','DA','POL','MAN','SUB','PLN','LM'];
+var FEV_ITEMS = ['OBJETIVO','ALCANCE','DEFINICIONES Y SIGLAS','RESPONSABLES','DESARROLLO','RELACIÓN DE ANEXOS','AUTORIZACIONES','DOCUMENTOS RELACIONADOS','TABLA DE RETENCIÓN DE REGISTROS','REFERENCIAS'];
+var FEV_SUBPROC = ['DESARROLLO','AUTORIZACIONES'];
+var _dashAreasExcluidas = new Set();
+var _dashPanelAbierto = false;
+var COLS_TIPO=['#2CA096','#3b82f6','#8b5cf6','#f59e0b','#ef4444','#22c55e',
+               '#06b6d4','#f97316','#ec4899','#6366f1','#a3a3a3','#84cc16'];
+var _etiqRegistros=[];      // todos los registros del código buscado
+var _etiqSeleccion=[];      // índices seleccionados
+var _etiqUbicacion='';      // ubicación física ingresada
+var _etiqZPLActual='';      // ZPL generado
+
+function etiqLimpiar(){
+  var codEl=document.getElementById('etiq-cod');
+var rl_texto='';       // texto extraído del doc cargado
+var rl_parrafos=[];    // [{texto, pagina, idx}] con página real del docx
+var rl_memoria=[];    // array de {codigo, nombre, ocurrencias, variaciones}
+
+function revdocTab(n){
+  document.getElementById('revdoc-panel1').style.display=n===1?'block':'none';
+var _moDelCallback = null;
+var solicitudes = []; // array global
+
+// Columnas de la hoja (B=índice0 en el array tras omitir col A)
+var colaboradores = []; // {nombre, cargo, correo} de hoja Listado de Colaboradores
+var codigosNuevos = []; // {tipo, corporativo, prefijo, consecutivo} de hoja Codigo_Doc_Nuevos
+
+var RB_COLS = [
+  'codigo','nombreDoc','tipoSolicitud','consecutivo','solicitante',
+  'areaGeneradora','fechaSolicitud','fechaRutaBorrador','version',
+  'descripcionModif','criticidadResultado','criticidadConclusion',
+  'estatus','fechaRevIni','fechaRevFin','fechaEntregaFirma',
+  'fechaOficializacion','fechaActListado','fechaIntranet',
+  'estadoOficializacion','correoUsuario','retiroRuta'
+];
+var _rbOficIdx=-1;
+var _rbCache=null; // cache del mapa de solicitudes por código
+var _rbCacheLen=-1;
+var _rbFechaDocAccion = ''; // 'oficializar' | 'anular'
+
+function rbGetCodigoModalDoc(){
+  // Obtener el código del documento que está siendo editado/creado en el modal
+  var codEl=document.getElementById('d-cod');
+var _pdfbc_previewUrl=null;
+
 // ============================================================
 // DASHBOARD
 // ============================================================
+
+// ── Variables globales requeridas ─────────────────────────
+var _dashAreasExcluidas = new Set();
+var _dashPanelAbierto = false;
+var _renderCfgOD = null;
+var _odPendienteGuardar = false;
+var _moDelCallback = null;
+var _rbOficIdx = -1;
+var _rbCache = null;
+var _rbCacheLen = -1;
+var _rbFechaDocAccion = '';
+var _pdfbc_previewUrl = null;
+var solicitudes = [];
+var codigosNuevos = [];
+var colaboradores = [];
+var _etiqRegistros = [];
+var _etiqSeleccion = [];
+var _etiqUbicacion = '';
+var _etiqZPLActual = '';
+var rl_texto = '';
+var rl_parrafos = [];
+var rl_memoria = [];
+var FEV_TIPOS = ['SOP','INST','DP','NI','DA','POL','MAN','SUB','PLN','LM'];
+var FEV_ITEMS = ['OBJETIVO','ALCANCE','DEFINICIONES Y SIGLAS','RESPONSABLES','DESARROLLO','RELACIÓN DE ANEXOS','AUTORIZACIONES','DOCUMENTOS RELACIONADOS','TABLA DE RETENCIÓN DE REGISTROS','REFERENCIAS'];
+var FEV_SUBPROC = ['DESARROLLO','AUTORIZACIONES'];
+var COLS_TIPO = ['#2CA096','#3b82f6','#8b5cf6','#f59e0b','#ef4444','#22c55e','#06b6d4','#f97316','#ec4899','#6366f1','#a3a3a3','#84cc16'];
+var RB_COLS = ['codigo','nombreDoc','tipoSolicitud','consecutivo','solicitante','areaGeneradora','fechaSolicitud','fechaRutaBorrador','version','descripcionModif','criticidadResultado','criticidadPorcentaje','estatus','estadoOficializacion','fechaOficializacion','empresa'];
+
 function renderDash(){
   //  KPIs — excluir Obsoletos de todos los cálculos 
   // Un doc es obsoleto si: estado==='Obsoleto' O campo obsoleto es X/Si
