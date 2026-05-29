@@ -3277,88 +3277,148 @@ function dcpRenderSidebar(){
 /* ── Familia documental: sidebar relacionados ───── */
 function dcpBuildFamilia(d){
   var cod=d.codigoActual.toUpperCase();
+
+  // Tokenizador robusto: separa SOLO por coma, punto y coma, pipe, tab o salto de linea
+  // NO por espacio, para no partir "SOP-0001" en tokens separados
   function parsearRel(campo){
-    return String(campo||'').toUpperCase().split(/[,;|\t ]+/).map(function(t){return t.trim();}).filter(Boolean);
+    return String(campo||'').toUpperCase()
+      .split(/[,;|\t\n\r]+/)
+      .map(function(t){return t.trim();})
+      .filter(Boolean);
   }
-  // Documentos que listan a este en su docsRelacionados
+
+  // Busca codigo exacto en el campo, incluso si viene separado por espacios entre comas
+  function contieneCodigoExacto(campo,buscar){
+    if(!campo) return false;
+    var tokens=parsearRel(campo);
+    if(tokens.indexOf(buscar)>=0) return true;
+    // Fallback: coincidencia como palabra completa
+    var re=new RegExp('(?:^|[,;|\\s])'+buscar.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?:[,;|\\s]|$)');
+    return re.test(String(campo).toUpperCase());
+  }
+
+  // GRUPO A: docs que tienen al doc base en su campo docsRelacionados
   var enRel=docsEmpresa().filter(function(x){
     if(x.id===d.id) return false;
-    return parsearRel(x.docsRelacionados).indexOf(cod)>=0;
+    return contieneCodigoExacto(x.docsRelacionados,cod);
   });
-  // Documentos que este doc lista en su docsRelacionados
+
+  // GRUPO B: docs que el doc base lista en su docsRelacionados (bidireccional)
   var misCods=parsearRel(d.docsRelacionados);
+  var yaIds=enRel.map(function(x){return x.id;});
   var misDocs=docsEmpresa().filter(function(x){
     if(x.id===d.id) return false;
-    if(enRel.some(function(r){return r.id===x.id;})) return false;
+    if(yaIds.indexOf(x.id)>=0) return false;
     return misCods.indexOf(x.codigoActual.toUpperCase())>=0;
   });
-  var todos=enRel.concat(misDocs);
-  // Agrupar por tipo de documento
+
+  // GRUPO C: Formatos/DA/otros cuyo codigo contiene el codigo base
+  // Ej: SOP-0001 -> F-SOP-0001, F-SOP-0001-01, DA-SOP-0001, etc.
+  var prefijos=['F-','DA-','INST-','PRG-','POL-','PRO-','MAN-','NI-','SUB-','DP-','CR-','MTZ-','MP-','LM-'];
+  var yaIds2=enRel.concat(misDocs).map(function(x){return x.id;});
+  var porPrefijo=docsEmpresa().filter(function(x){
+    if(x.id===d.id) return false;
+    if(yaIds2.indexOf(x.id)>=0) return false;
+    var xCod=(x.codigoActual||'').toUpperCase();
+    return prefijos.some(function(p){
+      // El codigo candidato comienza con PREFIJO+COD_BASE
+      return xCod===p+cod || xCod.indexOf(p+cod+'-')===0 || xCod.indexOf(p+cod+'_')===0;
+    });
+  });
+
+  var todos=enRel.concat(misDocs).concat(porPrefijo);
+
+  // Agrupar por tipo, ordenados por codigo dentro de cada grupo
   var grupos={};
   todos.forEach(function(x){
-    var tipo=x.tipoDocumento||'Otro';
+    var tipo=x.tipoDocumento||(typeof detTipo==='function'?detTipo(x.codigoActual):'')||'Otro';
     if(!grupos[tipo]) grupos[tipo]=[];
     grupos[tipo].push(x);
+  });
+  Object.keys(grupos).forEach(function(t){
+    grupos[t].sort(function(a,b){return (a.codigoActual||'').localeCompare(b.codigoActual||'');});
   });
   return grupos;
 }
 
+var _dcpActiveRelId = null;
+
 function dcpRenderRelated(d){
   var el=document.getElementById('dcp-related-list');
   if(!el) return;
+  _dcpActiveRelId=d.id;
   var grupos=dcpBuildFamilia(d);
-  var tiposOrden=['Formato','Documento Asociado','Instructivo','Programa','Protocolo','Politica','Manual','Norma Interna','Subproceso','Descripcion De Procesos','Cronograma','Matriz','Listado','Mapa De Procesos','Procedimiento'];
+  var tiposOrden=['Formato','Documento Asociado','Instructivo','Programa','Protocolo',
+    'Politica','Manual','Norma Interna','Subproceso','Descripcion De Procesos',
+    'Cronograma','Matriz','Listado','Mapa De Procesos','Procedimiento'];
   var tiposPresentes=Object.keys(grupos);
-  // Ordenar: primero los que están en tiposOrden, luego el resto
   tiposPresentes.sort(function(a,b){
     var ia=tiposOrden.indexOf(a); var ib=tiposOrden.indexOf(b);
-    if(ia<0) ia=99; if(ib<0) ib=99;
-    return ia-ib;
+    if(ia<0) ia=99; if(ib<0) ib=99; return ia-ib;
   });
-
-  if(!tiposPresentes.length){
-    el.innerHTML='<div style="padding:14px 12px;font-size:10px;color:var(--tx3);text-align:center;line-height:1.6">Este documento no tiene<br>documentos relacionados<br>registrados.</div>';
-    return;
-  }
-
+  var totalRel=tiposPresentes.reduce(function(s,t){return s+grupos[t].length;},0);
   var html='';
-  // Ítem: el propio documento (seleccionado)
-  html+='<div style="padding:8px 10px;border-bottom:1px solid var(--brd);background:var(--tl)">'+
-    '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--T3);margin-bottom:4px">Documento base</div>'+
-    '<div style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:#fff;border-radius:5px;border:1.5px solid var(--T)">'+
-      '<span style="width:6px;height:6px;border-radius:50%;background:'+dcpColorEstado(d.estado)+';flex-shrink:0;display:inline-block"></span>'+
-      '<span style="font-family:\'Courier New\',monospace;font-size:9px;font-weight:700;color:var(--T3);flex:1">'+d.codigoActual+'</span>'+
-    '</div>'+
-  '</div>';
-
+  // Doc base destacado
+  html+='<div style="padding:8px 10px;border-bottom:1px solid var(--brd);background:var(--tl)">'
+    +'<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--T3);margin-bottom:5px">Documento base</div>'
+    +'<div id="dcp-rel-item-base" onclick="dcpShowRelDoc('+d.id+',true)" style="display:flex;align-items:center;gap:7px;padding:6px 9px;background:#fff;border-radius:6px;border:2px solid var(--T);cursor:pointer">'
+      +'<span style="width:7px;height:7px;border-radius:50%;background:'+dcpColorEstado(d.estado)+';flex-shrink:0;display:inline-block"></span>'
+      +'<div style="flex:1;min-width:0">'
+        +'<div style="font-family:'Courier New',monospace;font-size:10px;font-weight:700;color:var(--T3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+d.codigoActual+'</div>'
+        +'<div style="font-size:9px;color:var(--tx3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px">'+d.descripcion+'</div>'
+      +'</div>'
+    +'</div>'
+  +'</div>';
+  if(!tiposPresentes.length){
+    html+='<div style="padding:14px 12px;font-size:10px;color:var(--tx3);text-align:center;line-height:1.7">No se encontraron formatos,<br>DAs ni documentos relacionados.</div>';
+    el.innerHTML=html; return;
+  }
+  html+='<div style="padding:5px 10px;background:var(--bg3);border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between">'
+    +'<span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx3)">Familia documental</span>'
+    +'<span style="font-size:9px;font-weight:700;color:var(--T);background:var(--tl);padding:1px 7px;border-radius:99px">'+totalRel+'</span>'
+  +'</div>';
   tiposPresentes.forEach(function(tipo){
     var items=grupos[tipo];
-    html+='<div style="border-bottom:1px solid var(--brd)">'+
-      '<div style="padding:6px 10px 3px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx3);background:var(--bg3)">'+tipo+' ('+items.length+')</div>';
+    html+='<div>'
+      +'<div style="padding:5px 10px 3px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--T3);background:var(--bg3);border-top:1px solid var(--brd);border-bottom:0.5px solid var(--brd)">'
+        +tipo+' <span style="font-weight:500;color:var(--tx3)">('+items.length+')</span>'
+      +'</div>';
     items.forEach(function(x){
       var color=dcpColorEstado(x.estado);
-      html+='<div onclick="dcpShowRelDoc('+x.id+')" style="display:flex;align-items:center;gap:7px;padding:7px 10px;cursor:pointer;border-top:0.5px solid var(--brd);transition:background .1s" onmouseover="this.style.background=\'var(--tlx)\'" onmouseout="this.style.background=\'\'">'+
-        '<span style="width:6px;height:6px;border-radius:50%;background:'+color+';flex-shrink:0;display:inline-block"></span>'+
-        '<div style="flex:1;min-width:0">'+
-          '<div style="font-family:\'Courier New\',monospace;font-size:9px;font-weight:700;color:var(--T3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+x.codigoActual+'</div>'+
-          '<div style="font-size:9px;color:var(--tx3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px">'+x.descripcion+'</div>'+
-        '</div>'+
-        '<span style="font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px;white-space:nowrap;'+dcpBadgeStyle(x.estado)+'">'+x.estado+'</span>'+
-      '</div>';
+      html+='<div id="dcp-rel-item-'+x.id+'" onclick="dcpShowRelDoc('+x.id+')" '
+        +'style="display:flex;align-items:center;gap:7px;padding:7px 10px;cursor:pointer;border-top:0.5px solid var(--brd);border-left:2px solid transparent;transition:background .12s">'
+        +'<span style="width:6px;height:6px;border-radius:50%;background:'+color+';flex-shrink:0;display:inline-block"></span>'
+        +'<div style="flex:1;min-width:0">'
+          +'<div style="font-family:'Courier New',monospace;font-size:9px;font-weight:700;color:var(--T3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+x.codigoActual+'</div>'
+          +'<div style="font-size:9px;color:var(--tx3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px">'+x.descripcion+'</div>'
+        +'</div>'
+        +'<span style="font-size:8px;font-weight:700;padding:2px 6px;border-radius:3px;white-space:nowrap;flex-shrink:0;'+dcpBadgeStyle(x.estado)+'">'+x.estado+'</span>'
+      +'</div>';
     });
     html+='</div>';
   });
   el.innerHTML=html;
 }
 
-function dcpShowRelDoc(id){
-  var d=docs.find(function(x){return x.id===id;});
-  if(!d) return;
+function dcpShowRelDoc(id,isBase){
+  var d=docs.find(function(x){return x.id===id;}); if(!d) return;
+  // Limpiar seleccion anterior
+  var prevItem=document.getElementById('dcp-rel-item-'+_dcpActiveRelId);
+  if(prevItem){prevItem.style.background='';prevItem.style.borderLeft='2px solid transparent';}
+  var baseEl=document.getElementById('dcp-rel-item-base');
+  // Marcar nuevo activo
+  _dcpActiveRelId=id;
+  if(isBase){
+    if(baseEl){baseEl.style.border='2px solid var(--T)';}
+  } else {
+    if(baseEl){baseEl.style.border='1px solid var(--brd2)';}
+    var newEl=document.getElementById('dcp-rel-item-'+id);
+    if(newEl){newEl.style.background='var(--tlx)';newEl.style.borderLeft='2px solid var(--T)';}
+  }
   dcpRenderDetailPanel(d);
-  // Actualizar topbar sin cambiar el doc base
   var codeEl=document.getElementById('dcp-topbar-code');
   var nameEl=document.getElementById('dcp-topbar-name');
-  if(codeEl) codeEl.textContent=d.codigoActual;
+  if(codeEl) codeEl.textContent=d.codigoActual+(isBase?'':' ← '+((_dcpCurrentDoc&&_dcpCurrentDoc.codigoActual)||''));
   if(nameEl) nameEl.textContent=d.descripcion;
 }
 
