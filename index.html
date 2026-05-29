@@ -172,6 +172,34 @@ tbody tr:last-child td{border-bottom:none}
 .doc-card-ver{font-size:10px;font-weight:700;color:var(--tx3);background:var(--bg4);padding:2px 7px;border-radius:5px}
 .doc-card-actions{display:flex;gap:4px}
 
+/* ── RUTABOR ACCORDION ──────────────────────────────────────────────── */
+.rb-accordion{display:flex;flex-direction:column;gap:6px}
+.rb-acc-item{background:#fff;border:1px solid var(--brd);border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh);transition:border-color .15s}
+.rb-acc-item:hover{border-color:var(--brd2)}
+.rb-acc-item.rb-open{border-color:var(--T)}
+.rb-acc-header{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;user-select:none;transition:background .12s}
+.rb-acc-header:hover{background:var(--tlx)}
+.rb-acc-item.rb-open .rb-acc-header{background:var(--tlx);border-bottom:1px solid var(--brd)}
+.rb-acc-chevron{font-size:11px;color:var(--tx3);transition:transform .2s;flex-shrink:0;margin-left:auto}
+.rb-acc-item.rb-open .rb-acc-chevron{transform:rotate(180deg)}
+.rb-acc-code{font-family:'Courier New',monospace;font-size:10px;color:var(--T3);background:var(--tl);padding:2px 8px;border-radius:4px;font-weight:700;white-space:nowrap;flex-shrink:0}
+.rb-acc-consec{font-size:10px;font-weight:700;color:#fff;background:var(--T);padding:2px 8px;border-radius:99px;white-space:nowrap;flex-shrink:0}
+.rb-acc-nombre{font-size:12px;font-weight:600;color:var(--tx);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rb-acc-tipo{font-size:9px;font-weight:600;padding:2px 7px;border-radius:99px;background:#e0f5f3;color:var(--T3);white-space:nowrap;flex-shrink:0}
+.rb-acc-estado{font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0}
+.rb-acc-body{display:none;padding:14px 16px}
+.rb-acc-item.rb-open .rb-acc-body{display:block}
+.rb-acc-section{margin-bottom:14px}
+.rb-acc-section-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--T);border-bottom:2px solid var(--tl);padding-bottom:4px;margin-bottom:9px}
+.rb-acc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.rb-acc-field{display:flex;flex-direction:column;gap:2px}
+.rb-acc-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--tx3)}
+.rb-acc-value{font-size:11px;color:var(--tx);font-weight:500}
+.rb-acc-value.mono{font-family:'Courier New',monospace;color:var(--T3);font-size:10px}
+.rb-acc-value.empty{color:var(--tx3);font-style:italic}
+.rb-acc-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:10px 14px;border-top:1px solid var(--brd);background:var(--bg3)}
+.rb-acc-strip{width:4px;border-radius:4px 0 0 4px;flex-shrink:0;align-self:stretch;min-height:40px}
+
 </style>
 </head>
 <body>
@@ -31613,8 +31641,9 @@ function rbEscribirHoja(wb){
 
 // Renderizar tabla
 function rbRender(){
+  // Support both accordion and tbody (accordion is primary)
+  var container=document.getElementById('rb-accordion');
   var tbody=document.getElementById('rb-tbody');
-  if(!tbody) return;
   var fCod=((document.getElementById('rb-f-cod')||{}).value||'').trim().toLowerCase();
   var fConsec=((document.getElementById('rb-f-consec')||{}).value||'').trim().toLowerCase();
   var fSolit=((document.getElementById('rb-f-solit')||{}).value||'').trim().toLowerCase();
@@ -31623,17 +31652,11 @@ function rbRender(){
   var est=((document.getElementById('rb-filtro-estado')||{}).value||'').trim();
 
   var filtrados=solicitudes.filter(function(s){
-    // Código
     if(fCod&&(s.codigo||'').toLowerCase().indexOf(fCod)<0) return false;
-    // Consecutivo
     if(fConsec&&(s.consecutivo||'').toLowerCase().indexOf(fConsec)<0) return false;
-    // Solicitante
     if(fSolit&&(s.solicitante||'').toLowerCase().indexOf(fSolit)<0) return false;
-    // Nombre del documento
     if(fNombre&&(s.nombreDoc||'').toLowerCase().indexOf(fNombre)<0) return false;
-    // Tipo de modificación
     if(fTipoSol&&(s.tipoSolicitud||'').toLowerCase().indexOf(fTipoSol)<0) return false;
-    // Estado
     if(est&&s.estatus!==est&&s.estadoOficializacion!==est) return false;
     return true;
   });
@@ -31641,23 +31664,16 @@ function rbRender(){
   var cnt=document.getElementById('rb-contador');
   if(cnt) cnt.textContent=filtrados.length+' resultado'+(filtrados.length!==1?'s':'');
 
-  // Poblar selector de tipo de solicitud con valores reales del Excel
   var selTSol=document.getElementById('rb-f-tsol');
   if(selTSol){
     var curTSol=selTSol.value;
     var tSolSet={};
-    solicitudes.forEach(function(s){
-      var t=(s.tipoSolicitud||'').trim();
-      if(t) tSolSet[t]=1;
-    });
+    solicitudes.forEach(function(s){var t=(s.tipoSolicitud||'').trim();if(t) tSolSet[t]=1;});
     var tSolOrden=Object.keys(tSolSet).sort();
     selTSol.innerHTML='<option value="">Tipo de solicitud</option>'
-      +tSolOrden.map(function(t){
-        return '<option value="'+t+'"'+(t===curTSol?' selected':'')+'>'+t+'</option>';
-      }).join('');
+      +tSolOrden.map(function(t){return '<option value="'+t+'"'+(t===curTSol?' selected':'')+'>'+t+'</option>';}).join('');
   }
 
-  // Paginación: máx 50 por página
   var rbPg=parseInt(document.getElementById('rb-pg-num')?document.getElementById('rb-pg-num').value||'1':'1')||1;
   var rbPS=50;
   var rbTotal=filtrados.length;
@@ -31665,56 +31681,117 @@ function rbRender(){
   if(rbPg>rbPages) rbPg=rbPages;
   var rbSlice=filtrados.slice((rbPg-1)*rbPS, rbPg*rbPS);
 
-  // Paginación UI
   var pgBar=document.getElementById('rb-pgbar');
   if(pgBar){
     pgBar.innerHTML=rbTotal>rbPS
-      ?'<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:11px;color:var(--tx3);border-top:1px solid var(--brd)">'
-        +'<button class="btn gh sm" style="font-size:10px" onclick="rbIrPg('+rbPg+'-1)" '+(rbPg<=1?'disabled':'')+'>← Ant.</button>'
-        +'<span>Página '+rbPg+' de '+rbPages+' &nbsp;('+rbTotal+' solicitudes)</span>'
-        +'<button class="btn gh sm" style="font-size:10px" onclick="rbIrPg('+rbPg+'+1)" '+(rbPg>=rbPages?'disabled':'')+'>Sig. →</button>'
+      ?'<div style="display:flex;align-items:center;gap:8px;padding:10px 0;font-size:11px;color:var(--tx3)">'
+        +'<button class="btn gh sm" style="font-size:10px" onclick="rbIrPg('+(rbPg-1)+')" '+(rbPg<=1?'disabled':'')+'>← Ant.</button>'
+        +'<span>Página '+rbPg+' de '+rbPages+'&nbsp;&nbsp;('+rbTotal+' solicitudes)</span>'
+        +'<button class="btn gh sm" style="font-size:10px" onclick="rbIrPg('+(rbPg+1)+')" '+(rbPg>=rbPages?'disabled':'')+'>Sig. →</button>'
         +'</div>'
       :'';
   }
 
-  tbody.innerHTML=rbSlice.map(function(s,i){
-    var esOfic=(s.estadoOficializacion||'').toLowerCase().indexOf('oficial')>=0;
-    // Estado de oficialización como columna principal de Estatus
-    var estOfic=s.estadoOficializacion||s.estatus||'Pendiente';
-    var estatusBg=esOfic?'#e8f5e9':s.estatus==='Aceptada'?'#e0f5f3':s.estatus==='Rechazada'?'#fdeaea':'#fff8e1';
-    var estatusColor=esOfic?'#2e7d32':s.estatus==='Aceptada'?'#00695C':s.estatus==='Rechazada'?'#C62828':'#f57f17';
-    var bg=i%2===0?'var(--bg)':'var(--bg3)';
-    return '<tr style="background:'+bg+'">'
-      // Botón Ver fijo al inicio — siempre visible
-      +'<td style="padding:4px 8px;border-bottom:1px solid var(--brd);white-space:nowrap;position:sticky;left:0;background:'+bg+';z-index:1">'
-        +'<button class="btn gh sm" style="font-size:10px;padding:3px 8px" onclick="rbVerDetalle('+s.consecutivo+')">👁 Ver</button>'
-        +'<button class="btn dn sm" style="font-size:10px;padding:3px 7px;margin-left:3px" onclick="rbEliminarSolicitud(\''+s.consecutivo+'\')">🗑</button>'
-        +(!esOfic?' <button class="btn sm" style="font-size:10px;padding:3px 8px;background:var(--T);color:#fff" onclick="rbAbrirOficializar('+s.consecutivo+')">✅</button>':'')
-      +'</td>'
-      +'<td style="padding:6px 10px;border-bottom:1px solid var(--brd);white-space:nowrap">'
-        +'<span class="cd" style="font-size:10px">'+s.codigo+'</span>'
-      +'</td>'
-      +'<td style="padding:6px 10px;border-bottom:1px solid var(--brd);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+s.nombreDoc+'">'+s.nombreDoc+'</td>'
-      +'<td style="padding:6px 10px;border-bottom:1px solid var(--brd);white-space:nowrap;font-size:10px">'+s.tipoSolicitud+'</td>'
-      +'<td style="padding:6px 10px;border-bottom:1px solid var(--brd);text-align:center;font-weight:700;color:var(--T)">'+s.consecutivo+'</td>'
-      +'<td style="padding:6px 10px;border-bottom:1px solid var(--brd);white-space:nowrap;font-size:10px">'+s.solicitante+'</td>'
-      +'<td style="padding:6px 10px;border-bottom:1px solid var(--brd);white-space:nowrap;font-size:10px">'+s.areaGeneradora+'</td>'
-      +'<td style="padding:6px 10px;border-bottom:1px solid var(--brd);white-space:nowrap;font-size:10px">'+s.fechaSolicitud+'</td>'
-      +'<td style="padding:6px 10px;border-bottom:1px solid var(--brd);white-space:nowrap;font-size:10px">'+s.fechaRutaBorrador+'</td>'
-      +'<td style="padding:6px 10px;border-bottom:1px solid var(--brd);text-align:center;font-size:10px">v'+s.version+'</td>'
-      // Estatus: muestra Estado De Oficialización
-      +'<td style="padding:6px 10px;border-bottom:1px solid var(--brd);text-align:center">'
-        +'<span style="background:'+estatusBg+';color:'+estatusColor+';border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;white-space:nowrap">'+estOfic+'</span>'
-      +'</td>'
-      // F. Oficialización
-      +'<td style="padding:6px 10px;border-bottom:1px solid var(--brd);text-align:center;white-space:nowrap;font-size:10px">'
-        +(esOfic&&s.fechaOficializacion?s.fechaOficializacion:'<span style="color:var(--tx3)">—</span>')
-      +'</td>'
-          +'</tr>';
-  }).join('');
+  if(!container){if(tbody) tbody.innerHTML='<tr><td colspan="12">Sin contenedor accordion</td></tr>';return;}
 
-  if(!filtrados.length) tbody.innerHTML='<tr><td colspan="12" style="padding:20px;text-align:center;color:var(--tx3)">Sin resultados para los filtros aplicados.</td></tr>';
+  if(!rbSlice.length){
+    container.innerHTML='<div class="emp"><div style="font-size:28px">📭</div><div style="font-size:12px;margin-top:4px">Sin resultados para los filtros aplicados.</div></div>';
+    return;
+  }
+
+  function fv(v){return (v&&String(v).trim()&&String(v).trim()!=='undefined')?String(v).trim():'';}
+  function disp(v){return fv(v)||'<span class="rb-acc-value empty">—</span>';}
+
+  container.innerHTML=rbSlice.map(function(s){
+    var esOfic=(s.estadoOficializacion||'').toLowerCase().indexOf('oficial')>=0;
+    var estOfic=fv(s.estadoOficializacion)||fv(s.estatus)||'Pendiente';
+    var esRechazo=(s.estatus||'').toLowerCase().indexOf('rechaz')>=0;
+    var stripColor=esOfic?'var(--G)':esRechazo?'var(--R)':s.estatus==='Aceptada'?'var(--T)':'var(--A)';
+    var estadoBg=esOfic?'#e6f9f3':esRechazo?'#fde8e8':s.estatus==='Aceptada'?'#e0f5f3':'#fff8e1';
+    var estadoColor=esOfic?'#0f7a50':esRechazo?'#a02020':s.estatus==='Aceptada'?'var(--T3)':'#a06000';
+    var id='rb-acc-'+s.consecutivo;
+    return '<div class="rb-acc-item" id="'+id+'">'
+      // Header row
+      +'<div class="rb-acc-header" onclick="rbToggleAcc(\''+id+'\')">'
+        +'<div style="width:4px;border-radius:4px;background:'+stripColor+';align-self:stretch;flex-shrink:0;min-height:28px"></div>'
+        +'<span class="rb-acc-consec">#'+s.consecutivo+'</span>'
+        +'<span class="rb-acc-code">'+s.codigo+'</span>'
+        +'<span class="rb-acc-nombre" title="'+s.nombreDoc+'">'+s.nombreDoc+'</span>'
+        +(fv(s.tipoSolicitud)?'<span class="rb-acc-tipo">'+s.tipoSolicitud+'</span>':'')
+        +'<span class="rb-acc-estado" style="background:'+estadoBg+';color:'+estadoColor+'">'+estOfic+'</span>'
+        +'<span class="rb-acc-chevron">▼</span>'
+      +'</div>'
+      // Body
+      +'<div class="rb-acc-body">'
+        // IDENTIFICACIÓN
+        +'<div class="rb-acc-section">'
+          +'<div class="rb-acc-section-title">📄 Identificación del Documento</div>'
+          +'<div class="rb-acc-grid">'
+            +'<div class="rb-acc-field"><div class="rb-acc-label">Código</div><div class="rb-acc-value mono">'+disp(s.codigo)+'</div></div>'
+            +'<div class="rb-acc-field"><div class="rb-acc-label">Nombre del Documento</div><div class="rb-acc-value">'+disp(s.nombreDoc)+'</div></div>'
+            +'<div class="rb-acc-field"><div class="rb-acc-label">Versión</div><div class="rb-acc-value">'+disp(s.version)+'</div></div>'
+            +'<div class="rb-acc-field"><div class="rb-acc-label">Tipo de Solicitud</div><div class="rb-acc-value">'+disp(s.tipoSolicitud)+'</div></div>'
+            +'<div class="rb-acc-field"><div class="rb-acc-label">Consecutivo</div><div class="rb-acc-value" style="font-weight:700;color:var(--T)">'+disp(s.consecutivo)+'</div></div>'
+          +'</div>'
+        +'</div>'
+        // SOLICITANTE
+        +'<div class="rb-acc-section">'
+          +'<div class="rb-acc-section-title">👤 Solicitante y Área</div>'
+          +'<div class="rb-acc-grid">'
+            +'<div class="rb-acc-field"><div class="rb-acc-label">Solicitante</div><div class="rb-acc-value">'+disp(s.solicitante)+'</div></div>'
+            +'<div class="rb-acc-field"><div class="rb-acc-label">Área Generadora</div><div class="rb-acc-value">'+disp(s.areaGeneradora)+'</div></div>'
+            +(fv(s.correoUsuario)?'<div class="rb-acc-field"><div class="rb-acc-label">Correo</div><div class="rb-acc-value">'+s.correoUsuario+'</div></div>':'')
+          +'</div>'
+        +'</div>'
+        // FECHAS
+        +'<div class="rb-acc-section">'
+          +'<div class="rb-acc-section-title">📅 Fechas</div>'
+          +'<div class="rb-acc-grid">'
+            +'<div class="rb-acc-field"><div class="rb-acc-label">Fecha Solicitud</div><div class="rb-acc-value">'+disp(s.fechaSolicitud)+'</div></div>'
+            +'<div class="rb-acc-field"><div class="rb-acc-label">Fecha Ruta Borrador</div><div class="rb-acc-value">'+disp(s.fechaRutaBorrador)+'</div></div>'
+            +(fv(s.fechaRevIni)?'<div class="rb-acc-field"><div class="rb-acc-label">F. Revisión Inicial</div><div class="rb-acc-value">'+s.fechaRevIni+'</div></div>':'')
+            +(fv(s.fechaRevFin)?'<div class="rb-acc-field"><div class="rb-acc-label">F. Revisión Final</div><div class="rb-acc-value">'+s.fechaRevFin+'</div></div>':'')
+            +(fv(s.fechaEntregaFirma)?'<div class="rb-acc-field"><div class="rb-acc-label">F. Entrega Firma</div><div class="rb-acc-value">'+s.fechaEntregaFirma+'</div></div>':'')
+            +(fv(s.fechaOficializacion)?'<div class="rb-acc-field"><div class="rb-acc-label">F. Oficialización</div><div class="rb-acc-value" style="font-weight:700;color:var(--G)">'+s.fechaOficializacion+'</div></div>':'')
+            +(fv(s.fechaActListado)?'<div class="rb-acc-field"><div class="rb-acc-label">F. Actualiz. Listado</div><div class="rb-acc-value">'+s.fechaActListado+'</div></div>':'')
+            +(fv(s.fechaIntranet)?'<div class="rb-acc-field"><div class="rb-acc-label">F. Colocación Intranet</div><div class="rb-acc-value">'+s.fechaIntranet+'</div></div>':'')
+          +'</div>'
+        +'</div>'
+        // DESCRIPCIÓN / CRITICIDAD
+        +(fv(s.descripcionModif)||fv(s.criticidadResultado)||fv(s.criticidadConclusion)||fv(s.retiroRuta)
+          ?'<div class="rb-acc-section">'
+            +'<div class="rb-acc-section-title">📝 Detalles de la Solicitud</div>'
+            +'<div style="display:flex;flex-direction:column;gap:7px">'
+              +(fv(s.descripcionModif)?'<div class="rb-acc-field"><div class="rb-acc-label">Descripción de Modificación</div><div class="rb-acc-value" style="white-space:pre-wrap">'+s.descripcionModif+'</div></div>':'')
+              +(fv(s.criticidadResultado)?'<div class="rb-acc-field"><div class="rb-acc-label">Criticidad — Resultado</div><div class="rb-acc-value">'+s.criticidadResultado+'</div></div>':'')
+              +(fv(s.criticidadConclusion)?'<div class="rb-acc-field"><div class="rb-acc-label">Criticidad — Conclusión</div><div class="rb-acc-value">'+s.criticidadConclusion+'</div></div>':'')
+              +(fv(s.retiroRuta)?'<div class="rb-acc-field"><div class="rb-acc-label">Retiro de Ruta</div><div class="rb-acc-value">'+s.retiroRuta+'</div></div>':'')
+            +'</div>'
+          +'</div>'
+          :'')
+        // ESTADO
+        +'<div class="rb-acc-section" style="margin-bottom:0">'
+          +'<div class="rb-acc-section-title">🔖 Estado</div>'
+          +'<div class="rb-acc-grid">'
+            +'<div class="rb-acc-field"><div class="rb-acc-label">Estatus Solicitud</div><div class="rb-acc-value"><span style="background:'+estadoBg+';color:'+estadoColor+';border-radius:4px;padding:2px 9px;font-weight:700;font-size:11px">'+disp(s.estatus)+'</span></div></div>'
+            +'<div class="rb-acc-field"><div class="rb-acc-label">Estado Oficialización</div><div class="rb-acc-value"><span style="background:'+(esOfic?'#e6f9f3':'#f0f0f0')+';color:'+(esOfic?'#0f7a50':'#666')+';border-radius:4px;padding:2px 9px;font-weight:700;font-size:11px">'+disp(s.estadoOficializacion||'Pendiente')+'</span></div></div>'
+          +'</div>'
+        +'</div>'
+      +'</div>'
+      // Footer actions
+      +'<div class="rb-acc-actions">'
+        +'<button class="btn gh sm" style="font-size:10px" onclick="rbVerDetalle('+s.consecutivo+')">👁 Ver detalle</button>'
+        +(!esOfic?'<button class="btn sm" style="font-size:10px;background:var(--T);color:#fff" onclick="rbAbrirOficializar('+s.consecutivo+')">✅ Oficializar</button>':'')
+        +'<button class="btn dn sm" style="font-size:10px;margin-left:auto" onclick="rbEliminarSolicitud(\''+s.consecutivo+'\')">🗑 Eliminar</button>'
+      +'</div>'
+    +'</div>';
+  }).join('');
 }
+function rbToggleAcc(id){
+  var el=document.getElementById(id);
+  if(el) el.classList.toggle('rb-open');
+}
+
 
 function rbEliminarSolicitud(consecutivo){
   var s=solicitudes.find(function(x){return String(x.consecutivo)===String(consecutivo);});
@@ -35006,54 +35083,39 @@ document.addEventListener('click',function(e){
   <!-- PÁGINA: RUTA DE BORRADOR — SOLICITUDES DE USUARIOS        -->
   <!-- ═══════════════════════════════════════════════════════════ -->
   <div class="pg" id="pg-rutabor">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
-      <div>
-        <div style="font-size:16px;font-weight:700">📋 Ruta de Borrador</div>
-        <div style="font-size:11px;color:var(--tx3);margin-top:2px">Consulta y gestión de solicitudes de documentos en proceso</div>
+    <!-- Header + Filtros -->
+    <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:14px 16px;margin-bottom:12px;box-shadow:var(--sh)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div>
+          <div style="font-size:16px;font-weight:700;color:var(--tx)">📋 Ruta de Borrador</div>
+          <div style="font-size:11px;color:var(--tx3);margin-top:2px">Consulta y gestión de solicitudes de documentos en proceso</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span id="rb-contador" style="font-size:11px;color:var(--tx3);font-weight:600"></span>
+          <button class="btn gh sm" onclick="rbLimpiarFiltros()" style="white-space:nowrap">✕ Limpiar filtros</button>
+        </div>
       </div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px;justify-content:flex-start">
-        <button class="btn gh sm" onclick="rbLimpiarFiltros()" style="white-space:nowrap">✕ Limpiar</button>
-        <input id="rb-f-cod" type="text" class="fi" placeholder="Código" style="width:100px;font-size:12px" oninput="rbFiltrar()" title="Filtrar por código">
-        <input id="rb-f-consec" type="text" class="fi" placeholder="Consecutivo" style="width:100px;font-size:12px" oninput="rbFiltrar()" title="Filtrar por consecutivo">
-        <input id="rb-f-solit" type="text" class="fi" placeholder="Solicitante" style="width:140px;font-size:12px" oninput="rbFiltrar()" title="Filtrar por solicitante">
-        <input id="rb-f-nombre" type="text" class="fi" placeholder="Nombre del documento" style="width:190px;font-size:12px" oninput="rbFiltrar()" title="Filtrar por nombre">
-        <select id="rb-f-tsol" class="fi" style="font-size:12px;width:150px" onchange="rbFiltrar()" title="Tipo de solicitud">
+      <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
+        <input id="rb-f-cod" type="text" class="fi" placeholder="🔍 Código" style="width:110px;font-size:12px" oninput="rbFiltrar()" title="Filtrar por código">
+        <input id="rb-f-consec" type="text" class="fi" placeholder="# Consecutivo" style="width:110px;font-size:12px" oninput="rbFiltrar()" title="Filtrar por consecutivo">
+        <input id="rb-f-solit" type="text" class="fi" placeholder="👤 Solicitante" style="width:140px;font-size:12px" oninput="rbFiltrar()" title="Filtrar por solicitante">
+        <input id="rb-f-nombre" type="text" class="fi" placeholder="📄 Nombre del documento" style="width:210px;font-size:12px" oninput="rbFiltrar()" title="Filtrar por nombre">
+        <select id="rb-f-tsol" class="fi" style="font-size:12px;width:160px" onchange="rbFiltrar()" title="Tipo de solicitud">
           <option value="">Tipo de solicitud</option>
         </select>
-        <select id="rb-filtro-estado" class="fi" style="font-size:12px;width:130px" onchange="rbFiltrar()">
+        <select id="rb-filtro-estado" class="fi" style="font-size:12px;width:140px" onchange="rbFiltrar()">
           <option value="">Todos los estados</option>
           <option>Aceptada</option><option>En proceso</option><option>Oficializado</option>
           <option>Rechazada</option><option>Pendiente</option>
         </select>
-        <span id="rb-contador" style="font-size:11px;color:var(--tx3)"></span>
       </div>
     </div>
 
-    <!-- Tabla principal -->
-    <div class="card" style="padding:0;overflow:hidden">
-      <div style="overflow-x:auto">
-        <table style="width:100%;border-collapse:collapse;font-size:11px" id="rb-tabla">
-          <thead>
-            <tr style="background:var(--bg3);position:sticky;top:0;z-index:2">
-              <th style="padding:8px 10px;text-align:center;border-bottom:1px solid var(--brd);min-width:90px;position:sticky;left:0;background:var(--bg3);z-index:2">Acciones</th>
-              <th style="padding:8px 10px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--brd);min-width:100px">Código</th>
-              <th style="padding:8px 10px;text-align:left;border-bottom:1px solid var(--brd);min-width:200px">Nombre del Documento</th>
-              <th style="padding:8px 10px;text-align:left;border-bottom:1px solid var(--brd);min-width:100px">Tipo Solicitud</th>
-              <th style="padding:8px 10px;text-align:left;border-bottom:1px solid var(--brd);min-width:80px">Consecutivo</th>
-              <th style="padding:8px 10px;text-align:left;border-bottom:1px solid var(--brd);min-width:130px">Solicitante</th>
-              <th style="padding:8px 10px;text-align:left;border-bottom:1px solid var(--brd);min-width:130px">Área</th>
-              <th style="padding:8px 10px;text-align:left;border-bottom:1px solid var(--brd);min-width:90px">F. Solicitud</th>
-              <th style="padding:8px 10px;text-align:left;border-bottom:1px solid var(--brd);min-width:90px">F. Ruta Borr.</th>
-              <th style="padding:8px 10px;text-align:center;border-bottom:1px solid var(--brd);min-width:50px">Ver.</th>
-              <th style="padding:8px 10px;text-align:center;border-bottom:1px solid var(--brd);min-width:130px">Estado Oficialización</th>
-              <th style="padding:8px 10px;text-align:center;border-bottom:1px solid var(--brd);min-width:90px">F. Oficialización</th>
-            </tr>
-          </thead>
-          <tbody id="rb-tbody"></tbody>
-        </table>
-      </div>
-      <div id="rb-pgbar"></div>
-    </div>
+    <!-- Accordion principal -->
+    <div class="rb-accordion" id="rb-accordion"></div>
+    <div id="rb-pgbar" style="margin-top:8px"></div>
+    <!-- hidden para paginación -->
+    <input type="hidden" id="rb-pg-num" value="1">
 
     <!-- Modal Oficializar -->
     <div id="rb-mo-ofic" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
