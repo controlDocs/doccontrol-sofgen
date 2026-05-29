@@ -15347,7 +15347,11 @@ async function etiqEnviarImpresora(){
 
   // Ningún método funcionó — mostrar instrucciones sin descargar
   odSetInfo('','');
-  toast('⚠️ No se pudo conectar con la impresora. Verifica que Zebra Browser Print esté activo en la bandeja del siasync function etiqEnviarWebUSBn etiqEnviarWebUSB(){
+  toast('⚠️ No se pudo conectar con la impresora. Verifica que Zebra Browser Print esté activo en la bandeja del sistema.','er');
+  etiqEnviarFallback();
+}
+
+async function etiqEnviarWebUSB(){
   try{
     // Solicitar acceso al dispositivo USB Zebra
     // Vendor ID de Zebra Technologies: 0x0A5F
@@ -16248,7 +16252,10 @@ function generarListadoPDF(){
   if(!lang){toast('Selecciona un idioma','er');return;}
   closeMo('mo-pdf-idioma');
   toast(lang==='es'?'Generando PDF del Listado Maestro...':'Generating Master Document List PDF...','if');
-  setTimeout(function(){_buildListasync function getLogoImg;
+  setTimeout(function(){_buildListadoPDF(lang);},50);
+}
+
+function getLogoImg(cb){
 }
 
 function getLogoImg(cb){
@@ -16284,7 +16291,7 @@ function moDelConfirmar(){
     return;
   }
   document.getElementById('mo-del-just').style.display='none';
-  if(_moDelCallback){ _moDelCallback(txasync function moDelPedirnull; }
+  if(_moDelCallback){ _moDelCallback(txt.trim()); _moDelCallback=null; }
 }
 
 function moDelPedir(titulo, desc, callback){
@@ -16296,7 +16303,10 @@ function moDelPedir(titulo, desc, callback){
   document.getElementById('mo-del-just-err').style.display='none';
   _moDelCallback=callback;
   el.style.display='flex';
-  setTimeout(function(){document.getElementById('masync function odDiagnostico();},100);
+  setTimeout(function(){document.getElementById('modal-audit').style.display='block';},100);
+}
+
+async function odDiagnostico(){
 }
 
 function odDiagnostico(){
