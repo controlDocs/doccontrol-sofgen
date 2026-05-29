@@ -151,6 +151,58 @@ tbody tr:last-child td{border-bottom:none}
 @media(max-width:768px){.sb{display:none}.mn{margin-left:0}.fg,.fg3,.fg4{grid-template-columns:1fr}}
 @keyframes pulse{0%{opacity:1}50%{opacity:.4}100%{opacity:1}}
 .dash-area-lbl:hover{background:var(--bg3);}
+/* ── DOCS COMMAND PALETTE (Variante 1) ─────────────────────────── */
+.dcp-empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 120px);gap:14px;padding:40px}
+.dcp-empty-icon{width:52px;height:52px;border-radius:var(--rl);background:#fff;border:1px solid var(--brd);display:flex;align-items:center;justify-content:center;font-size:24px}
+.dcp-empty-title{font-size:14px;font-weight:600;color:var(--tx)}
+.dcp-empty-sub{font-size:12px;color:var(--tx3);text-align:center;max-width:280px;line-height:1.6}
+.dcp-trigger{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:var(--r);border:1px solid var(--T);background:var(--T);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--fn)}
+.dcp-trigger:hover{background:var(--T2)}
+.dcp-kbd-hint{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--tx3)}
+.dcp-kbd{font-size:10px;padding:2px 7px;border:1px solid var(--brd2);border-radius:4px;color:var(--tx3);background:var(--bg3);font-family:'Courier New',monospace}
+.dcp-overlay{display:none;position:fixed;inset:0;background:rgba(8,32,28,.52);z-index:2000;align-items:flex-start;justify-content:center;padding-top:60px}
+.dcp-overlay.open{display:flex}
+.dcp-palette{width:640px;max-width:96vw;background:#fff;border:1px solid var(--brd2);border-radius:var(--rl);overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.22);display:flex;flex-direction:column}
+.dcp-search-row{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--brd)}
+.dcp-search-row input{flex:1;font-size:14px;border:none;outline:none;background:transparent;color:var(--tx);font-family:'Courier New',monospace;letter-spacing:.3px}
+.dcp-search-row input::placeholder{font-family:var(--fn);letter-spacing:0;color:var(--tx3);font-size:13px}
+.dcp-search-icon{font-size:18px;color:var(--T);flex-shrink:0}
+.dcp-body{display:grid;grid-template-columns:172px 1fr;min-height:320px;max-height:560px}
+.dcp-sidebar{border-right:1px solid var(--brd);background:var(--bg3);overflow-y:auto;display:flex;flex-direction:column}
+.dcp-sidebar-label{font-size:9px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:var(--tx3);padding:10px 12px 5px}
+.dcp-hist-item{display:flex;align-items:center;gap:8px;padding:7px 12px;cursor:pointer;border-left:2px solid transparent;transition:background .1s}
+.dcp-hist-item:hover{background:var(--bg4)}
+.dcp-hist-item.dcp-sel{background:#fff;border-left-color:var(--T)}
+.dcp-hist-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.dcp-hist-code{font-family:'Courier New',monospace;font-size:10px;font-weight:700;color:var(--tx3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dcp-hist-item.dcp-sel .dcp-hist-code{color:var(--T3)}
+.dcp-sidebar-div{height:1px;background:var(--brd);margin:6px 12px}
+.dcp-detail{display:flex;flex-direction:column;overflow-y:auto}
+.dcp-detail-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:30px;color:var(--tx3)}
+.dcp-det-head{padding:14px 16px;border-bottom:1px solid var(--brd)}
+.dcp-det-code{font-family:'Courier New',monospace;font-size:11px;font-weight:700;color:var(--T3);background:var(--tl);padding:3px 9px;border-radius:4px;display:inline-block;margin-bottom:6px}
+.dcp-det-name{font-size:14px;font-weight:700;color:var(--tx);line-height:1.3;margin-bottom:2px}
+.dcp-det-en{font-size:10px;color:var(--tx3);margin-bottom:8px}
+.dcp-status-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.dcp-sections{padding:12px 16px;display:flex;flex-direction:column;gap:12px;flex:1}
+.dcp-sec-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--T);border-bottom:2px solid var(--tl);padding-bottom:4px;margin-bottom:8px}
+.dcp-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.dcp-grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.dcp-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--tx3);margin-bottom:2px}
+.dcp-val{font-size:11px;color:var(--tx);font-weight:500}
+.dcp-val.mono{font-family:'Courier New',monospace;color:var(--T3)}
+.dcp-val.green{color:var(--G)}
+.dcp-val.red{color:var(--R)}
+.dcp-val.amber{color:var(--A)}
+.dcp-val.empty{color:var(--tx3);font-style:italic}
+.dcp-actions{display:flex;gap:6px;padding:10px 16px;border-top:1px solid var(--brd);background:var(--bg3);flex-wrap:wrap}
+.dcp-btn{font-size:11px;padding:5px 12px;border-radius:6px;border:1px solid var(--brd2);background:#fff;color:var(--tx2);cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-family:var(--fn);font-weight:500}
+.dcp-btn:hover{border-color:var(--T);color:var(--T);background:var(--tlx)}
+.dcp-btn-p{background:var(--T);color:#fff;border-color:var(--T)}.dcp-btn-p:hover{background:var(--T2);color:#fff}
+.dcp-btn-d{color:var(--R);border-color:var(--brd2)}.dcp-btn-d:hover{border-color:var(--R);background:#fde8e8;color:var(--R)}
+.dcp-hints{display:flex;gap:12px;padding:6px 16px;border-top:1px solid var(--brd);background:var(--bg3)}
+.dcp-hint{font-size:9px;color:var(--tx3);display:flex;align-items:center;gap:4px}
+
 /* ── DOCS CARD VIEW ─────────────────────────────────────────── */
 .docs-view-toggle{display:flex;gap:3px;background:var(--bg4);border:1px solid var(--brd);border-radius:7px;padding:2px}
 .dvt-btn{border:none;background:transparent;border-radius:5px;padding:4px 8px;cursor:pointer;color:var(--tx3);font-size:13px;transition:all .14s;line-height:1}
@@ -472,44 +524,58 @@ tbody tr:last-child td{border-bottom:none}
   </div>
 
   <div class="pg" id="pg-docs">
-    <div class="flt" style="display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin-bottom:11px">
-      <select class="fsel" id="f-tipo" onchange="filterDocs()"><option value="">Todos los tipos</option></select>
-      <select class="fsel" id="f-est" onchange="filterDocs()" style="min-width:160px">
-        <option value="">Todos los estados</option>
-        <optgroup label="Estado">
-          <option value="Vigente">Vigente</option>
-          <option value="Vencido">Vencido</option>
-          <option value="Obsoleto">Obsoleto</option>
-        </optgroup>
-        <optgroup label="Próximos a vencer">
-          <option value="Menos de 15 días">Menos de 15 días</option>
-          <option value="Menos de 1 Mes">Menos de 1 Mes</option>
-          <option value="Menos de 2 Meses">Menos de 2 Meses</option>
-          <option value="Menos de 3 Meses">Menos de 3 Meses</option>
-          <option value="Menos de 4 Meses">Menos de 4 Meses</option>
-          <option value="Menos de 5 Meses">Menos de 5 Meses</option>
-        </optgroup>
-      </select>
-      <select class="fsel" id="f-proc" onchange="filterDocs()"><option value="">Todos los procesos</option></select>
-      <select class="fsel" id="f-area" onchange="filterDocs()"><option value="">Todas las áreas</option></select>
-      <select class="fsel" id="f-sub" onchange="filterDocs()"><option value="">Todas las subáreas</option></select>
-      <select class="fsel" id="f-gxp" onchange="filterDocs()"><option value="">Todos</option><option value="si">GxP</option><option value="no">No GxP</option></select>
-      <button class="btn gh sm" onclick="clearFiltros()" style="white-space:nowrap">✕ Limpiar filtros</button>
-      <div style="margin-left:auto;display:flex;align-items:center;gap:7px">
-        <div class="docs-view-toggle">
-          <button class="dvt-btn act" id="dvt-cards" onclick="setDocsView('cards')" title="Vista de tarjetas">⊞</button>
-          <button class="dvt-btn" id="dvt-list" onclick="setDocsView('list')" title="Vista de lista">☰</button>
+    <!-- Estado vacío — pantalla limpia con botón de búsqueda -->
+    <div class="dcp-empty-state" id="dcp-empty">
+      <div class="dcp-empty-icon">📄</div>
+      <div class="dcp-empty-title">Consulta de Documentos</div>
+      <div class="dcp-empty-sub">Ingresa el código del documento que deseas consultar para ver su información completa.</div>
+      <button class="dcp-trigger" onclick="dcpOpen()">🔍 Buscar documento</button>
+      <div class="dcp-kbd-hint">
+        <span class="dcp-kbd">Ctrl</span><span style="font-size:11px;color:var(--tx3)">+</span><span class="dcp-kbd">K</span>
+        <span style="font-size:11px;color:var(--tx3)">para abrir búsqueda</span>
+      </div>
+    </div>
+    <!-- Overlay command palette -->
+    <div class="dcp-overlay" id="dcp-overlay" onclick="dcpOverlayClick(event)">
+      <div class="dcp-palette" id="dcp-palette">
+        <div class="dcp-search-row">
+          <span class="dcp-search-icon">🔍</span>
+          <input id="dcp-input" placeholder="Escribe el código del documento..." oninput="dcpSearch(this.value)" onkeydown="dcpKeydown(event)" autocomplete="off" spellcheck="false"/>
+          <span class="dcp-kbd" onclick="dcpClose()" style="cursor:pointer">Esc</span>
+        </div>
+        <div class="dcp-body">
+          <div class="dcp-sidebar" id="dcp-sidebar">
+            <div class="dcp-sidebar-label">Recientes</div>
+            <div id="dcp-hist-recent"></div>
+            <div class="dcp-sidebar-div"></div>
+            <div class="dcp-sidebar-label">Más consultados</div>
+            <div id="dcp-hist-top"></div>
+          </div>
+          <div class="dcp-detail" id="dcp-detail">
+            <div class="dcp-detail-empty" id="dcp-detail-empty">
+              <div style="font-size:28px">📭</div>
+              <div style="font-size:12px;color:var(--tx3)">Escribe un código para consultar</div>
+            </div>
+            <div id="dcp-detail-content" style="display:none;flex-direction:column;flex:1"></div>
+          </div>
+        </div>
+        <div class="dcp-hints">
+          <span class="dcp-hint"><span class="dcp-kbd">Enter</span> consultar</span>
+          <span class="dcp-hint"><span class="dcp-kbd">↑↓</span> navegar historial</span>
+          <span class="dcp-hint"><span class="dcp-kbd">Esc</span> cerrar</span>
         </div>
       </div>
     </div>
-    <div class="card">
-      <div id="docs-list-view" style="display:none">
-        <div class="tw"><table><thead><tr><th>Código</th><th>Cód. Ant.</th><th>Descripción</th><th>Ver.</th><th>Tipo</th><th>Área</th><th>Vencimiento</th><th>Estado</th><th>GxP</th><th>Administrador</th><th></th></tr></thead><tbody id="docs-tb"></tbody></table></div>
-      </div>
-      <div id="docs-cards-view">
-        <div class="doc-cards-grid" id="docs-cards-grid"></div>
-      </div>
-      <div class="pgctrl" id="docs-pg"></div>
+    <!-- Contenedores legacy para compatibilidad (ocultos) -->
+    <div style="display:none">
+      <select id="f-tipo"></select><select id="f-est"></select>
+      <select id="f-proc"></select><select id="f-area"></select>
+      <select id="f-sub"></select><select id="f-gxp"></select>
+      <table><tbody id="docs-tb"></tbody></table>
+      <div id="docs-pg"></div>
+      <div id="docs-list-view"></div>
+      <div id="docs-cards-view"><div id="docs-cards-grid"></div></div>
+      <div id="dvt-cards"></div><div id="dvt-list"></div>
     </div>
   </div>
 
@@ -2994,6 +3060,230 @@ function sortCodigos(a, b){
 
   // 4. Fallback: orden alfabético
   return pa.original.localeCompare(pb.original);
+}
+
+
+/* ═══════════════════════════════════════════════════
+   COMMAND PALETTE — MÓDULO DOCUMENTOS
+   ═══════════════════════════════════════════════════ */
+var _dcpHistory = [];       // códigos recientes (max 8)
+var _dcpTopCodes = {};      // frecuencia de consulta
+var _dcpCurrentDoc = null;  // doc activo en el palette
+var _dcpHistIdx = -1;       // índice navegación teclado
+
+function dcpInit(){
+  try{ _dcpHistory = JSON.parse(localStorage.getItem('dcp_hist')||'[]'); }catch(e){ _dcpHistory=[]; }
+  try{ _dcpTopCodes = JSON.parse(localStorage.getItem('dcp_top')||'{}'); }catch(e){ _dcpTopCodes={}; }
+  dcpRenderSidebar();
+  // Atajos de teclado globales
+  document.addEventListener('keydown', function(e){
+    if((e.ctrlKey||e.metaKey) && e.key==='k'){
+      var pg = document.getElementById('pg-docs');
+      if(pg && pg.classList.contains('act')){ e.preventDefault(); dcpOpen(); }
+    }
+    if(e.key==='Escape'){ dcpClose(); }
+  });
+}
+
+function dcpOpen(){
+  var ov = document.getElementById('dcp-overlay');
+  if(ov){ ov.classList.add('open'); }
+  setTimeout(function(){
+    var inp = document.getElementById('dcp-input');
+    if(inp){ inp.focus(); inp.select(); }
+  }, 60);
+  dcpRenderSidebar();
+}
+
+function dcpClose(){
+  var ov = document.getElementById('dcp-overlay');
+  if(ov) ov.classList.remove('open');
+}
+
+function dcpOverlayClick(e){
+  if(e.target.id==='dcp-overlay') dcpClose();
+}
+
+function dcpColorEstado(estado){
+  var e = (estado||'').toLowerCase();
+  if(e==='vigente') return 'var(--G)';
+  if(e==='vencido') return 'var(--R)';
+  if(e==='obsoleto') return 'var(--R)';
+  return 'var(--A)';
+}
+
+function dcpRenderSidebar(){
+  var rEl = document.getElementById('dcp-hist-recent');
+  var tEl = document.getElementById('dcp-hist-top');
+  if(!rEl||!tEl) return;
+
+  // Recientes
+  var recHtml = '';
+  (_dcpHistory.slice(0,8)).forEach(function(cod){
+    var d = docs.find(function(x){ return x.codigoActual===cod; });
+    var color = d ? dcpColorEstado(d.estado) : 'var(--tx3)';
+    var isSel = _dcpCurrentDoc && _dcpCurrentDoc.codigoActual===cod;
+    recHtml += '<div class="dcp-hist-item'+(isSel?' dcp-sel':'')+'" onclick="dcpSelectByCod(\''+cod+'\')">'
+      +'<span class="dcp-hist-dot" style="background:'+color+'"></span>'
+      +'<span class="dcp-hist-code">'+cod+'</span>'
+      +'</div>';
+  });
+  rEl.innerHTML = recHtml || '<div style="padding:6px 12px;font-size:10px;color:var(--tx3)">Sin consultas aún</div>';
+
+  // Top consultados
+  var topArr = Object.keys(_dcpTopCodes).sort(function(a,b){ return _dcpTopCodes[b]-_dcpTopCodes[a]; }).slice(0,5);
+  var topHtml = '';
+  topArr.forEach(function(cod){
+    if(_dcpHistory.indexOf(cod)>=0) return; // ya en recientes
+    var d = docs.find(function(x){ return x.codigoActual===cod; });
+    var color = d ? dcpColorEstado(d.estado) : 'var(--tx3)';
+    topHtml += '<div class="dcp-hist-item" onclick="dcpSelectByCod(\''+cod+'\')">'
+      +'<span class="dcp-hist-dot" style="background:'+color+'"></span>'
+      +'<span class="dcp-hist-code">'+cod+'</span>'
+      +'</div>';
+  });
+  tEl.innerHTML = topHtml || '<div style="padding:6px 12px;font-size:10px;color:var(--tx3)">Sin datos aún</div>';
+}
+
+function dcpSearch(val){
+  val = (val||'').trim().toUpperCase();
+  if(!val){ dcpShowDetailEmpty(); return; }
+  // Busca coincidencia exacta primero, luego parcial
+  var exact = docs.find(function(d){ return d.codigoActual && d.codigoActual.toUpperCase()===val; });
+  if(exact){ dcpShowDoc(exact); return; }
+  var partial = docs.filter(function(d){ return d.codigoActual && d.codigoActual.toUpperCase().indexOf(val)>=0; });
+  if(partial.length===1){ dcpShowDoc(partial[0]); return; }
+  dcpShowDetailEmpty();
+}
+
+function dcpSelectByCod(cod){
+  var inp = document.getElementById('dcp-input');
+  if(inp) inp.value = cod;
+  var d = docs.find(function(x){ return x.codigoActual===cod; });
+  if(d) dcpShowDoc(d);
+}
+
+function dcpKeydown(e){
+  if(e.key==='Enter'){
+    var val = (e.target.value||'').trim().toUpperCase();
+    if(!val) return;
+    var d = docs.find(function(x){ return x.codigoActual && x.codigoActual.toUpperCase()===val; });
+    if(d) dcpShowDoc(d);
+  }
+  if(e.key==='Escape'){ dcpClose(); }
+}
+
+function dcpFmtDate(s){
+  if(!s||s==='—') return '—';
+  var parts = s.split('-');
+  if(parts.length===3){
+    var meses=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    var m = parseInt(parts[1])-1;
+    return parts[2]+' '+( meses[m]||parts[1])+' '+parts[0];
+  }
+  return s;
+}
+
+function dcpDias(s){
+  if(!s) return null;
+  var h=new Date(); h.setHours(0,0,0,0);
+  var r=new Date(s+'T00:00:00');
+  if(isNaN(r)) return null;
+  return Math.round((r-h)/86400000);
+}
+
+function dcpShowDoc(d){
+  _dcpCurrentDoc = d;
+  // Guardar en historial
+  _dcpHistory = _dcpHistory.filter(function(c){ return c!==d.codigoActual; });
+  _dcpHistory.unshift(d.codigoActual);
+  if(_dcpHistory.length>8) _dcpHistory.pop();
+  _dcpTopCodes[d.codigoActual] = (_dcpTopCodes[d.codigoActual]||0)+1;
+  try{ localStorage.setItem('dcp_hist', JSON.stringify(_dcpHistory)); }catch(e){}
+  try{ localStorage.setItem('dcp_top', JSON.stringify(_dcpTopCodes)); }catch(e){}
+  dcpRenderSidebar();
+
+  var dias = dcpDias(d.fechaVencimiento);
+  var diasColor = dias===null?'var(--tx3)':dias<0?'var(--R)':dias<=30?'var(--A)':'var(--G)';
+  var diasText = dias===null?'—':dias<0?'Vencido hace '+Math.abs(dias)+' días':dias===0?'Vence hoy':dias+' días';
+
+  var estadoBg = d.estado==='Vigente'?'#e6f9f3':d.estado==='Vencido'?'#fde8e8':d.estado==='Obsoleto'?'#fde8e8':'#fff5e0';
+  var estadoColor = d.estado==='Vigente'?'#0f7a50':d.estado==='Vencido'?'#a02020':d.estado==='Obsoleto'?'#a02020':'#a06000';
+  var gxpSi = d.docGxP==='X'||d.docGxP==='Si'||d.docGxP==='Sí';
+
+  function fv(v){ return (v&&String(v).trim()&&v!=='undefined') ? String(v).trim() : ''; }
+  function fi(label,val,cls){
+    return '<div><div class="dcp-lbl">'+label+'</div><div class="dcp-val'+(cls?' '+cls:'')+'">'+( fv(val)||'<span style="color:var(--tx3);font-style:italic">—</span>'  )+'</div></div>';
+  }
+
+  var html =
+    '<div class="dcp-det-head">'
+      +'<div class="dcp-det-code">'+d.codigoActual+'</div>'
+      +(fv(d.codigoAntiguo)?'<div style="font-size:9px;color:var(--tx3);margin-bottom:4px">Ant: '+d.codigoAntiguo+'</div>':'')
+      +'<div class="dcp-det-name">'+d.descripcion+'</div>'
+      +(fv(d.descriptionEn)?'<div class="dcp-det-en">'+d.descriptionEn+'</div>':'')
+      +'<div class="dcp-status-row" style="margin-top:8px">'
+        +'<span style="background:'+estadoBg+';color:'+estadoColor+';border-radius:4px;padding:3px 10px;font-size:10px;font-weight:700">'+( d.estado||'—')+'</span>'
+        +(gxpSi?'<span style="background:#e8f0fb;color:#1a5fa0;border-radius:4px;padding:3px 9px;font-size:10px;font-weight:700">GxP</span>':'')
+        +'<span style="font-size:10px;color:var(--tx3);margin-left:4px">v'+(fv(d.version)||'—')+'</span>'
+      +'</div>'
+    +'</div>'
+    +'<div class="dcp-sections">'
+      // Clasificación
+      +'<div>'
+        +'<div class="dcp-sec-title">📄 Clasificación</div>'
+        +'<div class="dcp-grid3">'
+          +fi('Tipo de documento', d.tipoDocumento)
+          +fi('Proceso', d.proceso)
+          +fi('Versión', d.version)
+        +'</div>'
+      +'</div>'
+      // Responsables
+      +'<div>'
+        +'<div class="dcp-sec-title">👤 Responsables</div>'
+        +'<div class="dcp-grid3">'
+          +fi('Área', d.areaGeneradora)
+          +fi('Administrador', d.administrador)
+          +fi('Líder', d.liderProceso)
+        +'</div>'
+      +'</div>'
+      // Vigencia
+      +'<div>'
+        +'<div class="dcp-sec-title">📅 Vigencia</div>'
+        +'<div class="dcp-grid3">'
+          +'<div><div class="dcp-lbl">Fecha vencimiento</div><div class="dcp-val" style="color:'+diasColor+'">'+dcpFmtDate(d.fechaVencimiento)+'</div></div>'
+          +'<div><div class="dcp-lbl">Días restantes</div><div class="dcp-val" style="color:'+diasColor+'">'+diasText+'</div></div>'
+          +fi('Alcance empresas', d.alcanceEmpresas)
+        +'</div>'
+      +'</div>'
+    +'</div>'
+    +'<div class="dcp-actions">'
+      +'<button class="dcp-btn dcp-btn-p" onclick="verDoc('+d.id+');dcpClose()">👁 Ver completo</button>'
+      +'<button class="dcp-btn" onclick="editDoc('+d.id+');dcpClose()">✏️ Editar</button>'
+      +(typeof renderDocsRel==='function'?'<button class="dcp-btn" onclick="nav(\'docsrel\',document.querySelector(\'[data-p=docsrel]\'));dcpClose()">🔗 Relacionados</button>':'')
+      +'<button class="dcp-btn dcp-btn-d" style="margin-left:auto" onclick="dcpClose();setTimeout(function(){delDoc('+d.id+')},200)">🗑 Eliminar</button>'
+    +'</div>';
+
+  var emEl = document.getElementById('dcp-detail-empty');
+  var ctEl = document.getElementById('dcp-detail-content');
+  if(emEl) emEl.style.display='none';
+  if(ctEl){ ctEl.style.display='flex'; ctEl.innerHTML=html; }
+}
+
+function dcpShowDetailEmpty(){
+  _dcpCurrentDoc = null;
+  var emEl = document.getElementById('dcp-detail-empty');
+  var ctEl = document.getElementById('dcp-detail-content');
+  if(emEl) emEl.style.display='flex';
+  if(ctEl){ ctEl.style.display='none'; ctEl.innerHTML=''; }
+  dcpRenderSidebar();
+}
+
+/* Override renderDocs to initialize palette on nav */
+var _origRenderDocs = typeof renderDocs==='function' ? renderDocs : null;
+function renderDocs(){
+  dcpInit();
+  if(_origRenderDocs) _origRenderDocs();
 }
 
 function onSearch(){dPage=0;renderDocs();}
@@ -15156,44 +15446,58 @@ tbody tr:last-child td{border-bottom:none}
   </div>
 
   <div class="pg" id="pg-docs">
-    <div class="flt" style="display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin-bottom:11px">
-      <select class="fsel" id="f-tipo" onchange="filterDocs()"><option value="">Todos los tipos</option></select>
-      <select class="fsel" id="f-est" onchange="filterDocs()" style="min-width:160px">
-        <option value="">Todos los estados</option>
-        <optgroup label="Estado">
-          <option value="Vigente">Vigente</option>
-          <option value="Vencido">Vencido</option>
-          <option value="Obsoleto">Obsoleto</option>
-        </optgroup>
-        <optgroup label="Próximos a vencer">
-          <option value="Menos de 15 días">Menos de 15 días</option>
-          <option value="Menos de 1 Mes">Menos de 1 Mes</option>
-          <option value="Menos de 2 Meses">Menos de 2 Meses</option>
-          <option value="Menos de 3 Meses">Menos de 3 Meses</option>
-          <option value="Menos de 4 Meses">Menos de 4 Meses</option>
-          <option value="Menos de 5 Meses">Menos de 5 Meses</option>
-        </optgroup>
-      </select>
-      <select class="fsel" id="f-proc" onchange="filterDocs()"><option value="">Todos los procesos</option></select>
-      <select class="fsel" id="f-area" onchange="filterDocs()"><option value="">Todas las áreas</option></select>
-      <select class="fsel" id="f-sub" onchange="filterDocs()"><option value="">Todas las subáreas</option></select>
-      <select class="fsel" id="f-gxp" onchange="filterDocs()"><option value="">Todos</option><option value="si">GxP</option><option value="no">No GxP</option></select>
-      <button class="btn gh sm" onclick="clearFiltros()" style="white-space:nowrap">✕ Limpiar filtros</button>
-      <div style="margin-left:auto;display:flex;align-items:center;gap:7px">
-        <div class="docs-view-toggle">
-          <button class="dvt-btn act" id="dvt-cards" onclick="setDocsView('cards')" title="Vista de tarjetas">⊞</button>
-          <button class="dvt-btn" id="dvt-list" onclick="setDocsView('list')" title="Vista de lista">☰</button>
+    <!-- Estado vacío — pantalla limpia con botón de búsqueda -->
+    <div class="dcp-empty-state" id="dcp-empty">
+      <div class="dcp-empty-icon">📄</div>
+      <div class="dcp-empty-title">Consulta de Documentos</div>
+      <div class="dcp-empty-sub">Ingresa el código del documento que deseas consultar para ver su información completa.</div>
+      <button class="dcp-trigger" onclick="dcpOpen()">🔍 Buscar documento</button>
+      <div class="dcp-kbd-hint">
+        <span class="dcp-kbd">Ctrl</span><span style="font-size:11px;color:var(--tx3)">+</span><span class="dcp-kbd">K</span>
+        <span style="font-size:11px;color:var(--tx3)">para abrir búsqueda</span>
+      </div>
+    </div>
+    <!-- Overlay command palette -->
+    <div class="dcp-overlay" id="dcp-overlay" onclick="dcpOverlayClick(event)">
+      <div class="dcp-palette" id="dcp-palette">
+        <div class="dcp-search-row">
+          <span class="dcp-search-icon">🔍</span>
+          <input id="dcp-input" placeholder="Escribe el código del documento..." oninput="dcpSearch(this.value)" onkeydown="dcpKeydown(event)" autocomplete="off" spellcheck="false"/>
+          <span class="dcp-kbd" onclick="dcpClose()" style="cursor:pointer">Esc</span>
+        </div>
+        <div class="dcp-body">
+          <div class="dcp-sidebar" id="dcp-sidebar">
+            <div class="dcp-sidebar-label">Recientes</div>
+            <div id="dcp-hist-recent"></div>
+            <div class="dcp-sidebar-div"></div>
+            <div class="dcp-sidebar-label">Más consultados</div>
+            <div id="dcp-hist-top"></div>
+          </div>
+          <div class="dcp-detail" id="dcp-detail">
+            <div class="dcp-detail-empty" id="dcp-detail-empty">
+              <div style="font-size:28px">📭</div>
+              <div style="font-size:12px;color:var(--tx3)">Escribe un código para consultar</div>
+            </div>
+            <div id="dcp-detail-content" style="display:none;flex-direction:column;flex:1"></div>
+          </div>
+        </div>
+        <div class="dcp-hints">
+          <span class="dcp-hint"><span class="dcp-kbd">Enter</span> consultar</span>
+          <span class="dcp-hint"><span class="dcp-kbd">↑↓</span> navegar historial</span>
+          <span class="dcp-hint"><span class="dcp-kbd">Esc</span> cerrar</span>
         </div>
       </div>
     </div>
-    <div class="card">
-      <div id="docs-list-view" style="display:none">
-        <div class="tw"><table><thead><tr><th>Código</th><th>Cód. Ant.</th><th>Descripción</th><th>Ver.</th><th>Tipo</th><th>Área</th><th>Vencimiento</th><th>Estado</th><th>GxP</th><th>Administrador</th><th></th></tr></thead><tbody id="docs-tb"></tbody></table></div>
-      </div>
-      <div id="docs-cards-view">
-        <div class="doc-cards-grid" id="docs-cards-grid"></div>
-      </div>
-      <div class="pgctrl" id="docs-pg"></div>
+    <!-- Contenedores legacy para compatibilidad (ocultos) -->
+    <div style="display:none">
+      <select id="f-tipo"></select><select id="f-est"></select>
+      <select id="f-proc"></select><select id="f-area"></select>
+      <select id="f-sub"></select><select id="f-gxp"></select>
+      <table><tbody id="docs-tb"></tbody></table>
+      <div id="docs-pg"></div>
+      <div id="docs-list-view"></div>
+      <div id="docs-cards-view"><div id="docs-cards-grid"></div></div>
+      <div id="dvt-cards"></div><div id="dvt-list"></div>
     </div>
   </div>
 
