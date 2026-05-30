@@ -3276,67 +3276,47 @@ function dcpRenderSidebar(){
 
 /* ── Familia documental: sidebar relacionados ───── */
 function dcpBuildFamilia(d){
-  var cod=d.codigoActual.toUpperCase();
+  var cod = (d.codigoActual||'').toUpperCase().trim();
 
-  // Tokenizador robusto: separa SOLO por coma, punto y coma, pipe, tab o salto de linea
-  // NO por espacio, para no partir "SOP-0001" en tokens separados
-  function parsearRel(campo){
+  // Tokenizar por coma, punto y coma, pipe o tabulacion — NUNCA por espacio
+  function tokens(campo){
     return String(campo||'').toUpperCase()
       .split(/[,;|\t\n\r]+/)
-      .map(function(t){return t.trim();})
+      .map(function(t){ return t.trim(); })
       .filter(Boolean);
   }
 
-  // Busca codigo exacto en el campo, incluso si viene separado por espacios entre comas
-  function contieneCodigoExacto(campo,buscar){
-    if(!campo) return false;
-    var tokens=parsearRel(campo);
-    if(tokens.indexOf(buscar)>=0) return true;
-    // Fallback: coincidencia como palabra completa
-    var re=new RegExp('(?:^|[,;|\\s])'+buscar.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?:[,;|\\s]|$)');
-    return re.test(String(campo).toUpperCase());
-  }
+  var empresa = docsEmpresa();
+  var resultado = [];
+  var vistosId = { [d.id]: true };
 
-  // GRUPO A: docs que tienen al doc base en su campo docsRelacionados
-  var enRel=docsEmpresa().filter(function(x){
-    if(x.id===d.id) return false;
-    return contieneCodigoExacto(x.docsRelacionados,cod);
+  empresa.forEach(function(x){
+    if(vistosId[x.id]) return;
+    var xCod = (x.codigoActual||'').toUpperCase().trim();
+
+    // REGLA 1: el codigo candidato COMIENZA con el codigo base + guion
+    // Ej: SOP-0001  →  F-SOP-0001-1, DA-SOP-0001-02, INST-SOP-0001
+    var rePrefix = new RegExp('^[A-Z]+-' + cod.replace(/[-]/g,'[-]') + '(?:[-_]|$)');
+    if(rePrefix.test(xCod)){ vistosId[x.id]=true; resultado.push(x); return; }
+
+    // REGLA 2: el candidato tiene al doc base en su campo docsRelacionados
+    var toks = tokens(x.docsRelacionados);
+    if(toks.indexOf(cod)>=0){ vistosId[x.id]=true; resultado.push(x); return; }
+
+    // REGLA 3: el doc base tiene al candidato en su propio docsRelacionados
+    var misTokens = tokens(d.docsRelacionados);
+    if(misTokens.indexOf(xCod)>=0){ vistosId[x.id]=true; resultado.push(x); return; }
   });
 
-  // GRUPO B: docs que el doc base lista en su docsRelacionados (bidireccional)
-  var misCods=parsearRel(d.docsRelacionados);
-  var yaIds=enRel.map(function(x){return x.id;});
-  var misDocs=docsEmpresa().filter(function(x){
-    if(x.id===d.id) return false;
-    if(yaIds.indexOf(x.id)>=0) return false;
-    return misCods.indexOf(x.codigoActual.toUpperCase())>=0;
-  });
-
-  // GRUPO C: Formatos/DA/otros cuyo codigo contiene el codigo base
-  // Ej: SOP-0001 -> F-SOP-0001, F-SOP-0001-01, DA-SOP-0001, etc.
-  var prefijos=['F-','DA-','INST-','PRG-','POL-','PRO-','MAN-','NI-','SUB-','DP-','CR-','MTZ-','MP-','LM-'];
-  var yaIds2=enRel.concat(misDocs).map(function(x){return x.id;});
-  var porPrefijo=docsEmpresa().filter(function(x){
-    if(x.id===d.id) return false;
-    if(yaIds2.indexOf(x.id)>=0) return false;
-    var xCod=(x.codigoActual||'').toUpperCase();
-    return prefijos.some(function(p){
-      // El codigo candidato comienza con PREFIJO+COD_BASE
-      return xCod===p+cod || xCod.indexOf(p+cod+'-')===0 || xCod.indexOf(p+cod+'_')===0;
-    });
-  });
-
-  var todos=enRel.concat(misDocs).concat(porPrefijo);
-
-  // Agrupar por tipo, ordenados por codigo dentro de cada grupo
-  var grupos={};
-  todos.forEach(function(x){
-    var tipo=x.tipoDocumento||(typeof detTipo==='function'?detTipo(x.codigoActual):'')||'Otro';
-    if(!grupos[tipo]) grupos[tipo]=[];
+  // Agrupar por tipo, ordenados por codigo dentro del grupo
+  var grupos = {};
+  resultado.forEach(function(x){
+    var tipo = x.tipoDocumento || (typeof detTipo==='function' ? detTipo(x.codigoActual) : '') || 'Otro';
+    if(!grupos[tipo]) grupos[tipo] = [];
     grupos[tipo].push(x);
   });
   Object.keys(grupos).forEach(function(t){
-    grupos[t].sort(function(a,b){return (a.codigoActual||'').localeCompare(b.codigoActual||'');});
+    grupos[t].sort(function(a,b){ return (a.codigoActual||'').localeCompare(b.codigoActual||''); });
   });
   return grupos;
 }
@@ -3344,164 +3324,196 @@ function dcpBuildFamilia(d){
 var _dcpActiveRelId = null;
 
 function dcpRenderRelated(d){
-  var el=document.getElementById('dcp-related-list');
+  var el = document.getElementById('dcp-related-list');
   if(!el) return;
-  _dcpActiveRelId=d.id;
-  var grupos=dcpBuildFamilia(d);
-  var tiposOrden=['Formato','Documento Asociado','Instructivo','Programa','Protocolo',
+  _dcpActiveRelId = d.id;
+  var grupos = dcpBuildFamilia(d);
+  var tiposOrden = ['Formato','Documento Asociado','Instructivo','Programa','Protocolo',
     'Politica','Manual','Norma Interna','Subproceso','Descripcion De Procesos',
     'Cronograma','Matriz','Listado','Mapa De Procesos','Procedimiento'];
-  var tiposPresentes=Object.keys(grupos);
+  var tiposPresentes = Object.keys(grupos);
   tiposPresentes.sort(function(a,b){
     var ia=tiposOrden.indexOf(a); var ib=tiposOrden.indexOf(b);
     if(ia<0) ia=99; if(ib<0) ib=99; return ia-ib;
   });
-  var totalRel=tiposPresentes.reduce(function(s,t){return s+grupos[t].length;},0);
-  var html='';
-  // Doc base destacado
-  html+='<div style="padding:8px 10px;border-bottom:1px solid var(--brd);background:var(--tl)">'
-    +'<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--T3);margin-bottom:5px">Documento base</div>'
-    +'<div id="dcp-rel-item-base" onclick="dcpShowRelDoc('+d.id+',true)" style="display:flex;align-items:center;gap:7px;padding:6px 9px;background:#fff;border-radius:6px;border:2px solid var(--T);cursor:pointer">'
-      +'<span style="width:7px;height:7px;border-radius:50%;background:'+dcpColorEstado(d.estado)+';flex-shrink:0;display:inline-block"></span>'
-      +'<div style="flex:1;min-width:0">'
-        +'<div style="font-family:'Courier New',monospace;font-size:10px;font-weight:700;color:var(--T3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+d.codigoActual+'</div>'
-        +'<div style="font-size:9px;color:var(--tx3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px">'+d.descripcion+'</div>'
-      +'</div>'
-    +'</div>'
-  +'</div>';
+  var totalRel = tiposPresentes.reduce(function(s,t){ return s+grupos[t].length; }, 0);
+
+  var html = '';
+
+  // ── Documento base ──
+  html += '<div style="padding:8px 10px;border-bottom:1px solid var(--brd);background:var(--tl)">'
+    + '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--T3);margin-bottom:5px">Documento base</div>'
+    + '<div id="dcp-rel-item-base" onclick="dcpShowRelDoc('+d.id+',true)" style="display:flex;align-items:center;gap:7px;padding:6px 9px;background:#fff;border-radius:6px;border:2px solid var(--T);cursor:pointer">'
+      + '<span style="width:7px;height:7px;border-radius:50%;background:'+dcpColorEstado(d.estado)+';flex-shrink:0;display:inline-block"></span>'
+      + '<div style="flex:1;min-width:0">'
+        + '<div style="font-family:\'Courier New\',monospace;font-size:10px;font-weight:700;color:var(--T3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+d.codigoActual+'</div>'
+        + '<div style="font-size:9px;color:var(--tx3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px">'+d.descripcion+'</div>'
+      + '</div>'
+    + '</div>'
+  + '</div>';
+
   if(!tiposPresentes.length){
-    html+='<div style="padding:14px 12px;font-size:10px;color:var(--tx3);text-align:center;line-height:1.7">No se encontraron formatos,<br>DAs ni documentos relacionados.</div>';
-    el.innerHTML=html; return;
+    html += '<div style="padding:16px 12px;font-size:10px;color:var(--tx3);text-align:center;line-height:1.7">'
+      + 'No se encontraron Formatos,<br>DAs ni documentos relacionados.'
+      + '</div>';
+    el.innerHTML = html;
+    return;
   }
-  html+='<div style="padding:5px 10px;background:var(--bg3);border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between">'
-    +'<span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx3)">Familia documental</span>'
-    +'<span style="font-size:9px;font-weight:700;color:var(--T);background:var(--tl);padding:1px 7px;border-radius:99px">'+totalRel+'</span>'
-  +'</div>';
+
+  // ── Encabezado familia ──
+  html += '<div style="padding:5px 10px;background:var(--bg3);border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between">'
+    + '<span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx3)">Familia documental</span>'
+    + '<span style="font-size:9px;font-weight:700;color:var(--T);background:var(--tl);padding:1px 7px;border-radius:99px">'+totalRel+'</span>'
+  + '</div>';
+
+  // ── Grupos ──
   tiposPresentes.forEach(function(tipo){
-    var items=grupos[tipo];
-    html+='<div>'
-      +'<div style="padding:5px 10px 3px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--T3);background:var(--bg3);border-top:1px solid var(--brd);border-bottom:0.5px solid var(--brd)">'
-        +tipo+' <span style="font-weight:500;color:var(--tx3)">('+items.length+')</span>'
-      +'</div>';
+    var items = grupos[tipo];
+    html += '<div>'
+      + '<div style="padding:5px 10px 3px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--T3);background:var(--bg3);border-top:1px solid var(--brd);border-bottom:0.5px solid var(--brd)">'
+        + tipo + ' <span style="font-weight:500;color:var(--tx3)">('+items.length+')</span>'
+      + '</div>';
     items.forEach(function(x){
-      var color=dcpColorEstado(x.estado);
-      html+='<div id="dcp-rel-item-'+x.id+'" onclick="dcpShowRelDoc('+x.id+')" '
-        +'style="display:flex;align-items:center;gap:7px;padding:7px 10px;cursor:pointer;border-top:0.5px solid var(--brd);border-left:2px solid transparent;transition:background .12s">'
-        +'<span style="width:6px;height:6px;border-radius:50%;background:'+color+';flex-shrink:0;display:inline-block"></span>'
-        +'<div style="flex:1;min-width:0">'
-          +'<div style="font-family:'Courier New',monospace;font-size:9px;font-weight:700;color:var(--T3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+x.codigoActual+'</div>'
-          +'<div style="font-size:9px;color:var(--tx3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px">'+x.descripcion+'</div>'
-        +'</div>'
-        +'<span style="font-size:8px;font-weight:700;padding:2px 6px;border-radius:3px;white-space:nowrap;flex-shrink:0;'+dcpBadgeStyle(x.estado)+'">'+x.estado+'</span>'
-      +'</div>';
+      html += '<div id="dcp-rel-item-'+x.id+'" onclick="dcpShowRelDoc('+x.id+')" '
+        + 'style="display:flex;align-items:center;gap:7px;padding:7px 10px;cursor:pointer;border-top:0.5px solid var(--brd);border-left:2px solid transparent;transition:background .12s">'
+        + '<span style="width:6px;height:6px;border-radius:50%;background:'+dcpColorEstado(x.estado)+';flex-shrink:0;display:inline-block"></span>'
+        + '<div style="flex:1;min-width:0">'
+          + '<div style="font-family:\'Courier New\',monospace;font-size:9px;font-weight:700;color:var(--T3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+x.codigoActual+'</div>'
+          + '<div style="font-size:9px;color:var(--tx3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px">'+x.descripcion+'</div>'
+        + '</div>'
+        + '<span style="font-size:8px;font-weight:700;padding:2px 6px;border-radius:3px;white-space:nowrap;flex-shrink:0;'+dcpBadgeStyle(x.estado)+'">'+x.estado+'</span>'
+      + '</div>';
     });
-    html+='</div>';
+    html += '</div>';
   });
-  el.innerHTML=html;
+
+  el.innerHTML = html;
 }
 
-function dcpShowRelDoc(id,isBase){
-  var d=docs.find(function(x){return x.id===id;}); if(!d) return;
-  // Limpiar seleccion anterior
-  var prevItem=document.getElementById('dcp-rel-item-'+_dcpActiveRelId);
-  if(prevItem){prevItem.style.background='';prevItem.style.borderLeft='2px solid transparent';}
-  var baseEl=document.getElementById('dcp-rel-item-base');
-  // Marcar nuevo activo
-  _dcpActiveRelId=id;
+function dcpShowRelDoc(id, isBase){
+  var d = docs.find(function(x){ return x.id===id; });
+  if(!d) return;
+  // Quitar seleccion anterior
+  var prevItem = document.getElementById('dcp-rel-item-'+_dcpActiveRelId);
+  if(prevItem && !prevItem.id.endsWith('-base')){
+    prevItem.style.background=''; prevItem.style.borderLeft='2px solid transparent';
+  }
+  var baseEl = document.getElementById('dcp-rel-item-base');
+  _dcpActiveRelId = id;
   if(isBase){
-    if(baseEl){baseEl.style.border='2px solid var(--T)';}
+    if(baseEl) baseEl.style.border='2px solid var(--T)';
   } else {
-    if(baseEl){baseEl.style.border='1px solid var(--brd2)';}
-    var newEl=document.getElementById('dcp-rel-item-'+id);
-    if(newEl){newEl.style.background='var(--tlx)';newEl.style.borderLeft='2px solid var(--T)';}
+    if(baseEl) baseEl.style.border='1px solid var(--brd2)';
+    var newEl = document.getElementById('dcp-rel-item-'+id);
+    if(newEl){ newEl.style.background='var(--tlx)'; newEl.style.borderLeft='2px solid var(--T)'; }
   }
   dcpRenderDetailPanel(d);
-  var codeEl=document.getElementById('dcp-topbar-code');
-  var nameEl=document.getElementById('dcp-topbar-name');
-  if(codeEl) codeEl.textContent=d.codigoActual+(isBase?'':' ← '+((_dcpCurrentDoc&&_dcpCurrentDoc.codigoActual)||''));
-  if(nameEl) nameEl.textContent=d.descripcion;
+  var codeEl = document.getElementById('dcp-topbar-code');
+  var nameEl = document.getElementById('dcp-topbar-name');
+  if(codeEl) codeEl.textContent = d.codigoActual + (isBase ? ' — ' : ' \u2190 ' + ((_dcpCurrentDoc&&_dcpCurrentDoc.codigoActual)||'') + ' — ');
+  if(nameEl) nameEl.textContent = d.descripcion;
 }
 
-/* ── Panel de detalle (vista principal) ─────────── */
 function dcpRenderDetailPanel(d){
-  var panel=document.getElementById('dcp-detail-content-main');
+  var panel = document.getElementById('dcp-detail-content-main');
   if(!panel) return;
 
-  var dias=dcpDias(d.fechaVencimiento);
-  var diasColor=dias===null?'var(--tx3)':dias<0?'var(--R)':dias<=30?'var(--A)':'var(--G)';
-  var diasText=dias===null?'—':dias<0?'Vencido hace '+Math.abs(dias)+' días':dias===0?'Vence hoy':dias+' días restantes';
-  var gxpSi=d.docGxP==='X'||d.docGxP==='Si'||d.docGxP==='Sí';
+  var dias = dcpDias(d.fechaVencimiento);
+  var diasColor = dias===null ? 'var(--tx3)' : dias<0 ? 'var(--R)' : dias<=30 ? 'var(--A)' : 'var(--G)';
+  var diasText  = dias===null ? '—' : dias<0 ? 'Vencido hace '+Math.abs(dias)+' días' : dias===0 ? 'Vence hoy' : dias+' días restantes';
+  var gxpSi = d.docGxP==='X' || d.docGxP==='Si' || d.docGxP==='Sí';
 
-  function fi(label,val){
-    var v=dcpFv(val);
-    return '<div style="padding:8px 0;border-bottom:0.5px solid var(--brd)">'+
-      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--tx3);margin-bottom:3px">'+label+'</div>'+
-      '<div style="font-size:12px;color:var(--tx);font-weight:500">'+(v||'<span style="color:var(--tx3);font-style:italic">—</span>')+'</div>'+
-      '</div>';
+  // Fecha en formato YYYY-MM-DD (ya viene así del sistema, mostrar tal cual)
+  function fd(s){ return dcpFv(s) || '—'; }
+
+  function fi(label, val){
+    var v = dcpFv(val);
+    return '<div style="padding:7px 0;border-bottom:0.5px solid var(--brd)">'
+      + '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--tx3);margin-bottom:2px">'+label+'</div>'
+      + '<div style="font-size:12px;color:var(--tx);font-weight:500">'+(v||'<span style="color:var(--tx3);font-style:italic">—</span>')+'</div>'
+      + '</div>';
   }
 
-  var html=
-    // HEADER
+  // ── Historial ──
+  var hist = (d.historial||[]).slice().reverse();
+  var histHtml = hist.length
+    ? hist.map(function(h){
+        var fecha = (h.f||'').split(' ')[0]; // solo YYYY-MM-DD
+        return '<div style="display:flex;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--brd)">'
+          + '<div style="width:6px;height:6px;border-radius:50%;background:var(--T);margin-top:5px;flex-shrink:0"></div>'
+          + '<div style="flex:1">'
+            + '<div style="font-size:11px;font-weight:600;color:var(--tx);line-height:1.4">'+(h.c||'Sin descripción')+'</div>'
+            + '<div style="font-size:10px;color:var(--tx3);margin-top:2px">'
+              + '<span style="font-family:\'Courier New\',monospace;background:var(--bg3);padding:1px 5px;border-radius:3px;margin-right:6px">'+fecha+'</span>'
+              + (h.u||'Sistema')
+            + '</div>'
+          + '</div>'
+        + '</div>';
+      }).join('')
+    : '<div style="font-size:11px;color:var(--tx3);padding:10px 0;text-align:center">Sin historial de cambios registrado</div>';
+
+  var html =
+    // ── HEADER ──
     '<div style="padding:16px 18px;border-bottom:1px solid var(--brd)">'
-      +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">'
-        +'<div style="flex:1;min-width:0">'
-          +'<div style="font-family:\'Courier New\',monospace;font-size:12px;font-weight:700;color:var(--T3);background:var(--tl);padding:3px 10px;border-radius:4px;display:inline-block;margin-bottom:7px">'+d.codigoActual+'</div>'
-          +(dcpFv(d.codigoAntiguo)?'<div style="font-size:9px;color:var(--tx3);margin-bottom:4px">Código anterior: '+d.codigoAntiguo+'</div>':'')
-          +'<div style="font-size:16px;font-weight:700;color:var(--tx);line-height:1.3;margin-bottom:3px">'+d.descripcion+'</div>'
-          +(dcpFv(d.descriptionEn)?'<div style="font-size:11px;color:var(--tx3);margin-bottom:8px">'+d.descriptionEn+'</div>':'')
-          +'<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">'
-            +'<span style="'+dcpBadgeStyle(d.estado)+';border-radius:4px;padding:3px 10px;font-size:10px;font-weight:700">'+(d.estado||'—')+'</span>'
-            +(gxpSi?'<span style="background:#e8f0fb;color:#1a5fa0;border-radius:4px;padding:3px 9px;font-size:10px;font-weight:700">GxP</span>':'')
-            +'<span style="font-size:10px;color:var(--tx3);background:var(--bg4);padding:2px 8px;border-radius:99px">v'+(dcpFv(d.version)||'—')+'</span>'
-          +'</div>'
-        +'</div>'
-        +'<div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap">'
-          +'<button class="btn gh sm" onclick="verDoc('+d.id+')">👁 Ver</button>'
-          +'<button class="btn gh sm" onclick="editDoc('+d.id+')">✏️ Editar</button>'
-          +'<button class="btn dn sm" onclick="delDoc('+d.id+')">🗑</button>'
-        +'</div>'
-      +'</div>'
-    +'</div>'
-    // BODY: grid de secciones
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:0">'
-      // Clasificación
-      +'<div style="padding:14px 18px;border-right:1px solid var(--brd);border-bottom:1px solid var(--brd)">'
-        +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--T);margin-bottom:8px">📄 Clasificación</div>'
-        +fi('Tipo de documento', d.tipoDocumento)
-        +fi('Proceso', d.proceso)
-        +fi('Plantilla', d.tipoPlantilla)
-        +fi('Idioma', d.idioma)
-      +'</div>'
-      // Responsables
-      +'<div style="padding:14px 18px;border-bottom:1px solid var(--brd)">'
-        +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--T);margin-bottom:8px">👤 Responsables</div>'
-        +fi('Área generadora', d.areaGeneradora)
-        +fi('Administrador', d.administrador)
-        +fi('Líder de proceso', d.liderProceso)
-        +fi('Correo', d.correoElectronico)
-      +'</div>'
-      // Vigencia
-      +'<div style="padding:14px 18px;border-right:1px solid var(--brd)">'
-        +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--T);margin-bottom:8px">📅 Vigencia</div>'
-        +'<div style="padding:8px 0;border-bottom:0.5px solid var(--brd)"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--tx3);margin-bottom:3px">Fecha vencimiento</div><div style="font-size:12px;font-weight:500;color:'+diasColor+'">'+dcpFmtDate(d.fechaVencimiento)+'</div></div>'
-        +'<div style="padding:8px 0;border-bottom:0.5px solid var(--brd)"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--tx3);margin-bottom:3px">Estado de vigencia</div><div style="font-size:12px;font-weight:500;color:'+diasColor+'">'+diasText+'</div></div>'
-        +fi('Fecha vigencia desde', dcpFmtDate(d.fechaVigencia))
-        +fi('Extensión de vigencia', d.extensionVigencia)
-      +'</div>'
-      // Alcance
-      +'<div style="padding:14px 18px">'
-        +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--T);margin-bottom:8px">🌐 Alcance y clasificación</div>'
-        +fi('Alcance empresas', d.alcanceEmpresas)
-        +fi('Áreas aplicables', d.areasAplicables)
-        +fi('Intercompañía', d.docIntercompania)
-        +fi('MBR', d.mbr)
-        +fi('Obsoleto', d.obsoleto)
-      +'</div>'
-    +'</div>';
+      + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">'
+        + '<div style="flex:1;min-width:0">'
+          + '<div style="font-family:\'Courier New\',monospace;font-size:12px;font-weight:700;color:var(--T3);background:var(--tl);padding:3px 10px;border-radius:4px;display:inline-block;margin-bottom:7px">'+d.codigoActual+'</div>'
+          + (dcpFv(d.codigoAntiguo) ? '<div style="font-size:9px;color:var(--tx3);margin-bottom:4px">Código anterior: '+d.codigoAntiguo+'</div>' : '')
+          + '<div style="font-size:16px;font-weight:700;color:var(--tx);line-height:1.3;margin-bottom:3px">'+d.descripcion+'</div>'
+          + (dcpFv(d.descriptionEn) ? '<div style="font-size:11px;color:var(--tx3);margin-bottom:8px">'+d.descriptionEn+'</div>' : '')
+          + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">'
+            + '<span style="'+dcpBadgeStyle(d.estado)+';border-radius:4px;padding:3px 10px;font-size:10px;font-weight:700">'+(d.estado||'—')+'</span>'
+            + (gxpSi ? '<span style="background:#e8f0fb;color:#1a5fa0;border-radius:4px;padding:3px 9px;font-size:10px;font-weight:700">GxP</span>' : '')
+            + '<span style="font-size:10px;color:var(--tx3);background:var(--bg4);padding:2px 8px;border-radius:99px">v'+(dcpFv(d.version)||'—')+'</span>'
+          + '</div>'
+        + '</div>'
+        + '<div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap">'
+          + '<button class="btn gh sm" onclick="verDoc('+d.id+')">👁 Ver</button>'
+          + '<button class="btn gh sm" onclick="editDoc('+d.id+')">✏️ Editar</button>'
+          + '<button class="btn dn sm" onclick="delDoc('+d.id+')">🗑</button>'
+        + '</div>'
+      + '</div>'
+    + '</div>'
+    // ── INFO GRID ──
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0">'
+      + '<div style="padding:14px 18px;border-right:1px solid var(--brd);border-bottom:1px solid var(--brd)">'
+        + '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--T);margin-bottom:8px">📄 Clasificación</div>'
+        + fi('Tipo de documento', d.tipoDocumento)
+        + fi('Proceso', d.proceso)
+        + fi('Plantilla', d.tipoPlantilla)
+        + fi('Idioma', d.idioma)
+      + '</div>'
+      + '<div style="padding:14px 18px;border-bottom:1px solid var(--brd)">'
+        + '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--T);margin-bottom:8px">👤 Responsables</div>'
+        + fi('Área generadora', d.areaGeneradora)
+        + fi('Administrador', d.administrador)
+        + fi('Líder de proceso', d.liderProceso)
+        + fi('Correo', d.correoElectronico)
+      + '</div>'
+      + '<div style="padding:14px 18px;border-right:1px solid var(--brd);border-bottom:1px solid var(--brd)">'
+        + '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--T);margin-bottom:8px">📅 Vigencia</div>'
+        + '<div style="padding:7px 0;border-bottom:0.5px solid var(--brd)"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--tx3);margin-bottom:2px">Fecha vigencia desde</div><div style="font-size:12px;font-weight:500;color:var(--tx)">'+fd(d.fechaVigencia)+'</div></div>'
+        + '<div style="padding:7px 0;border-bottom:0.5px solid var(--brd)"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--tx3);margin-bottom:2px">Fecha vencimiento</div><div style="font-size:12px;font-weight:500;color:'+diasColor+'">'+fd(d.fechaVencimiento)+'</div></div>'
+        + '<div style="padding:7px 0;border-bottom:0.5px solid var(--brd)"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--tx3);margin-bottom:2px">Estado de vigencia</div><div style="font-size:12px;font-weight:500;color:'+diasColor+'">'+diasText+'</div></div>'
+        + fi('Extensión de vigencia', d.extensionVigencia)
+      + '</div>'
+      + '<div style="padding:14px 18px;border-bottom:1px solid var(--brd)">'
+        + '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--T);margin-bottom:8px">🌐 Alcance</div>'
+        + fi('Alcance empresas', d.alcanceEmpresas)
+        + fi('Áreas aplicables', d.areasAplicables)
+        + fi('Intercompañía', d.docIntercompania)
+        + fi('MBR', d.mbr)
+        + fi('Obsoleto', d.obsoleto)
+      + '</div>'
+    + '</div>'
+    // ── HISTORIAL ──
+    + '<div style="padding:14px 18px">'
+      + '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--T);margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--tl)">🕐 Historial de cambios</div>'
+      + histHtml
+    + '</div>';
 
-  panel.innerHTML=html;
+  panel.innerHTML = html;
 }
-
 /* ── Abrir palette ──────────────────────────────── */
 function dcpOpen(){
   var ov=document.getElementById('dcp-overlay');
