@@ -339,6 +339,80 @@ tbody tr:last-child td{border-bottom:none}
 </div>
 
   <div class="pg act" id="pg-dash">
+
+    <!-- ── BANNER BIENVENIDA ── -->
+    <div id="home-welcome-banner" style="background:var(--T3);border-radius:var(--rl);padding:14px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div id="home-avatar" style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0">U</div>
+        <div>
+          <div id="home-greeting" style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px">Bienvenido</div>
+          <div id="home-subgreeting" style="font-size:11px;color:rgba(255,255,255,.75)">Cargando...</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0">
+        <button class="btn sm" onclick="nav('docs',document.querySelector('[data-p=docs]'))" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.35);font-size:11px">🔍 Consultar documento</button>
+        <button class="btn sm" onclick="nav('docs',document.querySelector('[data-p=docs]'))" style="background:#fff;color:var(--T3);border-color:#fff;font-size:11px;font-weight:700">➕ Nuevo documento</button>
+      </div>
+    </div>
+
+    <!-- ── GRID: Accesos rápidos + Mis tareas ── -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+
+      <!-- Accesos rápidos a módulos -->
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--tx3);padding:0 2px">Accesos rápidos</div>
+        <div onclick="nav('docs',document.querySelector('[data-p=docs]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+          <div style="width:34px;height:34px;border-radius:7px;background:#e1f5ee;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">📄</div>
+          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--tx)">Documentos</div><div style="font-size:10px;color:var(--tx3)">Consulta y gestiona el archivo documental</div></div>
+          <span style="font-size:16px;color:var(--tx3)">›</span>
+        </div>
+        <div onclick="nav('rutabor',document.querySelector('[data-p=rutabor]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+          <div style="width:34px;height:34px;border-radius:7px;background:#faeeda;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">🗂️</div>
+          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--tx)">Ruta de borrador</div><div style="font-size:10px;color:var(--tx3)">Gestiona solicitudes en proceso</div></div>
+          <span style="font-size:16px;color:var(--tx3)">›</span>
+        </div>
+        <div onclick="nav('flujos',document.querySelector('[data-p=flujos]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+          <div style="width:34px;height:34px;border-radius:7px;background:#e6f1fb;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">🔀</div>
+          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--tx)">Flujos de aprobación</div><div style="font-size:10px;color:var(--tx3)">Revisa y aprueba documentos pendientes</div></div>
+          <span style="font-size:16px;color:var(--tx3)">›</span>
+        </div>
+        <div onclick="nav('venc',document.querySelector('[data-p=venc]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+          <div style="width:34px;height:34px;border-radius:7px;background:#fcebeb;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">⚠️</div>
+          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--tx)">Control de vencimientos</div><div style="font-size:10px;color:var(--tx3)">Documentos próximos a vencer o vencidos</div></div>
+          <span style="font-size:16px;color:var(--tx3)">›</span>
+        </div>
+        <div onclick="nav('audit',document.querySelector('[data-p=audit]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+          <div style="width:34px;height:34px;border-radius:7px;background:#e1f5ee;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">🛡️</div>
+          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--tx)">Auditoría</div><div style="font-size:10px;color:var(--tx3)">Registro de actividades del sistema</div></div>
+          <span style="font-size:16px;color:var(--tx3)">›</span>
+        </div>
+      </div>
+
+      <!-- Mis tareas del día -->
+      <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);box-shadow:var(--sh);display:flex;flex-direction:column;overflow:hidden">
+        <div style="padding:10px 13px;border-bottom:1px solid var(--brd);display:flex;align-items:center;gap:8px">
+          <span style="font-size:14px">✅</span>
+          <span style="font-size:12px;font-weight:700;color:var(--tx);flex:1">Mis tareas del día</span>
+          <span id="home-tasks-badge" style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:99px;background:#e1f5ee;color:#085041"></span>
+          <button onclick="homeAddTask()" style="font-size:10px;padding:3px 9px;border-radius:6px;border:1px solid var(--T);background:#e1f5ee;color:var(--T3);cursor:pointer;display:flex;align-items:center;gap:4px;font-weight:600">➕ Agregar</button>
+        </div>
+        <div id="home-tasks-list" style="flex:1;overflow-y:auto;max-height:340px"></div>
+        <div style="padding:8px 12px;background:var(--bg3);border-top:1px solid var(--brd)">
+          <div onclick="homeAddTask()" style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--tx3)">
+            <span style="font-size:14px;color:var(--tx3)">➕</span>
+            <span style="font-size:11px">Escribe una nueva tarea...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Separador hacia KPI Dashboard -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <div style="flex:1;height:1px;background:var(--brd)"></div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--tx3);white-space:nowrap">📊 KPI Dashboard</div>
+      <div style="flex:1;height:1px;background:var(--brd)"></div>
+    </div>
+
     <!-- Alertas de inspecciones visibles desde el dashboard -->
     <div id="insp-dash-alerts" style="margin-bottom:10px"></div>
     <!-- Header row -->
@@ -527,8 +601,8 @@ tbody tr:last-child td{border-bottom:none}
 
     <!-- ── LANDING: barra superior + tarjetas de acceso rápido ── -->
     <div id="dcp-landing">
-      <!-- Barra de búsqueda destacada -->
-      <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:14px 18px;margin-bottom:14px;box-shadow:var(--sh)">
+      <!-- Barra búsqueda principal -->
+      <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:12px 16px;margin-bottom:12px;box-shadow:var(--sh)">
         <div style="display:flex;align-items:center;gap:10px">
           <div style="flex:1;display:flex;align-items:center;gap:10px;background:var(--bg3);border:1.5px solid var(--T);border-radius:var(--r);padding:9px 14px;cursor:text" onclick="dcpOpen()">
             <span style="font-size:16px;color:var(--T)">🔍</span>
@@ -541,35 +615,89 @@ tbody tr:last-child td{border-bottom:none}
         </div>
       </div>
 
-      <!-- Tarjetas de acceso rápido -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-        <!-- Recientes -->
-        <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:14px 16px;box-shadow:var(--sh)">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--brd)">
-            <span style="font-size:14px">🕐</span>
-            <span style="font-size:12px;font-weight:700;color:var(--tx)">Consultados recientemente</span>
+      <!-- Grid: recientes + accesos rápidos -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+
+        <!-- Columna izquierda: recientes + más consultados -->
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <!-- Consultados recientemente -->
+          <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:14px 16px;box-shadow:var(--sh)">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--brd)">
+              <span style="font-size:14px">🕐</span>
+              <span style="font-size:12px;font-weight:700;color:var(--tx)">Consultados recientemente</span>
+            </div>
+            <div id="dcp-landing-recent" style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:11px;color:var(--tx3);text-align:center;padding:12px">Sin consultas recientes</div>
+            </div>
           </div>
-          <div id="dcp-landing-recent" style="display:flex;flex-direction:column;gap:4px">
-            <div style="font-size:11px;color:var(--tx3);text-align:center;padding:12px">Sin consultas recientes</div>
+          <!-- Más consultados -->
+          <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:14px 16px;box-shadow:var(--sh)">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--brd)">
+              <span style="font-size:14px">⭐</span>
+              <span style="font-size:12px;font-weight:700;color:var(--tx)">Más consultados</span>
+            </div>
+            <div id="dcp-landing-top" style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:11px;color:var(--tx3);text-align:center;padding:12px">Sin datos aún</div>
+            </div>
           </div>
         </div>
-        <!-- Más consultados -->
-        <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:14px 16px;box-shadow:var(--sh)">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--brd)">
-            <span style="font-size:14px">⭐</span>
-            <span style="font-size:12px;font-weight:700;color:var(--tx)">Más consultados</span>
+
+        <!-- Columna derecha: accesos rápidos a módulos -->
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--tx3);padding:0 2px;margin-bottom:0">Accesos directos</div>
+          <div onclick="nav('extvigor',document.querySelector('[data-p=extvigor]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+            <div style="width:34px;height:34px;border-radius:7px;background:#e1f5ee;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">📅</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--tx)">Extender vigencia</div>
+              <div style="font-size:10px;color:var(--tx3)">Amplía la fecha de vencimiento de un documento</div>
+            </div>
+            <span style="font-size:16px;color:var(--tx3)">›</span>
           </div>
-          <div id="dcp-landing-top" style="display:flex;flex-direction:column;gap:4px">
-            <div style="font-size:11px;color:var(--tx3);text-align:center;padding:12px">Sin datos aún</div>
+          <div onclick="nav('fextvig',document.querySelector('[data-p=fextvig]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+            <div style="width:34px;height:34px;border-radius:7px;background:#e8f0fb;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">📋</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--tx)">F-Extensión de vigencia</div>
+              <div style="font-size:10px;color:var(--tx3)">Formato oficial para solicitar extensión</div>
+            </div>
+            <span style="font-size:16px;color:var(--tx3)">›</span>
+          </div>
+          <div onclick="nav('docsrel',document.querySelector('[data-p=docsrel]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+            <div style="width:34px;height:34px;border-radius:7px;background:#faeeda;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">🔗</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--tx)">Documentos relacionados</div>
+              <div style="font-size:10px;color:var(--tx3)">Consulta las relaciones entre documentos</div>
+            </div>
+            <span style="font-size:16px;color:var(--tx3)">›</span>
+          </div>
+          <div onclick="nav('revdoc',document.querySelector('[data-p=revdoc]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+            <div style="width:34px;height:34px;border-radius:7px;background:#e0f5f3;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">🔍</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--tx)">Revisión de documentos</div>
+              <div style="font-size:10px;color:var(--tx3)">Gestiona el proceso de revisión documental</div>
+            </div>
+            <span style="font-size:16px;color:var(--tx3)">›</span>
+          </div>
+          <div onclick="nav('pdfbarcode',document.querySelector('[data-p=pdfbarcode]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+            <div style="width:34px;height:34px;border-radius:7px;background:#fcebeb;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">🖨️</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--tx)">Estampar PDF</div>
+              <div style="font-size:10px;color:var(--tx3)">Agrega código de barras o QR al PDF del documento</div>
+            </div>
+            <span style="font-size:16px;color:var(--tx3)">›</span>
+          </div>
+          <div onclick="nav('novedad',document.querySelector('[data-p=novedad]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+            <div style="width:34px;height:34px;border-radius:7px;background:#f3e8fb;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">📢</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--tx)">Novedad de documentos</div>
+              <div style="font-size:10px;color:var(--tx3)">Registra novedades sobre documentos del sistema</div>
+            </div>
+            <span style="font-size:16px;color:var(--tx3)">›</span>
           </div>
         </div>
       </div>
 
-      <!-- Resumen rápido por estado -->
-      <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:14px 16px;box-shadow:var(--sh)">
-        <div style="font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px">Estado del archivo documental</div>
-        <div id="dcp-landing-stats" style="display:flex;gap:0"></div>
-      </div>
+      <!-- hidden stats div for compatibility -->
+      <div id="dcp-landing-stats" style="display:none"></div>
     </div>
 
     <!-- ── VISTA PRINCIPAL: barra fija + layout split ── -->
@@ -2689,6 +2817,7 @@ function updBadges(){
 // DASHBOARD
 // ============================================================
 function renderDash(){
+  if(typeof homeInit==='function') homeInit();
   //  KPIs — excluir Obsoletos de todos los cálculos 
   // Un doc es obsoleto si: estado==='Obsoleto' O campo obsoleto es X/Si
   function esObsoleto(d){
@@ -3219,29 +3348,6 @@ function dcpRenderLanding(){
           '</div>';
       }).join('');
     }
-  }
-  // Stats
-  var sEl=document.getElementById('dcp-landing-stats');
-  if(sEl){
-    var empresa=docsEmpresa();
-    var total=empresa.length;
-    var vig=empresa.filter(function(d){return d.estado==='Vigente';}).length;
-    var venc=empresa.filter(function(d){return d.estado==='Vencido';}).length;
-    var obs=empresa.filter(function(d){return d.estado==='Obsoleto';}).length;
-    var otro=total-vig-venc-obs;
-    var stats=[
-      {label:'Total documentos',val:total,color:'var(--T)',bg:'var(--tl)'},
-      {label:'Vigentes',val:vig,color:'var(--G)',bg:'#e6f9f3'},
-      {label:'Vencidos',val:venc,color:'var(--R)',bg:'#fde8e8'},
-      {label:'Obsoletos',val:obs,color:'#888',bg:'#f0f0f0'},
-      {label:'Por vencer',val:otro,color:'var(--A)',bg:'#fff5e0'}
-    ];
-    sEl.innerHTML=stats.map(function(s,i){
-      return '<div style="flex:1;padding:10px 14px;border-right:'+(i<stats.length-1?'1px solid var(--brd)':'none')+';text-align:center">'+
-        '<div style="font-size:22px;font-weight:700;color:'+s.color+'">'+s.val+'</div>'+
-        '<div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">'+s.label+'</div>'+
-        '</div>';
-    }).join('');
   }
 }
 
@@ -15645,6 +15751,80 @@ tbody tr:last-child td{border-bottom:none}
 </div>
 
   <div class="pg act" id="pg-dash">
+
+    <!-- ── BANNER BIENVENIDA ── -->
+    <div id="home-welcome-banner" style="background:var(--T3);border-radius:var(--rl);padding:14px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div id="home-avatar" style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0">U</div>
+        <div>
+          <div id="home-greeting" style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px">Bienvenido</div>
+          <div id="home-subgreeting" style="font-size:11px;color:rgba(255,255,255,.75)">Cargando...</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0">
+        <button class="btn sm" onclick="nav('docs',document.querySelector('[data-p=docs]'))" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.35);font-size:11px">🔍 Consultar documento</button>
+        <button class="btn sm" onclick="nav('docs',document.querySelector('[data-p=docs]'))" style="background:#fff;color:var(--T3);border-color:#fff;font-size:11px;font-weight:700">➕ Nuevo documento</button>
+      </div>
+    </div>
+
+    <!-- ── GRID: Accesos rápidos + Mis tareas ── -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+
+      <!-- Accesos rápidos a módulos -->
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--tx3);padding:0 2px">Accesos rápidos</div>
+        <div onclick="nav('docs',document.querySelector('[data-p=docs]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+          <div style="width:34px;height:34px;border-radius:7px;background:#e1f5ee;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">📄</div>
+          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--tx)">Documentos</div><div style="font-size:10px;color:var(--tx3)">Consulta y gestiona el archivo documental</div></div>
+          <span style="font-size:16px;color:var(--tx3)">›</span>
+        </div>
+        <div onclick="nav('rutabor',document.querySelector('[data-p=rutabor]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+          <div style="width:34px;height:34px;border-radius:7px;background:#faeeda;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">🗂️</div>
+          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--tx)">Ruta de borrador</div><div style="font-size:10px;color:var(--tx3)">Gestiona solicitudes en proceso</div></div>
+          <span style="font-size:16px;color:var(--tx3)">›</span>
+        </div>
+        <div onclick="nav('flujos',document.querySelector('[data-p=flujos]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+          <div style="width:34px;height:34px;border-radius:7px;background:#e6f1fb;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">🔀</div>
+          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--tx)">Flujos de aprobación</div><div style="font-size:10px;color:var(--tx3)">Revisa y aprueba documentos pendientes</div></div>
+          <span style="font-size:16px;color:var(--tx3)">›</span>
+        </div>
+        <div onclick="nav('venc',document.querySelector('[data-p=venc]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+          <div style="width:34px;height:34px;border-radius:7px;background:#fcebeb;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">⚠️</div>
+          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--tx)">Control de vencimientos</div><div style="font-size:10px;color:var(--tx3)">Documentos próximos a vencer o vencidos</div></div>
+          <span style="font-size:16px;color:var(--tx3)">›</span>
+        </div>
+        <div onclick="nav('audit',document.querySelector('[data-p=audit]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+          <div style="width:34px;height:34px;border-radius:7px;background:#e1f5ee;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">🛡️</div>
+          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--tx)">Auditoría</div><div style="font-size:10px;color:var(--tx3)">Registro de actividades del sistema</div></div>
+          <span style="font-size:16px;color:var(--tx3)">›</span>
+        </div>
+      </div>
+
+      <!-- Mis tareas del día -->
+      <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);box-shadow:var(--sh);display:flex;flex-direction:column;overflow:hidden">
+        <div style="padding:10px 13px;border-bottom:1px solid var(--brd);display:flex;align-items:center;gap:8px">
+          <span style="font-size:14px">✅</span>
+          <span style="font-size:12px;font-weight:700;color:var(--tx);flex:1">Mis tareas del día</span>
+          <span id="home-tasks-badge" style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:99px;background:#e1f5ee;color:#085041"></span>
+          <button onclick="homeAddTask()" style="font-size:10px;padding:3px 9px;border-radius:6px;border:1px solid var(--T);background:#e1f5ee;color:var(--T3);cursor:pointer;display:flex;align-items:center;gap:4px;font-weight:600">➕ Agregar</button>
+        </div>
+        <div id="home-tasks-list" style="flex:1;overflow-y:auto;max-height:340px"></div>
+        <div style="padding:8px 12px;background:var(--bg3);border-top:1px solid var(--brd)">
+          <div onclick="homeAddTask()" style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--tx3)">
+            <span style="font-size:14px;color:var(--tx3)">➕</span>
+            <span style="font-size:11px">Escribe una nueva tarea...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Separador hacia KPI Dashboard -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <div style="flex:1;height:1px;background:var(--brd)"></div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--tx3);white-space:nowrap">📊 KPI Dashboard</div>
+      <div style="flex:1;height:1px;background:var(--brd)"></div>
+    </div>
+
     <!-- Alertas de inspecciones visibles desde el dashboard -->
     <div id="insp-dash-alerts" style="margin-bottom:10px"></div>
     <!-- Header row -->
@@ -15833,8 +16013,8 @@ tbody tr:last-child td{border-bottom:none}
 
     <!-- ── LANDING: barra superior + tarjetas de acceso rápido ── -->
     <div id="dcp-landing">
-      <!-- Barra de búsqueda destacada -->
-      <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:14px 18px;margin-bottom:14px;box-shadow:var(--sh)">
+      <!-- Barra búsqueda principal -->
+      <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:12px 16px;margin-bottom:12px;box-shadow:var(--sh)">
         <div style="display:flex;align-items:center;gap:10px">
           <div style="flex:1;display:flex;align-items:center;gap:10px;background:var(--bg3);border:1.5px solid var(--T);border-radius:var(--r);padding:9px 14px;cursor:text" onclick="dcpOpen()">
             <span style="font-size:16px;color:var(--T)">🔍</span>
@@ -15847,35 +16027,89 @@ tbody tr:last-child td{border-bottom:none}
         </div>
       </div>
 
-      <!-- Tarjetas de acceso rápido -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-        <!-- Recientes -->
-        <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:14px 16px;box-shadow:var(--sh)">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--brd)">
-            <span style="font-size:14px">🕐</span>
-            <span style="font-size:12px;font-weight:700;color:var(--tx)">Consultados recientemente</span>
+      <!-- Grid: recientes + accesos rápidos -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+
+        <!-- Columna izquierda: recientes + más consultados -->
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <!-- Consultados recientemente -->
+          <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:14px 16px;box-shadow:var(--sh)">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--brd)">
+              <span style="font-size:14px">🕐</span>
+              <span style="font-size:12px;font-weight:700;color:var(--tx)">Consultados recientemente</span>
+            </div>
+            <div id="dcp-landing-recent" style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:11px;color:var(--tx3);text-align:center;padding:12px">Sin consultas recientes</div>
+            </div>
           </div>
-          <div id="dcp-landing-recent" style="display:flex;flex-direction:column;gap:4px">
-            <div style="font-size:11px;color:var(--tx3);text-align:center;padding:12px">Sin consultas recientes</div>
+          <!-- Más consultados -->
+          <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:14px 16px;box-shadow:var(--sh)">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--brd)">
+              <span style="font-size:14px">⭐</span>
+              <span style="font-size:12px;font-weight:700;color:var(--tx)">Más consultados</span>
+            </div>
+            <div id="dcp-landing-top" style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:11px;color:var(--tx3);text-align:center;padding:12px">Sin datos aún</div>
+            </div>
           </div>
         </div>
-        <!-- Más consultados -->
-        <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:14px 16px;box-shadow:var(--sh)">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--brd)">
-            <span style="font-size:14px">⭐</span>
-            <span style="font-size:12px;font-weight:700;color:var(--tx)">Más consultados</span>
+
+        <!-- Columna derecha: accesos rápidos a módulos -->
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--tx3);padding:0 2px;margin-bottom:0">Accesos directos</div>
+          <div onclick="nav('extvigor',document.querySelector('[data-p=extvigor]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+            <div style="width:34px;height:34px;border-radius:7px;background:#e1f5ee;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">📅</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--tx)">Extender vigencia</div>
+              <div style="font-size:10px;color:var(--tx3)">Amplía la fecha de vencimiento de un documento</div>
+            </div>
+            <span style="font-size:16px;color:var(--tx3)">›</span>
           </div>
-          <div id="dcp-landing-top" style="display:flex;flex-direction:column;gap:4px">
-            <div style="font-size:11px;color:var(--tx3);text-align:center;padding:12px">Sin datos aún</div>
+          <div onclick="nav('fextvig',document.querySelector('[data-p=fextvig]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+            <div style="width:34px;height:34px;border-radius:7px;background:#e8f0fb;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">📋</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--tx)">F-Extensión de vigencia</div>
+              <div style="font-size:10px;color:var(--tx3)">Formato oficial para solicitar extensión</div>
+            </div>
+            <span style="font-size:16px;color:var(--tx3)">›</span>
+          </div>
+          <div onclick="nav('docsrel',document.querySelector('[data-p=docsrel]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+            <div style="width:34px;height:34px;border-radius:7px;background:#faeeda;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">🔗</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--tx)">Documentos relacionados</div>
+              <div style="font-size:10px;color:var(--tx3)">Consulta las relaciones entre documentos</div>
+            </div>
+            <span style="font-size:16px;color:var(--tx3)">›</span>
+          </div>
+          <div onclick="nav('revdoc',document.querySelector('[data-p=revdoc]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+            <div style="width:34px;height:34px;border-radius:7px;background:#e0f5f3;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">🔍</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--tx)">Revisión de documentos</div>
+              <div style="font-size:10px;color:var(--tx3)">Gestiona el proceso de revisión documental</div>
+            </div>
+            <span style="font-size:16px;color:var(--tx3)">›</span>
+          </div>
+          <div onclick="nav('pdfbarcode',document.querySelector('[data-p=pdfbarcode]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+            <div style="width:34px;height:34px;border-radius:7px;background:#fcebeb;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">🖨️</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--tx)">Estampar PDF</div>
+              <div style="font-size:10px;color:var(--tx3)">Agrega código de barras o QR al PDF del documento</div>
+            </div>
+            <span style="font-size:16px;color:var(--tx3)">›</span>
+          </div>
+          <div onclick="nav('novedad',document.querySelector('[data-p=novedad]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
+            <div style="width:34px;height:34px;border-radius:7px;background:#f3e8fb;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">📢</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--tx)">Novedad de documentos</div>
+              <div style="font-size:10px;color:var(--tx3)">Registra novedades sobre documentos del sistema</div>
+            </div>
+            <span style="font-size:16px;color:var(--tx3)">›</span>
           </div>
         </div>
       </div>
 
-      <!-- Resumen rápido por estado -->
-      <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:14px 16px;box-shadow:var(--sh)">
-        <div style="font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px">Estado del archivo documental</div>
-        <div id="dcp-landing-stats" style="display:flex;gap:0"></div>
-      </div>
+      <!-- hidden stats div for compatibility -->
+      <div id="dcp-landing-stats" style="display:none"></div>
     </div>
 
     <!-- ── VISTA PRINCIPAL: barra fija + layout split ── -->
@@ -17995,6 +18229,7 @@ function updBadges(){
 // DASHBOARD
 // ============================================================
 function renderDash(){
+  if(typeof homeInit==='function') homeInit();
   //  KPIs — excluir Obsoletos de todos los cálculos 
   // Un doc es obsoleto si: estado==='Obsoleto' O campo obsoleto es X/Si
   function esObsoleto(d){
@@ -32252,6 +32487,126 @@ var _origGuardarDoc = null;
 
 
 //  ACTUALIZAR DASHBOARD: re-lee Excel de OneDrive sin cambios 
+
+/* ═══════════════════════════════════════════════════
+   HOME — BIENVENIDA + TAREAS DEL DÍA
+   ═══════════════════════════════════════════════════ */
+var _homeTasks = [];
+
+function homeLoadTasks(){
+  try{ _homeTasks = JSON.parse(localStorage.getItem('home_tasks')||'[]'); }catch(e){ _homeTasks=[]; }
+}
+function homeSaveTasks(){
+  try{ localStorage.setItem('home_tasks', JSON.stringify(_homeTasks)); }catch(e){}
+}
+
+function homeInit(){
+  homeLoadTasks();
+  homeRenderGreeting();
+  homeRenderTasks();
+}
+
+function homeRenderGreeting(){
+  var h = new Date().getHours();
+  var saludo = h<12 ? 'Buenos días' : h<18 ? 'Buenas tardes' : 'Buenas noches';
+  var nombre = (currentUser && (currentUser.nombre||currentUser.login)) ? (currentUser.nombre||currentUser.login) : 'Usuario';
+  var initiales = nombre.split(' ').slice(0,2).map(function(w){return w[0]||'';}).join('').toUpperCase() || 'U';
+  var dias=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  var meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  var hoy = new Date();
+  var fechaStr = dias[hoy.getDay()]+', '+hoy.getDate()+' de '+meses[hoy.getMonth()]+' de '+hoy.getFullYear();
+  var pend = _homeTasks.filter(function(t){return !t.done;}).length;
+  var subtxt = fechaStr + (pend>0 ? ' · ' + pend + ' tarea'+(pend>1?'s':'')+' pendiente'+(pend>1?'s':'') : ' · Sin tareas pendientes');
+  var gEl=document.getElementById('home-greeting');
+  var sEl=document.getElementById('home-subgreeting');
+  var aEl=document.getElementById('home-avatar');
+  if(gEl) gEl.textContent = saludo+', '+nombre;
+  if(sEl) sEl.textContent = subtxt;
+  if(aEl) aEl.textContent = initiales;
+}
+
+function homeRenderTasks(){
+  var el = document.getElementById('home-tasks-list');
+  var badge = document.getElementById('home-tasks-badge');
+  if(!el) return;
+  var pend = _homeTasks.filter(function(t){return !t.done;}).length;
+  var total = _homeTasks.length;
+  if(badge) badge.textContent = (total-pend)+' de '+total+' listas';
+
+  if(!_homeTasks.length){
+    el.innerHTML='<div style="padding:24px 16px;text-align:center;color:var(--tx3);font-size:11px;line-height:1.7">Sin tareas aún.<br>Presiona <strong>➕ Agregar</strong> para crear una.</div>';
+    return;
+  }
+
+  var prioColors = {alta:'#E24B4A', media:'#EF9F27', baja:'#1D9E75'};
+  var prioBg    = {alta:'#fcebeb', media:'#faeeda', baja:'#e1f5ee'};
+  var prioText  = {alta:'#791f1f', media:'#633806', baja:'#085041'};
+  var prioLabel = {alta:'Alta', media:'Media', baja:'Baja'};
+
+  // Pending first, then done
+  var pending = _homeTasks.filter(function(t){return !t.done;});
+  var done    = _homeTasks.filter(function(t){return t.done;});
+  var ordered = pending.concat(done);
+
+  el.innerHTML = ordered.map(function(t, idx){
+    var realIdx = _homeTasks.indexOf(t);
+    var borderColor = t.done ? 'transparent' : (prioColors[t.prio]||'transparent');
+    var opacity = t.done ? '0.6' : '1';
+    return '<div style="display:flex;align-items:flex-start;gap:9px;padding:9px 12px;border-bottom:0.5px solid var(--brd);border-left:2px solid '+borderColor+';opacity:'+opacity+';transition:background .1s" onmouseover="this.style.background=\'var(--bg3)\'" onmouseout="this.style.background=\'\'">'
+      + '<div onclick="homeToggleTask('+realIdx+')" style="width:17px;height:17px;border-radius:50%;border:1.5px solid '+(t.done?'#1D9E75':'var(--brd2)')+';background:'+(t.done?'#1D9E75':'transparent')+';display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;margin-top:2px">'
+        + (t.done?'<span style="font-size:9px;color:#fff">✓</span>':'')
+      + '</div>'
+      + '<div style="flex:1;min-width:0">'
+        + '<div style="font-size:11px;font-weight:600;color:var(--tx);margin-bottom:2px;'+(t.done?'text-decoration:line-through;color:var(--tx3)':'')+'">'+homeEscape(t.title)+'</div>'
+        + (t.desc?'<div style="font-size:9px;color:var(--tx3);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+homeEscape(t.desc)+'</div>':'')
+        + (!t.done && t.prio ? '<span style="font-size:8px;font-weight:700;padding:2px 7px;border-radius:99px;background:'+prioBg[t.prio]+';color:'+prioText[t.prio]+'">'+prioLabel[t.prio]+' prioridad</span>' : '')
+        + (t.done && t.doneAt ? '<div style="font-size:9px;color:var(--tx3);margin-top:2px">Completada · '+t.doneAt+'</div>' : '')
+      + '</div>'
+      + '<button onclick="homeDeleteTask('+realIdx+')" style="font-size:11px;background:none;border:none;color:var(--tx3);cursor:pointer;padding:2px 4px;opacity:.5;flex-shrink:0" title="Eliminar">✕</button>'
+    + '</div>';
+  }).join('');
+}
+
+function homeEscape(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function homeToggleTask(idx){
+  if(!_homeTasks[idx]) return;
+  _homeTasks[idx].done = !_homeTasks[idx].done;
+  if(_homeTasks[idx].done){
+    var now = new Date();
+    var hh = String(now.getHours()).padStart(2,'0');
+    var mm = String(now.getMinutes()).padStart(2,'0');
+    _homeTasks[idx].doneAt = hh+':'+mm+' am'.replace('am', now.getHours()>=12?'pm':'am');
+  } else {
+    _homeTasks[idx].doneAt = '';
+  }
+  homeSaveTasks();
+  homeRenderTasks();
+  homeRenderGreeting();
+}
+
+function homeDeleteTask(idx){
+  _homeTasks.splice(idx,1);
+  homeSaveTasks();
+  homeRenderTasks();
+  homeRenderGreeting();
+}
+
+function homeAddTask(){
+  var title = prompt('Título de la tarea:');
+  if(!title || !title.trim()) return;
+  var desc  = prompt('Descripción (opcional, Enter para omitir):') || '';
+  var prioR = prompt('Prioridad: 1=Alta, 2=Media, 3=Baja (Enter para ninguna):') || '';
+  var prioMap = {'1':'alta','2':'media','3':'baja'};
+  var prio = prioMap[prioR.trim()] || '';
+  _homeTasks.unshift({id:Date.now(), title:title.trim(), desc:desc.trim(), prio:prio, done:false, doneAt:''});
+  homeSaveTasks();
+  homeRenderTasks();
+  homeRenderGreeting();
+}
+
 async function dashActualizar(){
   var btn=document.getElementById('dash-btn-actualizar');
   if(!OD.fileHandle){
