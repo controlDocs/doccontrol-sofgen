@@ -2652,46 +2652,79 @@ function vB(d){if(d<0)return'<span class="b vc">Vencido</span>';if(d<=30)return'
 function gB(v){return(v==='X'||v==='Si'||v==='Sí')?'<span class="b gx">GxP</span>':'<span class="b ng">No GxP</span>';}
 // Acciones que NO deben registrarse en Auditrail (son del sistema, no del usuario)
 var _AUDIT_EXCLUIR=['Inicializacion','Consulta','OneDrive','Sync Copias',
-  'Revisión Documental','QR PDF','Descarga','Estado automático','Estado auto'];
+  'QR PDF','Estado automático','Estado auto'];
 
 // Mapeo de acción normalizada y módulo para el Auditrail
 function _auditNormalizar(a,d){
   var acc=a, mod='Sistema';
-  // Determinar módulo por acción
-  if(a==='Creacion'||a==='Edicion'||a==='Eliminacion'||a==='Aprobacion'||a==='Rechazo'||
-     a==='Obsoleto'||a==='Reversion Obsoleto'||a==='Extension Vigencia'||a==='Quitar Extension')
-    mod='Listado Maestro';
-  if(a==='Copia controlada'||a==='Importacion copias') mod='Copias Controladas';
+  // ── Listado Maestro / Documentos ─────────────────────────────────────
+  if(['Creacion','Edicion','Eliminacion','Aprobacion','Rechazo',
+      'Obsoleto','Reversion Obsoleto','Extension Vigencia','Quitar Extension',
+      'Envio a flujo'].indexOf(a)>=0) mod='Listado Maestro';
+  // ── Copias controladas ───────────────────────────────────────────────
+  if(['Copia controlada','Importacion copias'].indexOf(a)>=0) mod='Copias Controladas';
   if(a==='Acta Copias') mod='Entrega de Copias';
-  if(a==='Inspeccion') mod='Inspecciones';
-  if(a==='Solicitud RB'||a==='Oficialización') mod='Ruta de Borrador';
+  // ── Inspecciones ─────────────────────────────────────────────────────
+  if(a==='Inspeccion'||a==='Inspección') mod='Inspecciones';
+  // ── Ruta de Borrador ─────────────────────────────────────────────────
+  if(['Solicitud RB','Oficialización','Oficialización automática',
+      'Aprobación ruta','Oficialización ruta','Eliminación ruta',
+      'Aprobacion ruta'].indexOf(a)>=0) mod='Ruta de Borrador';
+  // ── Novedad de Documento ─────────────────────────────────────────────
   if(a==='Novedad de Documento') mod='Novedad de Documento';
+  // ── Extensión de Vigencia ────────────────────────────────────────────
+  if(a==='Extension Vigencia'||a==='Quitar Extension') mod='Extensión de Vigencia';
+  // ── Revisión de Documentos ───────────────────────────────────────────
+  if(a==='Revisión Documental'||a==='Revision Documental') mod='Revisión de Documentos';
+  // ── Estampar PDF ─────────────────────────────────────────────────────
+  if(a==='PDF Barcode'||a==='Estampar PDF') mod='Estampar PDF';
+  // ── Marcar Obsoleto ──────────────────────────────────────────────────
+  if(a==='Marcar Obsoleto') mod='Marcar Obsoleto';
+  // ── Usuarios ─────────────────────────────────────────────────────────
   if(a==='Usuarios') mod='Administración de Usuarios';
+  // ── Notificaciones ───────────────────────────────────────────────────
   if(a==='Notificacion'||a==='Correo') mod='Notificaciones';
+  // ── Importación ──────────────────────────────────────────────────────
   if(a==='Importacion') mod='Importación';
+  // ── Auditoría / Sistema ──────────────────────────────────────────────
+  if(a==='Cierre de sesión'||a==='Descarga'||a==='Informe') mod='Sistema';
+
   // Normalizar la acción a texto descriptivo
   var DESC={
     'Creacion':'Creación de código',
     'Edicion':'Modificación de código',
-    'Eliminacion':'Eliminación de código',
+    'Eliminacion':'Eliminación de registro',
     'Aprobacion':'Aprobación de documento',
     'Rechazo':'Rechazo de documento',
+    'Envio a flujo':'Envío a flujo de aprobación',
     'Obsoleto':'Documento marcado como Obsoleto',
-    'Reversion Obsoleto':'Reversión de Obsoleto',
-    'Extension Vigencia':'Extensión de vigencia',
-    'Quitar Extension':'Eliminación de extensión de vigencia',
+    'Marcar Obsoleto':'Documento marcado como Obsoleto',
+    'Reversion Obsoleto':'Reversión de estado Obsoleto',
+    'Extension Vigencia':'Extensión de vigencia aplicada',
+    'Quitar Extension':'Extensión de vigencia eliminada',
     'Copia controlada':'Registro de copia controlada',
     'Importacion copias':'Importación de copias controladas',
-    'Acta Copias':'Generación de acta de entrega',
+    'Acta Copias':'Generación de acta de entrega de copias',
     'Inspeccion':'Inspección de copias controladas',
+    'Inspección':'Inspección de copias controladas',
     'Solicitud RB':'Asignación a ruta de borrador',
     'Oficialización':'Oficialización de documento',
+    'Oficialización automática':'Oficialización automática al guardar documento',
+    'Aprobación ruta':'Aprobación — paso a proceso de firma',
+    'Aprobacion ruta':'Aprobación — paso a proceso de firma',
+    'Oficialización ruta':'Oficialización desde módulo Ruta de Borrador',
+    'Eliminación ruta':'Eliminación de solicitud de ruta de borrador',
     'Novedad de Documento':'Solicitud de novedad de documento',
+    'Revisión Documental':'Actualización de documentos relacionados',
+    'Revision Documental':'Actualización de documentos relacionados',
+    'PDF Barcode':'Estampado de código QR/barras en PDF',
+    'Estampar PDF':'Estampado de código QR/barras en PDF',
     'Usuarios':'Gestión de usuarios',
     'Notificacion':'Notificación enviada',
-    'Correo':'Notificación por correo',
-    'Importacion':'Importación de datos',
+    'Correo':'Notificación por correo enviada',
+    'Importacion':'Importación de datos desde archivo',
     'Cierre de sesión':'Cierre de sesión',
+    'Descarga':'Descarga de archivo',
     'Informe':'Generación de informe'
   };
   acc=DESC[a]||a;
@@ -7001,15 +7034,34 @@ function renderAudit(){
     'Descarga':'#0ea5e9','Inicializacion':'#94a3b8','Reversion Obsoleto':'#22c55e',
     'Quitar Extension':'#94a3b8','Impresión ZPL':'#0d9488',
     'Traduccion':'#0d9488','OneDrive':'#0078d4','Acta Copias':'#10b981',
-    'Solicitud RB':'#6366f1','Inspeccion':'#f59e0b'
+    'Solicitud RB':'#6366f1','Inspeccion':'#f59e0b','Inspección':'#f59e0b',
+    'Oficialización':'#22c55e','Oficialización automática':'#22c55e','Oficialización ruta':'#22c55e',
+    'Aprobación ruta':'#3b82f6','Aprobacion ruta':'#3b82f6',
+    'Eliminación ruta':'#ef4444','Eliminacion':'#ef4444',
+    'Novedad de Documento':'#8b5cf6',
+    'Revisión Documental':'#0d9488','Revision Documental':'#0d9488',
+    'PDF Barcode':'#6366f1','Estampar PDF':'#6366f1',
+    'Marcar Obsoleto':'#94a3b8',
+    'Correo':'#06b6d4','Cierre de sesión':'#64748b',
+    'Informe':'#0ea5e9','Usuarios':'#7c3aed'
   };
   var icoAcc={
     'Creacion':'➕','Edicion':'✏️','Eliminacion':'🗑️','Aprobacion':'✅',
     'Rechazo':'❌','Obsoleto':'📦','Importacion':'📥','Descarga':'⬇️',
     'Extension Vigencia':'📅','Reversion Obsoleto':'♻️','Quitar Extension':'🔄',
     'Copia controlada':'📋','Acta Copias':'📄','Sync Copias':'🔄',
-    'Solicitud RB':'📝','Inspeccion':'🔍',
-    'Traduccion':'🌐','OneDrive':'☁️','Impresión ZPL':'🖨️'
+    'Solicitud RB':'📝','Inspeccion':'🔍','Inspección':'🔍',
+    'Traduccion':'🌐','OneDrive':'☁️','Impresión ZPL':'🖨️',
+    'Oficialización':'✅','Oficialización automática':'✅','Oficialización ruta':'✅',
+    'Aprobación ruta':'👍','Aprobacion ruta':'👍',
+    'Eliminación ruta':'🗑️',
+    'Novedad de Documento':'📢',
+    'Revisión Documental':'🔗','Revision Documental':'🔗',
+    'PDF Barcode':'🖨️','Estampar PDF':'🖨️',
+    'Marcar Obsoleto':'🚫',
+    'Correo':'✉️','Cierre de sesión':'🔒',
+    'Informe':'📈','Usuarios':'👥',
+    'Envio a flujo':'➡️','Notificacion':'🔔'
   };
 
   // Obtener usuarios únicos para el filtro
@@ -14291,24 +14343,27 @@ function odHookSaveInsp(){
   var prevSaveArr=saveArr;
   saveArr=function(k,v){
     prevSaveArr(k,v);
-    if((k==='insp'||k==='inspProg')&&OD.fileHandle&&OD.syncActivo){
+    // Trigger OD sync for inspecciones AND any other data array
+    var SYNC_KEYS=['insp','inspProg','sol','c','p','u','nh'];
+    if(SYNC_KEYS.indexOf(k)>=0&&OD.fileHandle&&OD.syncActivo){
       if(OD.saveTimer) clearTimeout(OD.saveTimer);
-      OD.saveTimer=setTimeout(function(){ odGuardarListado(true); },3000);
+      OD.saveTimer=setTimeout(function(){ odGuardarListado(true); },2500);
     }
   };
 }
 
-//  HOOK saveArr → dispara guardado de copias en OneDrive 
+//  HOOK saveArr → dispara guardado en OneDrive para todos los módulos
 var _saveArrOD=null;
 function odHookSaveArr(){
   if(_saveArrOD) return; // solo una vez
   _saveArrOD=saveArr;
   saveArr=function(k,v){
     _saveArrOD(k,v);
-    // Si se guarda el array de copias ('c') y hay sync activo, programar guardado
-    if(k==='c'&&OD.fileHandle&&OD.syncActivo){
+    // Trigger sync para copias, solicitudes, procesos, usuarios, notificaciones
+    var OD_SYNC_KEYS=['c','sol','p','u','nh','insp','inspProg'];
+    if(OD_SYNC_KEYS.indexOf(k)>=0&&OD.fileHandle&&OD.syncActivo){
       if(OD.saveTimer) clearTimeout(OD.saveTimer);
-      OD.saveTimer=setTimeout(function(){ odGuardarListado(true); },3000);
+      OD.saveTimer=setTimeout(function(){ odGuardarListado(true); },2500);
     }
   };
 }
@@ -18045,46 +18100,79 @@ function vB(d){if(d<0)return'<span class="b vc">Vencido</span>';if(d<=30)return'
 function gB(v){return(v==='X'||v==='Si'||v==='Sí')?'<span class="b gx">GxP</span>':'<span class="b ng">No GxP</span>';}
 // Acciones que NO deben registrarse en Auditrail (son del sistema, no del usuario)
 var _AUDIT_EXCLUIR=['Inicializacion','Consulta','OneDrive','Sync Copias',
-  'Revisión Documental','QR PDF','Descarga','Estado automático','Estado auto'];
+  'QR PDF','Estado automático','Estado auto'];
 
 // Mapeo de acción normalizada y módulo para el Auditrail
 function _auditNormalizar(a,d){
   var acc=a, mod='Sistema';
-  // Determinar módulo por acción
-  if(a==='Creacion'||a==='Edicion'||a==='Eliminacion'||a==='Aprobacion'||a==='Rechazo'||
-     a==='Obsoleto'||a==='Reversion Obsoleto'||a==='Extension Vigencia'||a==='Quitar Extension')
-    mod='Listado Maestro';
-  if(a==='Copia controlada'||a==='Importacion copias') mod='Copias Controladas';
+  // ── Listado Maestro / Documentos ─────────────────────────────────────
+  if(['Creacion','Edicion','Eliminacion','Aprobacion','Rechazo',
+      'Obsoleto','Reversion Obsoleto','Extension Vigencia','Quitar Extension',
+      'Envio a flujo'].indexOf(a)>=0) mod='Listado Maestro';
+  // ── Copias controladas ───────────────────────────────────────────────
+  if(['Copia controlada','Importacion copias'].indexOf(a)>=0) mod='Copias Controladas';
   if(a==='Acta Copias') mod='Entrega de Copias';
-  if(a==='Inspeccion') mod='Inspecciones';
-  if(a==='Solicitud RB'||a==='Oficialización') mod='Ruta de Borrador';
+  // ── Inspecciones ─────────────────────────────────────────────────────
+  if(a==='Inspeccion'||a==='Inspección') mod='Inspecciones';
+  // ── Ruta de Borrador ─────────────────────────────────────────────────
+  if(['Solicitud RB','Oficialización','Oficialización automática',
+      'Aprobación ruta','Oficialización ruta','Eliminación ruta',
+      'Aprobacion ruta'].indexOf(a)>=0) mod='Ruta de Borrador';
+  // ── Novedad de Documento ─────────────────────────────────────────────
   if(a==='Novedad de Documento') mod='Novedad de Documento';
+  // ── Extensión de Vigencia ────────────────────────────────────────────
+  if(a==='Extension Vigencia'||a==='Quitar Extension') mod='Extensión de Vigencia';
+  // ── Revisión de Documentos ───────────────────────────────────────────
+  if(a==='Revisión Documental'||a==='Revision Documental') mod='Revisión de Documentos';
+  // ── Estampar PDF ─────────────────────────────────────────────────────
+  if(a==='PDF Barcode'||a==='Estampar PDF') mod='Estampar PDF';
+  // ── Marcar Obsoleto ──────────────────────────────────────────────────
+  if(a==='Marcar Obsoleto') mod='Marcar Obsoleto';
+  // ── Usuarios ─────────────────────────────────────────────────────────
   if(a==='Usuarios') mod='Administración de Usuarios';
+  // ── Notificaciones ───────────────────────────────────────────────────
   if(a==='Notificacion'||a==='Correo') mod='Notificaciones';
+  // ── Importación ──────────────────────────────────────────────────────
   if(a==='Importacion') mod='Importación';
+  // ── Auditoría / Sistema ──────────────────────────────────────────────
+  if(a==='Cierre de sesión'||a==='Descarga'||a==='Informe') mod='Sistema';
+
   // Normalizar la acción a texto descriptivo
   var DESC={
     'Creacion':'Creación de código',
     'Edicion':'Modificación de código',
-    'Eliminacion':'Eliminación de código',
+    'Eliminacion':'Eliminación de registro',
     'Aprobacion':'Aprobación de documento',
     'Rechazo':'Rechazo de documento',
+    'Envio a flujo':'Envío a flujo de aprobación',
     'Obsoleto':'Documento marcado como Obsoleto',
-    'Reversion Obsoleto':'Reversión de Obsoleto',
-    'Extension Vigencia':'Extensión de vigencia',
-    'Quitar Extension':'Eliminación de extensión de vigencia',
+    'Marcar Obsoleto':'Documento marcado como Obsoleto',
+    'Reversion Obsoleto':'Reversión de estado Obsoleto',
+    'Extension Vigencia':'Extensión de vigencia aplicada',
+    'Quitar Extension':'Extensión de vigencia eliminada',
     'Copia controlada':'Registro de copia controlada',
     'Importacion copias':'Importación de copias controladas',
-    'Acta Copias':'Generación de acta de entrega',
+    'Acta Copias':'Generación de acta de entrega de copias',
     'Inspeccion':'Inspección de copias controladas',
+    'Inspección':'Inspección de copias controladas',
     'Solicitud RB':'Asignación a ruta de borrador',
     'Oficialización':'Oficialización de documento',
+    'Oficialización automática':'Oficialización automática al guardar documento',
+    'Aprobación ruta':'Aprobación — paso a proceso de firma',
+    'Aprobacion ruta':'Aprobación — paso a proceso de firma',
+    'Oficialización ruta':'Oficialización desde módulo Ruta de Borrador',
+    'Eliminación ruta':'Eliminación de solicitud de ruta de borrador',
     'Novedad de Documento':'Solicitud de novedad de documento',
+    'Revisión Documental':'Actualización de documentos relacionados',
+    'Revision Documental':'Actualización de documentos relacionados',
+    'PDF Barcode':'Estampado de código QR/barras en PDF',
+    'Estampar PDF':'Estampado de código QR/barras en PDF',
     'Usuarios':'Gestión de usuarios',
     'Notificacion':'Notificación enviada',
-    'Correo':'Notificación por correo',
-    'Importacion':'Importación de datos',
+    'Correo':'Notificación por correo enviada',
+    'Importacion':'Importación de datos desde archivo',
     'Cierre de sesión':'Cierre de sesión',
+    'Descarga':'Descarga de archivo',
     'Informe':'Generación de informe'
   };
   acc=DESC[a]||a;
@@ -21867,15 +21955,34 @@ function renderAudit(){
     'Descarga':'#0ea5e9','Inicializacion':'#94a3b8','Reversion Obsoleto':'#22c55e',
     'Quitar Extension':'#94a3b8','Impresión ZPL':'#0d9488',
     'Traduccion':'#0d9488','OneDrive':'#0078d4','Acta Copias':'#10b981',
-    'Solicitud RB':'#6366f1','Inspeccion':'#f59e0b'
+    'Solicitud RB':'#6366f1','Inspeccion':'#f59e0b','Inspección':'#f59e0b',
+    'Oficialización':'#22c55e','Oficialización automática':'#22c55e','Oficialización ruta':'#22c55e',
+    'Aprobación ruta':'#3b82f6','Aprobacion ruta':'#3b82f6',
+    'Eliminación ruta':'#ef4444','Eliminacion':'#ef4444',
+    'Novedad de Documento':'#8b5cf6',
+    'Revisión Documental':'#0d9488','Revision Documental':'#0d9488',
+    'PDF Barcode':'#6366f1','Estampar PDF':'#6366f1',
+    'Marcar Obsoleto':'#94a3b8',
+    'Correo':'#06b6d4','Cierre de sesión':'#64748b',
+    'Informe':'#0ea5e9','Usuarios':'#7c3aed'
   };
   var icoAcc={
     'Creacion':'➕','Edicion':'✏️','Eliminacion':'🗑️','Aprobacion':'✅',
     'Rechazo':'❌','Obsoleto':'📦','Importacion':'📥','Descarga':'⬇️',
     'Extension Vigencia':'📅','Reversion Obsoleto':'♻️','Quitar Extension':'🔄',
     'Copia controlada':'📋','Acta Copias':'📄','Sync Copias':'🔄',
-    'Solicitud RB':'📝','Inspeccion':'🔍',
-    'Traduccion':'🌐','OneDrive':'☁️','Impresión ZPL':'🖨️'
+    'Solicitud RB':'📝','Inspeccion':'🔍','Inspección':'🔍',
+    'Traduccion':'🌐','OneDrive':'☁️','Impresión ZPL':'🖨️',
+    'Oficialización':'✅','Oficialización automática':'✅','Oficialización ruta':'✅',
+    'Aprobación ruta':'👍','Aprobacion ruta':'👍',
+    'Eliminación ruta':'🗑️',
+    'Novedad de Documento':'📢',
+    'Revisión Documental':'🔗','Revision Documental':'🔗',
+    'PDF Barcode':'🖨️','Estampar PDF':'🖨️',
+    'Marcar Obsoleto':'🚫',
+    'Correo':'✉️','Cierre de sesión':'🔒',
+    'Informe':'📈','Usuarios':'👥',
+    'Envio a flujo':'➡️','Notificacion':'🔔'
   };
 
   // Obtener usuarios únicos para el filtro
@@ -29157,24 +29264,27 @@ function odHookSaveInsp(){
   var prevSaveArr=saveArr;
   saveArr=function(k,v){
     prevSaveArr(k,v);
-    if((k==='insp'||k==='inspProg')&&OD.fileHandle&&OD.syncActivo){
+    // Trigger OD sync for inspecciones AND any other data array
+    var SYNC_KEYS=['insp','inspProg','sol','c','p','u','nh'];
+    if(SYNC_KEYS.indexOf(k)>=0&&OD.fileHandle&&OD.syncActivo){
       if(OD.saveTimer) clearTimeout(OD.saveTimer);
-      OD.saveTimer=setTimeout(function(){ odGuardarListado(true); },3000);
+      OD.saveTimer=setTimeout(function(){ odGuardarListado(true); },2500);
     }
   };
 }
 
-//  HOOK saveArr → dispara guardado de copias en OneDrive 
+//  HOOK saveArr → dispara guardado en OneDrive para todos los módulos
 var _saveArrOD=null;
 function odHookSaveArr(){
   if(_saveArrOD) return; // solo una vez
   _saveArrOD=saveArr;
   saveArr=function(k,v){
     _saveArrOD(k,v);
-    // Si se guarda el array de copias ('c') y hay sync activo, programar guardado
-    if(k==='c'&&OD.fileHandle&&OD.syncActivo){
+    // Trigger sync para copias, solicitudes, procesos, usuarios, notificaciones
+    var OD_SYNC_KEYS=['c','sol','p','u','nh','insp','inspProg'];
+    if(OD_SYNC_KEYS.indexOf(k)>=0&&OD.fileHandle&&OD.syncActivo){
       if(OD.saveTimer) clearTimeout(OD.saveTimer);
-      OD.saveTimer=setTimeout(function(){ odGuardarListado(true); },3000);
+      OD.saveTimer=setTimeout(function(){ odGuardarListado(true); },2500);
     }
   };
 }
@@ -32958,7 +33068,10 @@ function rbAprobar(consecutivo){
   s.estadoOficializacion='En proceso de firma';
   s.fechaEntregaFirma=s.fechaEntregaFirma||new Date().toISOString().split('T')[0];
   saveArr('sol',solicitudes);
-  logA(currentUser?currentUser.nombre:'Usuario','Aprobación ruta','Solicitud #'+consecutivo+' → En proceso de firma');
+  logA(currentUser?currentUser.nombre:'Usuario','Aprobación ruta',
+    'Solicitud #'+consecutivo+' — '+s.codigo+' | '+s.nombreDoc+' → En proceso de firma',
+    'Solicitante: '+(s.solicitante||'-')+' | Área: '+(s.areaGeneradora||'-'),
+    'Ruta de Borrador');
   toast('Solicitud #'+consecutivo+' marcada como En proceso de firma','ok');
   rbRender();
   if(window.OD&&OD.fileHandle&&OD.syncActivo){if(OD.saveTimer)clearTimeout(OD.saveTimer);OD.saveTimer=setTimeout(function(){odGuardarListado(true);},2000);}
@@ -33105,14 +33218,20 @@ function rbOficializarConfirmar(){
 
   document.getElementById('rb-mo-ofic').style.display='none';
   saveArr('sol', solicitudes);
-  logA(currentUser?currentUser.nombre:'Admin','Oficialización','Solicitud '+s.consecutivo+' — '+s.codigo+' oficializada el '+s.fechaOficializacion);
+  if(typeof rbRecalcCache==='function') rbRecalcCache();
+  logA(currentUser?currentUser.nombre:'Admin','Oficialización ruta',
+    'Solicitud #'+s.consecutivo+' — '+s.codigo+' | '+s.nombreDoc+' | oficializada el '+s.fechaOficializacion,
+    'F.Rev.Ini:'+s.fechaRevIni+' F.Rev.Fin:'+s.fechaRevFin+' F.Firma:'+s.fechaEntregaFirma,
+    'Ruta de Borrador');
   toast('✅ Documento '+s.codigo+' oficializado correctamente','ok');
-  rbRender();
-  // Disparar guardado en Excel
-  if(OD.fileHandle&&OD.syncActivo){
+  // Forzar guardado inmediato en OneDrive
+  if(OD.fileHandle&&window.currentUser){
+    OD.syncActivo=true;
     if(OD.saveTimer) clearTimeout(OD.saveTimer);
-    OD.saveTimer=setTimeout(function(){odGuardarListado(true);},2000);
+    OD.saveTimer=setTimeout(function(){odGuardarListado(true);},1000);
+    if(typeof odSaveBtnEstado==='function') odSaveBtnEstado('pendiente');
   }
+  rbRender();
 }
 
 // Actualizar oficialización automática cuando se crea/edita un doc
@@ -33136,7 +33255,9 @@ function rbActualizarOficializacion(codigo){
   s.fechaActListado=s.fechaActListado||hoy;
   saveArr('sol',solicitudes);
   logA(window.currentUser?currentUser.nombre:'Sistema','Oficialización automática',
-    'Solicitud '+s.consecutivo+' — '+cod+' marcada como Oficializado al guardar documento');
+    'Solicitud #'+s.consecutivo+' — '+cod+' marcada automáticamente como Oficializado al guardar documento en módulo Documentos',
+    'Estado anterior: '+estado,
+    'Ruta de Borrador');
   toast('✅ Solicitud '+s.consecutivo+' actualizada a Oficializado en Ruta de Borrador','ok');
   // Guardar en Excel si hay conexión
   if(window.OD&&OD.fileHandle&&OD.syncActivo){
