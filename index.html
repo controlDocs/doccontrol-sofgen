@@ -226,6 +226,38 @@ tbody tr:last-child td{border-bottom:none}
 
 /* ── RUTABOR ACCORDION ──────────────────────────────────────────────── */
 .rb-accordion{display:flex;flex-direction:column;gap:6px}
+/* ── RUTABOR SPLIT VIEW ──────────────────────────────────────────────── */
+.rb-split{display:grid;grid-template-columns:260px 1fr;gap:12px;align-items:start}
+.rb-split-list{background:#fff;border:1px solid var(--brd);border-radius:var(--rl);box-shadow:var(--sh);overflow:hidden;position:sticky;top:8px}
+.rb-split-list-search{padding:8px 10px;border-bottom:1px solid var(--brd);background:var(--bg3)}
+.rb-split-list-search input{width:100%;font-size:11px;padding:5px 9px;border-radius:5px;border:1px solid var(--brd2);background:#fff;color:var(--tx);outline:none;font-family:var(--fn)}
+.rb-split-group-hdr{padding:5px 10px 3px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--tx3);border-top:1px solid var(--brd);background:var(--bg3)}
+.rb-split-item{display:flex;align-items:center;gap:8px;padding:8px 10px;cursor:pointer;border-top:0.5px solid var(--brd);border-left:2px solid transparent;transition:background .1s}
+.rb-split-item:hover{background:var(--tlx)}
+.rb-split-item.act{background:var(--tlx);border-left-color:var(--T)}
+.rb-split-item.done{opacity:.6}
+.rb-split-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.rb-split-info{flex:1;min-width:0}
+.rb-split-code{font-family:'Courier New',monospace;font-size:9px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rb-split-name{font-size:9px;color:var(--tx3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
+.rb-split-badge{font-size:8px;font-weight:700;padding:1px 6px;border-radius:3px;white-space:nowrap;flex-shrink:0}
+.rb-split-detail{background:#fff;border:1px solid var(--brd);border-radius:var(--rl);box-shadow:var(--sh);overflow:hidden}
+.rb-split-empty{padding:48px 20px;text-align:center;color:var(--tx3);font-size:12px;line-height:1.8}
+.rb-det-head{padding:14px 16px;border-bottom:1px solid var(--brd)}
+.rb-det-stage{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-top:10px}
+.rb-det-stage-pill{font-size:9px;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.rb-det-stage-arrow{font-size:11px;color:var(--tx3)}
+.rb-det-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.rb-det-sec{padding:12px 16px;border-bottom:1px solid var(--brd)}
+.rb-det-sec:nth-child(odd){border-right:1px solid var(--brd)}
+.rb-det-sec-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--T);margin-bottom:8px;padding-bottom:4px;border-bottom:2px solid var(--tl)}
+.rb-det-field{padding:5px 0;border-bottom:0.5px solid var(--brd)}
+.rb-det-field:last-child{border-bottom:none}
+.rb-det-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--tx3);margin-bottom:2px}
+.rb-det-val{font-size:11px;color:var(--tx);font-weight:500}
+.rb-det-val.empty{color:var(--tx3);font-style:italic}
+.rb-det-actions{padding:10px 16px;border-top:1px solid var(--brd);background:var(--bg3);display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+
 .rb-acc-item{background:#fff;border:1px solid var(--brd);border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh);transition:border-color .15s}
 .rb-acc-item:hover{border-color:var(--brd2)}
 .rb-acc-item.rb-open{border-color:var(--T)}
@@ -32750,157 +32782,236 @@ function rbEscribirHoja(wb){
 }
 
 // Renderizar tabla
-function rbRender(){
-  // Support both accordion and tbody (accordion is primary)
-  var container=document.getElementById('rb-accordion');
-  var tbody=document.getElementById('rb-tbody');
+var _rbActiveSol = null; // consecutivo activo en split view
+
+function rbEstadoInfo(s){
+  var est=(s.estadoOficializacion||s.estatus||'').trim();
+  var esOfic=est.toLowerCase().indexOf('oficial')>=0;
+  var esRechazo=est.toLowerCase().indexOf('rechaz')>=0;
+  var esRevision=est.toLowerCase()==='en revisión'||est.toLowerCase()==='en revision'||est.toLowerCase()==='aceptada';
+  var esFirma=est.toLowerCase().indexOf('proceso de firma')>=0||est.toLowerCase()==='en proceso';
+  var color=esOfic?'var(--G)':esRechazo?'var(--R)':esFirma?'var(--T)':esRevision?'var(--A)':'#aaa';
+  var bg=esOfic?'#e6f9f3':esRechazo?'#fde8e8':esFirma?'#e0f5f3':esRevision?'#fff8e1':'#f0f0f0';
+  var tc=esOfic?'#0f7a50':esRechazo?'#a02020':esFirma?'var(--T3)':esRevision?'#a06000':'#666';
+  var label=esOfic?'Oficializado':esRechazo?'Rechazada':esFirma?'En proceso de firma':esRevision?'En revisión':est||'Pendiente';
+  return{color:color,bg:bg,tc:tc,label:label,esOfic:esOfic,esRechazo:esRechazo,esRevision:esRevision,esFirma:esFirma};
+}
+
+function rbSplitStageBar(s){
+  var info=rbEstadoInfo(s);
+  var stages=[
+    {key:'revision',  label:'En revisión',       done:info.esRevision||info.esFirma||info.esOfic, active:info.esRevision&&!info.esFirma&&!info.esOfic},
+    {key:'firma',     label:'En proceso de firma',done:info.esFirma||info.esOfic,                  active:info.esFirma&&!info.esOfic},
+    {key:'oficial',   label:'Oficializado',       done:info.esOfic,                                active:false}
+  ];
+  return stages.map(function(st,i){
+    var pillBg=st.done&&!st.active?'var(--G)':st.active?'var(--A)':'var(--bg4)';
+    var pillTc=st.done||st.active?'#fff':'var(--tx3)';
+    var icon=st.done&&!st.active?'✓ ':st.active?'⏱ ':'';
+    return '<span class="rb-det-stage-pill" style="background:'+pillBg+';color:'+pillTc+'">'+icon+st.label+'</span>'
+      +(i<stages.length-1?'<span class="rb-det-stage-arrow">›</span>':'');
+  }).join('');
+}
+
+function rbGetFiltered(){
   var fCod=((document.getElementById('rb-f-cod')||{}).value||'').trim().toLowerCase();
   var fConsec=((document.getElementById('rb-f-consec')||{}).value||'').trim().toLowerCase();
   var fSolit=((document.getElementById('rb-f-solit')||{}).value||'').trim().toLowerCase();
   var fNombre=((document.getElementById('rb-f-nombre')||{}).value||'').trim().toLowerCase();
   var fTipoSol=((document.getElementById('rb-f-tsol')||{}).value||'').trim().toLowerCase();
   var est=((document.getElementById('rb-filtro-estado')||{}).value||'').trim();
-
-  var filtrados=solicitudes.filter(function(s){
+  return (solicitudes||[]).filter(function(s){
     if(fCod&&(s.codigo||'').toLowerCase().indexOf(fCod)<0) return false;
     if(fConsec&&(s.consecutivo||'').toLowerCase().indexOf(fConsec)<0) return false;
     if(fSolit&&(s.solicitante||'').toLowerCase().indexOf(fSolit)<0) return false;
     if(fNombre&&(s.nombreDoc||'').toLowerCase().indexOf(fNombre)<0) return false;
     if(fTipoSol&&(s.tipoSolicitud||'').toLowerCase().indexOf(fTipoSol)<0) return false;
-    if(est&&s.estatus!==est&&s.estadoOficializacion!==est) return false;
+    if(est){
+      var info=rbEstadoInfo(s);
+      if(est==='En revisión'&&!info.esRevision) return false;
+      if(est==='En proceso de firma'&&!info.esFirma) return false;
+      if(est==='Oficializado'&&!info.esOfic) return false;
+      if(est==='Rechazada'&&!info.esRechazo) return false;
+      if(est==='Pendiente'&&(info.esOfic||info.esRevision||info.esFirma||info.esRechazo)) return false;
+    }
     return true;
   });
+}
 
-  var cnt=document.getElementById('rb-contador');
-  if(cnt) cnt.textContent=filtrados.length+' resultado'+(filtrados.length!==1?'s':'');
-
+function rbRender(){
+  // Update tipo solicitud select
   var selTSol=document.getElementById('rb-f-tsol');
   if(selTSol){
-    var curTSol=selTSol.value;
-    var tSolSet={};
-    solicitudes.forEach(function(s){var t=(s.tipoSolicitud||'').trim();if(t) tSolSet[t]=1;});
-    var tSolOrden=Object.keys(tSolSet).sort();
+    var cur=selTSol.value;
+    var tSet={};
+    (solicitudes||[]).forEach(function(s){var t=(s.tipoSolicitud||'').trim();if(t)tSet[t]=1;});
     selTSol.innerHTML='<option value="">Tipo de solicitud</option>'
-      +tSolOrden.map(function(t){return '<option value="'+t+'"'+(t===curTSol?' selected':'')+'>'+t+'</option>';}).join('');
+      +Object.keys(tSet).sort().map(function(t){return'<option value="'+t+'"'+(t===cur?' selected':'')+'>'+t+'</option>';}).join('');
   }
 
-  var rbPg=parseInt(document.getElementById('rb-pg-num')?document.getElementById('rb-pg-num').value||'1':'1')||1;
-  var rbPS=50;
-  var rbTotal=filtrados.length;
-  var rbPages=Math.max(1,Math.ceil(rbTotal/rbPS));
-  if(rbPg>rbPages) rbPg=rbPages;
-  var rbSlice=filtrados.slice((rbPg-1)*rbPS, rbPg*rbPS);
+  var filtrados=rbGetFiltered();
+  var cnt=document.getElementById('rb-contador');
+  if(cnt) cnt.textContent=filtrados.length+' solicitud'+(filtrados.length!==1?'es':'');
 
-  var pgBar=document.getElementById('rb-pgbar');
-  if(pgBar){
-    pgBar.innerHTML=rbTotal>rbPS
-      ?'<div style="display:flex;align-items:center;gap:8px;padding:10px 0;font-size:11px;color:var(--tx3)">'
-        +'<button class="btn gh sm" style="font-size:10px" onclick="rbIrPg('+(rbPg-1)+')" '+(rbPg<=1?'disabled':'')+'>← Ant.</button>'
-        +'<span>Página '+rbPg+' de '+rbPages+'&nbsp;&nbsp;('+rbTotal+' solicitudes)</span>'
-        +'<button class="btn gh sm" style="font-size:10px" onclick="rbIrPg('+(rbPg+1)+')" '+(rbPg>=rbPages?'disabled':'')+'>Sig. →</button>'
-        +'</div>'
-      :'';
+  rbRenderList(filtrados);
+  // Re-render detail if active sol still in filtrados
+  if(_rbActiveSol){
+    var still=filtrados.find(function(s){return String(s.consecutivo)===String(_rbActiveSol);});
+    if(still) rbRenderDetail(still);
   }
+}
 
-  if(!container){if(tbody) tbody.innerHTML='<tr><td colspan="12">Sin contenedor accordion</td></tr>';return;}
+function rbRenderList(filtrados, searchQ){
+  var listEl=document.getElementById('rb-split-list-body');
+  if(!listEl) return;
+  if(!filtrados) filtrados=rbGetFiltered();
 
-  if(!rbSlice.length){
-    container.innerHTML='<div class="emp"><div style="font-size:28px">📭</div><div style="font-size:12px;margin-top:4px">Sin resultados para los filtros aplicados.</div></div>';
+  // Apply inline search
+  var q=(searchQ||'').toLowerCase().trim();
+  if(q) filtrados=filtrados.filter(function(s){
+    return (s.codigo||'').toLowerCase().indexOf(q)>=0||(s.nombreDoc||'').toLowerCase().indexOf(q)>=0||(s.consecutivo||'').toLowerCase().indexOf(q)>=0;
+  });
+
+  if(!filtrados.length){
+    listEl.innerHTML='<div style="padding:24px 12px;text-align:center;font-size:11px;color:var(--tx3)">Sin resultados</div>';
     return;
   }
 
-  function fv(v){return (v&&String(v).trim()&&String(v).trim()!=='undefined')?String(v).trim():'';}
-  function disp(v){return fv(v)||'<span class="rb-acc-value empty">—</span>';}
+  // Group: En proceso vs Oficializados
+  var enProceso=filtrados.filter(function(s){return !rbEstadoInfo(s).esOfic;});
+  var oficial=filtrados.filter(function(s){return rbEstadoInfo(s).esOfic;});
 
-  container.innerHTML=rbSlice.map(function(s){
-    var esOfic=(s.estadoOficializacion||'').toLowerCase().indexOf('oficial')>=0;
-    var estOfic=fv(s.estadoOficializacion)||fv(s.estatus)||'Pendiente';
-    var esRechazo=(s.estatus||'').toLowerCase().indexOf('rechaz')>=0;
-    var stripColor=esOfic?'var(--G)':esRechazo?'var(--R)':s.estatus==='Aceptada'?'var(--T)':'var(--A)';
-    var estadoBg=esOfic?'#e6f9f3':esRechazo?'#fde8e8':s.estatus==='Aceptada'?'#e0f5f3':'#fff8e1';
-    var estadoColor=esOfic?'#0f7a50':esRechazo?'#a02020':s.estatus==='Aceptada'?'var(--T3)':'#a06000';
-    var id='rb-acc-'+s.consecutivo;
-    return '<div class="rb-acc-item" id="'+id+'">'
-      // Header row
-      +'<div class="rb-acc-header" onclick="rbToggleAcc(\''+id+'\')">'
-        +'<div style="width:4px;border-radius:4px;background:'+stripColor+';align-self:stretch;flex-shrink:0;min-height:28px"></div>'
-        +'<span class="rb-acc-consec">#'+s.consecutivo+'</span>'
-        +'<span class="rb-acc-code">'+s.codigo+'</span>'
-        +'<span class="rb-acc-nombre" title="'+s.nombreDoc+'">'+s.nombreDoc+'</span>'
-        +(fv(s.tipoSolicitud)?'<span class="rb-acc-tipo">'+s.tipoSolicitud+'</span>':'')
-        +'<span class="rb-acc-estado" style="background:'+estadoBg+';color:'+estadoColor+'">'+estOfic+'</span>'
-        +'<span class="rb-acc-chevron">▼</span>'
-      +'</div>'
-      // Body
-      +'<div class="rb-acc-body">'
-        // IDENTIFICACIÓN
-        +'<div class="rb-acc-section">'
-          +'<div class="rb-acc-section-title">📄 Identificación del Documento</div>'
-          +'<div class="rb-acc-grid">'
-            +'<div class="rb-acc-field"><div class="rb-acc-label">Código</div><div class="rb-acc-value mono">'+disp(s.codigo)+'</div></div>'
-            +'<div class="rb-acc-field"><div class="rb-acc-label">Nombre del Documento</div><div class="rb-acc-value">'+disp(s.nombreDoc)+'</div></div>'
-            +'<div class="rb-acc-field"><div class="rb-acc-label">Versión</div><div class="rb-acc-value">'+disp(s.version)+'</div></div>'
-            +'<div class="rb-acc-field"><div class="rb-acc-label">Tipo de Solicitud</div><div class="rb-acc-value">'+disp(s.tipoSolicitud)+'</div></div>'
-            +'<div class="rb-acc-field"><div class="rb-acc-label">Consecutivo</div><div class="rb-acc-value" style="font-weight:700;color:var(--T)">'+disp(s.consecutivo)+'</div></div>'
-          +'</div>'
+  var html='';
+  function renderGroup(list, label){
+    if(!list.length) return;
+    html+='<div class="rb-split-group-hdr">'+label+' ('+list.length+')</div>';
+    list.forEach(function(s){
+      var info=rbEstadoInfo(s);
+      var isAct=String(s.consecutivo)===String(_rbActiveSol);
+      html+='<div class="rb-split-item'+(isAct?' act':'')+(info.esOfic?' done':'')+'" onclick="rbSelectSol(\''+s.consecutivo+'\')">'
+        +'<span class="rb-split-dot" style="background:'+info.color+'"></span>'
+        +'<div class="rb-split-info">'
+          +'<div class="rb-split-code" style="color:'+(info.esOfic?'var(--G)':info.esFirma?'var(--T3)':'var(--A2)')+'">'+
+            '#'+s.consecutivo+' — '+(s.codigo||'?')+
+          '</div>'
+          +'<div class="rb-split-name">'+(s.nombreDoc||'Sin nombre')+'</div>'
         +'</div>'
-        // SOLICITANTE
-        +'<div class="rb-acc-section">'
-          +'<div class="rb-acc-section-title">👤 Solicitante y Área</div>'
-          +'<div class="rb-acc-grid">'
-            +'<div class="rb-acc-field"><div class="rb-acc-label">Solicitante</div><div class="rb-acc-value">'+disp(s.solicitante)+'</div></div>'
-            +'<div class="rb-acc-field"><div class="rb-acc-label">Área Generadora</div><div class="rb-acc-value">'+disp(s.areaGeneradora)+'</div></div>'
-            +(fv(s.correoUsuario)?'<div class="rb-acc-field"><div class="rb-acc-label">Correo</div><div class="rb-acc-value">'+s.correoUsuario+'</div></div>':'')
+        +'<span class="rb-split-badge" style="background:'+info.bg+';color:'+info.tc+'">'+info.label+'</span>'
+      +'</div>';
+    });
+  }
+  renderGroup(enProceso, 'En proceso');
+  renderGroup(oficial, 'Oficializadas');
+  listEl.innerHTML=html;
+}
+
+function rbSplitSearch(q){
+  rbRenderList(rbGetFiltered(), q);
+}
+
+function rbSelectSol(consecutivo){
+  _rbActiveSol=consecutivo;
+  var s=(solicitudes||[]).find(function(x){return String(x.consecutivo)===String(consecutivo);});
+  if(!s) return;
+  // Update active state in list
+  document.querySelectorAll('.rb-split-item').forEach(function(el){el.classList.remove('act');});
+  var items=document.querySelectorAll('.rb-split-item');
+  items.forEach(function(el){
+    if(el.onclick&&el.getAttribute('onclick')&&el.getAttribute('onclick').indexOf("'"+consecutivo+"'")>=0)
+      el.classList.add('act');
+  });
+  rbRenderDetail(s);
+}
+
+function rbRenderDetail(s){
+  var panel=document.getElementById('rb-split-detail');
+  if(!panel) return;
+  var info=rbEstadoInfo(s);
+  function fv(v){return(v&&String(v).trim()&&String(v).trim()!=='undefined')?String(v).trim():'';}
+  function fi(label,val,color){
+    var v=fv(val);
+    return '<div class="rb-det-field">'
+      +'<div class="rb-det-label">'+label+'</div>'
+      +'<div class="rb-det-val'+(v?'':' empty')+'" '+(color?'style="color:'+color+'"':'')+'>'+( v||'—')+'</div>'
+      +'</div>';
+  }
+
+  panel.innerHTML=
+    // ── HEADER ──
+    '<div class="rb-det-head">'
+      +'<div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap">'
+        +'<div style="flex:1;min-width:0">'
+          +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">'
+            +'<span style="font-size:10px;font-weight:700;background:#e0f5f3;color:var(--T3);padding:2px 9px;border-radius:99px">#'+s.consecutivo+'</span>'
+            +'<span style="font-family:\'Courier New\',monospace;font-size:11px;font-weight:700;color:var(--T3);background:var(--tl);padding:2px 8px;border-radius:4px">'+(s.codigo||'—')+'</span>'
+            +'<span style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;background:'+info.bg+';color:'+info.tc+'">'+info.label+'</span>'
           +'</div>'
-        +'</div>'
-        // FECHAS
-        +'<div class="rb-acc-section">'
-          +'<div class="rb-acc-section-title">📅 Fechas</div>'
-          +'<div class="rb-acc-grid">'
-            +'<div class="rb-acc-field"><div class="rb-acc-label">Fecha Solicitud</div><div class="rb-acc-value">'+disp(s.fechaSolicitud)+'</div></div>'
-            +'<div class="rb-acc-field"><div class="rb-acc-label">Fecha Ruta Borrador</div><div class="rb-acc-value">'+disp(s.fechaRutaBorrador)+'</div></div>'
-            +(fv(s.fechaRevIni)?'<div class="rb-acc-field"><div class="rb-acc-label">F. Revisión Inicial</div><div class="rb-acc-value">'+s.fechaRevIni+'</div></div>':'')
-            +(fv(s.fechaRevFin)?'<div class="rb-acc-field"><div class="rb-acc-label">F. Revisión Final</div><div class="rb-acc-value">'+s.fechaRevFin+'</div></div>':'')
-            +(fv(s.fechaEntregaFirma)?'<div class="rb-acc-field"><div class="rb-acc-label">F. Entrega Firma</div><div class="rb-acc-value">'+s.fechaEntregaFirma+'</div></div>':'')
-            +(fv(s.fechaOficializacion)?'<div class="rb-acc-field"><div class="rb-acc-label">F. Oficialización</div><div class="rb-acc-value" style="font-weight:700;color:var(--G)">'+s.fechaOficializacion+'</div></div>':'')
-            +(fv(s.fechaActListado)?'<div class="rb-acc-field"><div class="rb-acc-label">F. Actualiz. Listado</div><div class="rb-acc-value">'+s.fechaActListado+'</div></div>':'')
-            +(fv(s.fechaIntranet)?'<div class="rb-acc-field"><div class="rb-acc-label">F. Colocación Intranet</div><div class="rb-acc-value">'+s.fechaIntranet+'</div></div>':'')
-          +'</div>'
-        +'</div>'
-        // DESCRIPCIÓN / CRITICIDAD
-        +(fv(s.descripcionModif)||fv(s.criticidadResultado)||fv(s.criticidadConclusion)||fv(s.retiroRuta)
-          ?'<div class="rb-acc-section">'
-            +'<div class="rb-acc-section-title">📝 Detalles de la Solicitud</div>'
-            +'<div style="display:flex;flex-direction:column;gap:7px">'
-              +(fv(s.descripcionModif)?'<div class="rb-acc-field"><div class="rb-acc-label">Descripción de Modificación</div><div class="rb-acc-value" style="white-space:pre-wrap">'+s.descripcionModif+'</div></div>':'')
-              +(fv(s.criticidadResultado)?'<div class="rb-acc-field"><div class="rb-acc-label">Criticidad — Resultado</div><div class="rb-acc-value">'+s.criticidadResultado+'</div></div>':'')
-              +(fv(s.criticidadConclusion)?'<div class="rb-acc-field"><div class="rb-acc-label">Criticidad — Conclusión</div><div class="rb-acc-value">'+s.criticidadConclusion+'</div></div>':'')
-              +(fv(s.retiroRuta)?'<div class="rb-acc-field"><div class="rb-acc-label">Retiro de Ruta</div><div class="rb-acc-value">'+s.retiroRuta+'</div></div>':'')
-            +'</div>'
-          +'</div>'
-          :'')
-        // ESTADO
-        +'<div class="rb-acc-section" style="margin-bottom:0">'
-          +'<div class="rb-acc-section-title">🔖 Estado</div>'
-          +'<div class="rb-acc-grid">'
-            +'<div class="rb-acc-field"><div class="rb-acc-label">Estatus Solicitud</div><div class="rb-acc-value"><span style="background:'+estadoBg+';color:'+estadoColor+';border-radius:4px;padding:2px 9px;font-weight:700;font-size:11px">'+disp(s.estatus)+'</span></div></div>'
-            +'<div class="rb-acc-field"><div class="rb-acc-label">Estado Oficialización</div><div class="rb-acc-value"><span style="background:'+(esOfic?'#e6f9f3':'#f0f0f0')+';color:'+(esOfic?'#0f7a50':'#666')+';border-radius:4px;padding:2px 9px;font-weight:700;font-size:11px">'+disp(s.estadoOficializacion||'Pendiente')+'</span></div></div>'
-          +'</div>'
+          +'<div style="font-size:14px;font-weight:700;color:var(--tx);line-height:1.3;margin-bottom:3px">'+(s.nombreDoc||'—')+'</div>'
+          +'<div style="font-size:10px;color:var(--tx3)">'+(s.solicitante||'')+(s.areaGeneradora?' · '+s.areaGeneradora:'')+(s.fechaSolicitud?' · '+s.fechaSolicitud:'')+'</div>'
         +'</div>'
       +'</div>'
-      // Footer actions
-      +'<div class="rb-acc-actions">'
-        +'<button class="btn gh sm" style="font-size:10px" onclick="rbVerDetalle('+s.consecutivo+')">👁 Ver detalle</button>'
-        +(!esOfic?'<button class="btn sm" style="font-size:10px;background:var(--T);color:#fff" onclick="rbAbrirOficializar('+s.consecutivo+')">✅ Oficializar</button>':'')
-        +'<button class="btn dn sm" style="font-size:10px;margin-left:auto" onclick="rbEliminarSolicitud(\''+s.consecutivo+'\')">🗑 Eliminar</button>'
+      +'<div class="rb-det-stage" style="margin-top:10px">'+rbSplitStageBar(s)+'</div>'
+    +'</div>'
+    // ── GRID INFO ──
+    +'<div class="rb-det-grid">'
+      +'<div class="rb-det-sec">'
+        +'<div class="rb-det-sec-title">📄 Identificación</div>'
+        +fi('Código',s.codigo)
+        +fi('Nombre del documento',s.nombreDoc)
+        +fi('Versión',s.version)
+        +fi('Tipo de solicitud',s.tipoSolicitud)
       +'</div>'
+      +'<div class="rb-det-sec">'
+        +'<div class="rb-det-sec-title">👤 Solicitante</div>'
+        +fi('Solicitante',s.solicitante)
+        +fi('Área generadora',s.areaGeneradora)
+        +fi('Correo',s.correoUsuario)
+      +'</div>'
+      +'<div class="rb-det-sec">'
+        +'<div class="rb-det-sec-title">📅 Fechas</div>'
+        +fi('Fecha solicitud',s.fechaSolicitud)
+        +fi('Fecha ruta borrador',s.fechaRutaBorrador)
+        +fi('F. revisión inicial',s.fechaRevIni)
+        +fi('F. revisión final',s.fechaRevFin)
+        +fi('F. entrega firma',s.fechaEntregaFirma)
+        +fi('F. oficialización',s.fechaOficializacion,'var(--G)')
+      +'</div>'
+      +'<div class="rb-det-sec">'
+        +'<div class="rb-det-sec-title">📝 Detalles</div>'
+        +fi('Descripción modificación',s.descripcionModif)
+        +fi('Criticidad resultado',s.criticidadResultado)
+        +fi('Criticidad conclusión',s.criticidadConclusion)
+        +fi('Retiro de ruta',s.retiroRuta)
+      +'</div>'
+    +'</div>'
+    // ── ACTIONS ──
+    +'<div class="rb-det-actions">'
+      +'<button class="btn gh sm" onclick="rbVerDetalle('+s.consecutivo+')">👁 Ver detalle completo</button>'
+      +(!info.esOfic&&!info.esFirma&&!info.esRechazo
+        ?'<button class="btn sm" style="background:var(--A);color:#fff;border-color:var(--A)" onclick="rbAprobar(\''+s.consecutivo+'\')">✏️ Aprobar → Proceso de firma</button>'
+        :'')
+      +(!info.esOfic
+        ?'<button class="btn sm" style="background:var(--T);color:#fff" onclick="rbAbrirOficializar('+s.consecutivo+')">✅ Oficializar</button>'
+        :'')
+      +'<button class="btn dn sm" style="margin-left:auto" onclick="rbEliminarSolicitud(\''+s.consecutivo+'\')">🗑</button>'
     +'</div>';
-  }).join('');
 }
-function rbToggleAcc(id){
-  var el=document.getElementById(id);
-  if(el) el.classList.toggle('rb-open');
+
+function rbAprobar(consecutivo){
+  var s=(solicitudes||[]).find(function(x){return String(x.consecutivo)===String(consecutivo);});
+  if(!s) return;
+  if(!confirm('¿Confirmar aprobación? La solicitud pasará a "En proceso de firma".')) return;
+  s.estatus='En proceso de firma';
+  s.estadoOficializacion='En proceso de firma';
+  s.fechaEntregaFirma=s.fechaEntregaFirma||new Date().toISOString().split('T')[0];
+  saveArr('sol',solicitudes);
+  logA(currentUser?currentUser.nombre:'Usuario','Aprobación ruta','Solicitud #'+consecutivo+' → En proceso de firma');
+  toast('Solicitud #'+consecutivo+' marcada como En proceso de firma','ok');
+  rbRender();
+  if(window.OD&&OD.fileHandle&&OD.syncActivo){if(OD.saveTimer)clearTimeout(OD.saveTimer);OD.saveTimer=setTimeout(function(){odGuardarListado(true);},2000);}
 }
+
+function rbToggleAcc(id){var el=document.getElementById(id);if(el)el.classList.toggle('rb-open');}
 
 
 function rbEliminarSolicitud(consecutivo){
@@ -33059,9 +33170,10 @@ function rbActualizarOficializacion(codigo){
     return String(x.codigo||'').trim().toUpperCase()===cod;
   });
   if(!s) return; // no está en solicitudes
-  var estado=(s.estadoOficializacion||'').toLowerCase().trim();
-  // Solo actuar si está "en proceso" (no si está vacío, anulado, oficializado, etc.)
-  if(estado!=='en proceso') return;
+  var estado=(s.estadoOficializacion||s.estatus||'').toLowerCase().trim();
+  // Actuar si está "en proceso de firma" (listo para oficializar desde módulo documentos)
+  var lista=['en proceso de firma','en proceso','proceso de firma'];
+  if(lista.indexOf(estado)<0) return;
   var hoy=new Date().toISOString().split('T')[0];
   s.estadoOficializacion='Oficializado';
   s.estatus='Oficializado';
@@ -35701,20 +35813,19 @@ function nfVerificarRutaBorrador(cod){
     return fb.localeCompare(fa);
   });
   if(!coincidencias.length) return null;
+  // Solo generar alerta si la solicitud más reciente está en estado Pendiente
+  // Estados que NO generan alerta: Oficializado, En revisión, En proceso de firma, Rechazada, Aceptada
   var ultima=coincidencias[0];
   var estatus=(ultima.estatus||ultima.estadoOficializacion||'').toLowerCase().trim();
-  // Si no está oficializado → retornar info de alerta
-  var esOficializado=(estatus.indexOf('oficial')>=0||estatus.indexOf('oficializ')>=0);
-  if(!esOficializado){
-    return {
-      solicitante: ultima.solicitante||'(desconocido)',
-      fecha: ultima.fechaSolicitud||ultima.fechaRutaBorrador||'(sin fecha)',
-      motivo: ultima.descripcionModif||ultima.tipoSolicitud||'(sin descripción)',
-      estatus: ultima.estatus||'(sin estado)',
-      consecutivo: ultima.consecutivo||''
-    };
-  }
-  return null;
+  var esPendiente = estatus===''||estatus==='pendiente';
+  if(!esPendiente) return null;
+  return {
+    solicitante: ultima.solicitante||'(desconocido)',
+    fecha: ultima.fechaSolicitud||ultima.fechaRutaBorrador||'(sin fecha)',
+    motivo: ultima.descripcionModif||ultima.tipoSolicitud||'(sin descripción)',
+    estatus: ultima.estatus||'Pendiente',
+    consecutivo: ultima.consecutivo||''
+  };
 }
 
 function nfValidarCampos(){
@@ -35785,10 +35896,10 @@ function nfGuardarEjecutar(){
     descripcionModif:   document.getElementById('nf-descripcion').value.trim(),
     criticidadResultado:String(nfCalcResultado()),
     criticidadConclusion:nfGetConclusion(),
-    estatus:            document.getElementById('nf-estatus').value||'Pendiente',
+    estatus:            'En revisión',
     fechaRevIni:'',fechaRevFin:'',fechaEntregaFirma:'',
     fechaOficializacion:'',fechaActListado:'',fechaIntranet:'',
-    estadoOficializacion:'',
+    estadoOficializacion:'En revisión',
     correoUsuario:      (document.getElementById('nf-correo')||{}).value||'',
     retiroRuta:''
   };
@@ -36194,38 +36305,51 @@ document.addEventListener('click',function(e){
   <!-- ═══════════════════════════════════════════════════════════ -->
   <div class="pg" id="pg-rutabor">
     <!-- Header + Filtros -->
-    <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:14px 16px;margin-bottom:12px;box-shadow:var(--sh)">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+    <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:12px 16px;margin-bottom:12px;box-shadow:var(--sh)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
         <div>
-          <div style="font-size:16px;font-weight:700;color:var(--tx)">📋 Ruta de Borrador</div>
-          <div style="font-size:11px;color:var(--tx3);margin-top:2px">Consulta y gestión de solicitudes de documentos en proceso</div>
+          <div style="font-size:15px;font-weight:700;color:var(--tx)">📋 Ruta de Borrador</div>
+          <div style="font-size:11px;color:var(--tx3);margin-top:1px">Consulta y gestión de solicitudes de documentos en proceso</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
           <span id="rb-contador" style="font-size:11px;color:var(--tx3);font-weight:600"></span>
-          <button class="btn gh sm" onclick="rbLimpiarFiltros()" style="white-space:nowrap">✕ Limpiar filtros</button>
+          <button class="btn gh sm" onclick="rbLimpiarFiltros()" style="white-space:nowrap">✕ Limpiar</button>
         </div>
       </div>
       <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
-        <input id="rb-f-cod" type="text" class="fi" placeholder="🔍 Código" style="width:110px;font-size:12px" oninput="rbFiltrar()" title="Filtrar por código">
-        <input id="rb-f-consec" type="text" class="fi" placeholder="# Consecutivo" style="width:110px;font-size:12px" oninput="rbFiltrar()" title="Filtrar por consecutivo">
-        <input id="rb-f-solit" type="text" class="fi" placeholder="👤 Solicitante" style="width:140px;font-size:12px" oninput="rbFiltrar()" title="Filtrar por solicitante">
-        <input id="rb-f-nombre" type="text" class="fi" placeholder="📄 Nombre del documento" style="width:210px;font-size:12px" oninput="rbFiltrar()" title="Filtrar por nombre">
-        <select id="rb-f-tsol" class="fi" style="font-size:12px;width:160px" onchange="rbFiltrar()" title="Tipo de solicitud">
-          <option value="">Tipo de solicitud</option>
-        </select>
-        <select id="rb-filtro-estado" class="fi" style="font-size:12px;width:140px" onchange="rbFiltrar()">
+        <input id="rb-f-cod" type="text" class="fi" placeholder="🔍 Código" style="width:100px;font-size:11px" oninput="rbFiltrar()">
+        <input id="rb-f-consec" type="text" class="fi" placeholder="# Consecutivo" style="width:100px;font-size:11px" oninput="rbFiltrar()">
+        <input id="rb-f-solit" type="text" class="fi" placeholder="👤 Solicitante" style="width:130px;font-size:11px" oninput="rbFiltrar()">
+        <input id="rb-f-nombre" type="text" class="fi" placeholder="📄 Nombre del documento" style="width:190px;font-size:11px" oninput="rbFiltrar()">
+        <select id="rb-f-tsol" class="fi" style="font-size:11px;width:150px" onchange="rbFiltrar()"><option value="">Tipo de solicitud</option></select>
+        <select id="rb-filtro-estado" class="fi" style="font-size:11px;width:150px" onchange="rbFiltrar()">
           <option value="">Todos los estados</option>
-          <option>Aceptada</option><option>En proceso</option><option>Oficializado</option>
+          <option>En revisión</option><option>En proceso de firma</option><option>Oficializado</option>
           <option>Rechazada</option><option>Pendiente</option>
         </select>
       </div>
     </div>
 
-    <!-- Accordion principal -->
-    <div class="rb-accordion" id="rb-accordion"></div>
+    <!-- Split view: lista + detalle -->
+    <div class="rb-split">
+      <div class="rb-split-list">
+        <div class="rb-split-list-search">
+          <input id="rb-split-search" placeholder="Buscar en lista..." oninput="rbSplitSearch(this.value)">
+        </div>
+        <div id="rb-split-list-body" style="max-height:calc(100vh - 220px);overflow-y:auto"></div>
+      </div>
+      <div class="rb-split-detail" id="rb-split-detail">
+        <div class="rb-split-empty">
+          <div style="font-size:32px;margin-bottom:10px">📋</div>
+          <div style="font-size:13px;font-weight:700;color:var(--tx);margin-bottom:5px">Selecciona una solicitud</div>
+          <div>Haz clic en cualquier solicitud de la lista<br>para ver su información completa aquí.</div>
+        </div>
+      </div>
+    </div>
     <div id="rb-pgbar" style="margin-top:8px"></div>
-    <!-- hidden para paginación -->
     <input type="hidden" id="rb-pg-num" value="1">
+    <!-- hidden compat -->
+    <div style="display:none"><div class="rb-accordion" id="rb-accordion"></div></div>
 
     <!-- Modal Oficializar -->
     <div id="rb-mo-ofic" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
