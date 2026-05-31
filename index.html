@@ -877,13 +877,13 @@ tbody tr:last-child td{border-bottom:none}
         </div>
         <!-- Strip de estado -->
         <div class="cc-state-strip" id="cc-state-strip">
-          <div class="cc-state-cell" style="background:#e1f5ee" onclick="ccFilterByEstado('Vigente')">
-            <div><div class="cc-state-num" style="color:#0F6E56" id="cc-cnt-vig">0</div><div class="cc-state-lbl" style="color:#0F6E56">Vigentes</div></div>
+          <div class="cc-state-cell" style="background:#e1f5ee;cursor:default">
+            <div><div class="cc-state-num" style="color:#0F6E56" id="cc-cnt-vig">0</div><div class="cc-state-lbl" style="color:#0F6E56">Total listado</div></div>
           </div>
-          <div class="cc-state-cell" style="background:#faeeda" onclick="ccFilterByEstado('Ver. desactualizada')">
-            <div><div class="cc-state-num" style="color:#854F0B" id="cc-cnt-desc">0</div><div class="cc-state-lbl" style="color:#854F0B">Ver. desact.</div></div>
+          <div class="cc-state-cell" style="background:#faeeda;cursor:default">
+            <div><div class="cc-state-num" style="color:#854F0B" id="cc-cnt-desc">0</div><div class="cc-state-lbl" style="color:#854F0B">Total copias</div></div>
           </div>
-          <div class="cc-state-cell" style="background:#fcebeb" onclick="ccFilterByEstado('Obsoleto')">
+          <div class="cc-state-cell" style="background:#fcebeb" onclick="ccFilterByEstado('Obsoleto')" style="cursor:pointer">
             <div><div class="cc-state-num" style="color:#A32D2D" id="cc-cnt-obs">0</div><div class="cc-state-lbl" style="color:#A32D2D">Obsoletas</div></div>
           </div>
         </div>
@@ -2843,7 +2843,7 @@ function getSaludo(){var h=new Date().getHours();if(h>=5&&h<12)return'Buenos dia
 // ============================================================
 
 var PT={dash:'Inicio',kpi:'KPIs',docs:'Documentos',copias:'Copias Controladas',entregacc:'Entrega de Copias',insp:'Inspecciones Rutinarias',procs:'Mapa de Procesos',usrs:'Usuarios',notif:'Notificaciones',audit:'Auditoria',rep:'Reportes',cfg:'Configuracion',extvigor:'Extender Vigencia',marobs:'Marcar Obsoleto',docsrel:'Documentos Relacionados',pdfbarcode:'Estampar Código de Barras en PDF',revdoc:'Revisión de Documentos',validacion:'Informe de Validación IQ/OQ/PQ',fextvig:'F-Extensión de Vigencia',rutabor:'Ruta de Borrador',novedad:'Novedad de Documento F-SOP-0001-5'};
-var PR={dash:renderDash,kpi:function(){renderKPI();},docs:renderDocs,venc:renderVenc,copias:renderCopias,entregacc:function(){renderEntregaCC();},insp:function(){renderInsp();checkInspAlerts();},procs:renderProcs,usrs:renderUsrs,notif:renderNotif,audit:renderAudit,rep:renderRep,correos:renderCorreos,cfg:renderCfg,extvigor:renderExtVigor,marobs:renderMarObs,docsrel:renderDocsRel,pdfbarcode:renderPdfBarcode,revdoc:renderRevDoc,validacion:renderValidacion,fextvig:function(){renderFExtVig();},rutabor:function(){rbRender();},novedad:function(){nfInit();}};
+var PR={dash:renderDash,kpi:function(){renderKPI();},docs:renderDocs,venc:renderVenc,copias:function(){_ccSelectedArea=null;_ccSelectedSub=null;_ccEstadoFiltro=null;var q=document.getElementById('fc-q');if(q)q.value='';ccRenderTree();var tb=document.getElementById('copias-tb');if(tb)tb.innerHTML='<tr><td colspan="9"><div class="emp" style="padding:48px 20px;flex-direction:column;gap:10px"><div style="font-size:32px">📋</div><div style="font-size:13px;font-weight:700;color:var(--tx);margin-top:4px">Selecciona un área en el árbol izquierdo</div><div style="font-size:11px;color:var(--tx3)">o busca un código específico en el campo de búsqueda</div></div></td></tr>';var c=document.getElementById('cc-detail-title');if(c)c.textContent='Todas las áreas';},entregacc:function(){renderEntregaCC();},insp:function(){renderInsp();checkInspAlerts();},procs:renderProcs,usrs:renderUsrs,notif:renderNotif,audit:renderAudit,rep:renderRep,correos:renderCorreos,cfg:renderCfg,extvigor:renderExtVigor,marobs:renderMarObs,docsrel:renderDocsRel,pdfbarcode:renderPdfBarcode,revdoc:renderRevDoc,validacion:renderValidacion,fextvig:function(){renderFExtVig();},rutabor:function(){rbRender();},novedad:function(){nfInit();}};
 
 function nav(p,el){
   console.log('nav a:', p, '| modulos:', JSON.stringify(currentUser?currentUser.modulos:[]));
@@ -4667,42 +4667,103 @@ var _ccSelectedArea = null;
 var _ccSelectedSub  = null;
 var _ccEstadoFiltro = null;
 
+/* ══════════════════════════════════════════════════════════
+   COPIAS CONTROLADAS — árbol + tabla (rewrite limpio)
+   ══════════════════════════════════════════════════════════ */
+var _ccSelectedArea  = null;   // área seleccionada en el árbol
+var _ccSelectedSub   = null;   // subárea seleccionada
+var _ccEstadoFiltro  = null;   // filtro por estado (strip)
+var _ccBuscandoCod   = false;  // true = búsqueda por código activa
+
+function ccEstadoReal(x){
+  if(x._estCache) return x._estCache;
+  var dRef=(docs||[]).find(function(d){
+    return d.codigoActual&&x.codigo&&
+      d.codigoActual.toUpperCase().trim()===x.codigo.toUpperCase().trim();
+  });
+  var est='Vigente';
+  if(dRef){
+    var o=String(dRef.obsoleto||'').toUpperCase().trim();
+    var e=String(dRef.estado||'').toUpperCase().trim();
+    if(o==='X'||o==='SI'||o==='SÍ'||o==='YES'||o==='1'||o==='S'||e==='OBSOLETO') est='Obsoleto';
+    else if(parseInt(dRef.version,10)!==parseInt(x.version,10)) est='Ver. desactualizada';
+  }
+  x._estCache=est;
+  return est;
+}
+
+function ccLimpiarFiltros(){
+  var eq=document.getElementById('fc-q'); if(eq) eq.value='';
+  var es=document.getElementById('fc-estado'); if(es) es.selectedIndex=0;
+  _ccSelectedArea=null; _ccSelectedSub=null; _ccEstadoFiltro=null; _ccBuscandoCod=false;
+  // Vaciar tabla — estado inicial limpio
+  var tb=document.getElementById('copias-tb');
+  if(tb) tb.innerHTML='<tr><td colspan="9"><div class="emp" style="padding:40px"><div style="font-size:28px">🔍</div><div style="font-size:12px;margin-top:8px;color:var(--tx3)">Selecciona un área o busca un código para ver las copias</div></div></td></tr>';
+  ccRenderTree();
+  ccActualizarBanner([]);
+}
+
 function ccFilterByEstado(est){
   _ccEstadoFiltro = _ccEstadoFiltro===est ? null : est;
   renderCopias();
-  // Highlight strip
-  document.querySelectorAll('.cc-state-cell').forEach(function(el){
-    el.style.opacity = (!_ccEstadoFiltro || el.onclick.toString().indexOf("'"+_ccEstadoFiltro+"'")>=0) ? '1' : '0.5';
-  });
 }
 
 function ccRenderTree(){
-  var treeEl = document.getElementById('cc-tree-body');
+  var treeEl=document.getElementById('cc-tree-body');
   if(!treeEl) return;
-  var lista = copiasEmpresa();
-  // Build area → subarea map
-  var areas = {};
-  lista.forEach(function(x){
-    var a = x.area||'(Sin área)';
-    if(!areas[a]) areas[a] = {total:0,obs:0,desc:0,subs:{}};
+  var q=((document.getElementById('fc-q')||{}).value||'').toLowerCase().trim();
+  var todaLista=copiasEmpresa();
+
+  // Si hay búsqueda por código: mostrar todas las áreas/subareas donde aparece ese código
+  if(q){
+    var matches=todaLista.filter(function(x){
+      return (x.codigo||'').toLowerCase().indexOf(q)>=0
+          || (x.responsable||'').toLowerCase().indexOf(q)>=0;
+    });
+    // Agrupar matches por área → subárea
+    var areasQ={};
+    matches.forEach(function(x){
+      var a=x.area||'(Sin área)'; var s=x.subarea||'';
+      if(!areasQ[a]) areasQ[a]={total:0,subs:{}};
+      areasQ[a].total++;
+      if(s){ if(!areasQ[a].subs[s]) areasQ[a].subs[s]=0; areasQ[a].subs[s]++; }
+    });
+    var html='<div style="padding:6px 10px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx3)">Resultados de búsqueda</div>';
+    Object.keys(areasQ).sort().forEach(function(a){
+      var info=areasQ[a];
+      html+='<div class="cc-tree-area-hdr" style="border-left:2px solid transparent;cursor:default">'
+        +'<span class="cc-tree-dot" style="background:var(--T)"></span>'
+        +'<span class="cc-tree-name">'+a+'</span>'
+        +'<span class="cc-tree-cnt" style="background:var(--tl);color:var(--T3)">'+info.total+'</span>'
+        +'</div>';
+      var subs=Object.keys(info.subs).sort();
+      if(subs.length){
+        subs.forEach(function(s){
+          html+='<div style="padding:4px 10px 4px 26px;font-size:10px;color:var(--tx3);border-top:0.5px solid var(--brd)">'
+            +'↳ '+s+' <span style="font-size:9px">('+info.subs[s]+')</span>'
+            +'</div>';
+        });
+      }
+    });
+    if(!Object.keys(areasQ).length) html+='<div style="padding:12px;font-size:10px;color:var(--tx3);text-align:center">Sin resultados</div>';
+    treeEl.innerHTML=html;
+    return;
+  }
+
+  // Sin búsqueda: árbol normal por áreas
+  var areas={};
+  todaLista.forEach(function(x){
+    var a=x.area||'(Sin área)';
+    if(!areas[a]) areas[a]={total:0,obs:0,desc:0,subs:{}};
     areas[a].total++;
-    var est = ccEstadoReal(x);
+    var est=ccEstadoReal(x);
     if(est==='Obsoleto') areas[a].obs++;
     else if(est==='Ver. desactualizada') areas[a].desc++;
-    var s = x.subarea||'';
-    if(s){
-      if(!areas[a].subs[s]) areas[a].subs[s]=0;
-      areas[a].subs[s]++;
-    }
+    var s=x.subarea||'';
+    if(s){ if(!areas[a].subs[s]) areas[a].subs[s]=0; areas[a].subs[s]++; }
   });
-  var html = '';
-  // "Todas las áreas" option at top
-  var isAll = !_ccSelectedArea;
-  html+='<div class="cc-tree-area-hdr'+(isAll?' cc-active':'')+'" onclick="ccSelectArea(null)" style="border-left:'+(isAll?'2px solid var(--T)':'2px solid transparent')+';">'
-    +'<span class="cc-tree-dot" style="background:var(--T)"></span>'
-    +'<span class="cc-tree-name" style="color:'+(isAll?'var(--T3)':'var(--tx)')+'">Todas las áreas</span>'
-    +'<span class="cc-tree-cnt" style="background:var(--tl);color:var(--T3)">'+lista.length+'</span>'
-  +'</div>';
+
+  var html='';
   Object.keys(areas).sort().forEach(function(a){
     var info=areas[a];
     var isAct=_ccSelectedArea===a;
@@ -4710,94 +4771,68 @@ function ccRenderTree(){
     var cntColor=info.obs>0?'#A32D2D':info.desc>0?'#854F0B':'#085041';
     var cntBg=info.obs>0?'#fcebeb':info.desc>0?'#faeeda':'#e1f5ee';
     html+='<div class="cc-tree-area">'
-      +'<div class="cc-tree-area-hdr'+(isAct?' cc-active':'')+'" onclick="ccSelectArea(\''+a.replace(/'/g,"\\'")+'\')">'
+      +'<div class="cc-tree-area-hdr'+(isAct?' cc-active':'')+'" onclick="ccSelectArea(\''+a.replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\')">'
         +'<span class="cc-tree-dot" style="background:'+dotColor+'"></span>'
         +'<span class="cc-tree-name">'+a+'</span>'
         +'<span class="cc-tree-cnt" style="background:'+cntBg+';color:'+cntColor+'">'+info.total+'</span>'
       +'</div>';
+    // Subareas — solo del area activa
     if(isAct){
       var subs=Object.keys(info.subs).sort();
       if(subs.length){
         html+='<div class="cc-tree-sub">';
         subs.forEach(function(s){
           var isSubAct=_ccSelectedSub===s;
-          html+='<div class="cc-tree-sub-item'+(isSubAct?' cc-sub-active':'')+'" onclick="ccSelectSub(\''+s.replace(/'/g,"\\'")+'\')">'
-            +s+'<span style="font-size:9px">'+info.subs[s]+'</span></div>';
+          html+='<div class="cc-tree-sub-item'+(isSubAct?' cc-sub-active':'')+'" onclick="event.stopPropagation();ccSelectSub(\''+s.replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\')">'
+            +'<span style="font-size:12px;margin-right:4px;color:var(--tx3)">↳</span>'
+            +s+'<span style="float:right;font-size:9px;color:var(--tx3)">'+info.subs[s]+'</span></div>';
         });
         html+='</div>';
       }
     }
     html+='</div>';
   });
+  if(!html) html='<div style="padding:14px;font-size:11px;color:var(--tx3);text-align:center">Sin áreas registradas</div>';
   treeEl.innerHTML=html;
 }
 
 function ccSelectArea(a){
-  if(a===null || _ccSelectedArea===a){ _ccSelectedArea=null; _ccSelectedSub=null; }
+  if(_ccSelectedArea===a){ _ccSelectedArea=null; _ccSelectedSub=null; }
   else { _ccSelectedArea=a; _ccSelectedSub=null; }
+  _ccEstadoFiltro=null;
   ccRenderTree();
   renderCopias();
 }
 
 function ccSelectSub(s){
   _ccSelectedSub = _ccSelectedSub===s ? null : s;
+  _ccEstadoFiltro=null;
   ccRenderTree();
   renderCopias();
 }
 
-function ccEstadoReal(x){
-  // Si ya está cacheado y docs no ha cambiado, usar el cache
-  if(x._estCache) return x._estCache;
-  var dRef=(docs||[]).find(function(d){
-    return d.codigoActual&&x.codigo&&
-      d.codigoActual.toUpperCase()===x.codigo.toUpperCase();
-  });
-  var estado;
-  if(!dRef){
-    estado=x.estado||'Vigente';
-  } else {
-    // Normalizar obsoleto: puede venir como 'X', 'SI', 'Si', 'Sí', 'YES', '1', etc.
-    var obsStr=String(dRef.obsoleto||'').toUpperCase().trim();
-    var estStr=String(dRef.estado||'').toUpperCase().trim();
-    var isObs=obsStr==='X'||obsStr==='SI'||obsStr==='SÍ'||obsStr==='YES'||obsStr==='1'||obsStr==='S'
-              ||estStr==='OBSOLETO';
-    if(isObs){
-      estado='Obsoleto';
-    } else {
-      var verCop=parseInt(x.version,10)||0;
-      var verDoc=parseInt(dRef.version,10)||0;
-      estado=(verCop!==verDoc&&verCop>0&&verDoc>0)?'Ver. desactualizada':'Vigente';
-    }
-  }
-  x._estCache=estado; // cache para no recalcular en cada render
-  return estado;
+function ccActualizarBanner(lista){
+  // Vigentes = total de copias en el listado (sin filtro de estado)
+  // Ver. desact. = total de copias del listado (sin importar estado)  
+  // Obsoletas = solo las obsoletas
+  var todaLista = lista; // la lista filtrada por área/sub/q pero NO por estado
+  var cntVig  = todaLista.length;              // total vigentes en listado
+  var cntDesc = todaLista.length;              // total del listado (ver desact = total)
+  var cntObs  = todaLista.filter(function(x){ return ccEstadoReal(x)==='Obsoleto'; }).length;
+  var elV=document.getElementById('cc-cnt-vig'); if(elV) elV.textContent=cntVig;
+  var elD=document.getElementById('cc-cnt-desc'); if(elD) elD.textContent=cntDesc;
+  var elO=document.getElementById('cc-cnt-obs'); if(elO) elO.textContent=cntObs;
 }
 
-// Limpiar cache de estado de todas las copias (llamar cuando cambia el Listado Maestro)
-function ccLimpiarCacheEstados(){
-  (copias||[]).forEach(function(cop){delete cop._estCache;});
-}
-
-function ccLimpiarFiltros(){
-  ['fc-area','fc-sub','fc-estado'].forEach(function(id){
-    var el=document.getElementById(id);if(el)el.selectedIndex=0;
-  });
-  var eq=document.getElementById('fc-q');if(eq)eq.value='';
-  if(typeof _ccSelectedArea!=='undefined'){ _ccSelectedArea=null; _ccSelectedSub=null; _ccEstadoFiltro=null; }
-  if(typeof ccRenderTree==='function') ccRenderTree();
-  renderCopias();
-}
-function renderCopias(pg) {
+function renderCopias(pg){
   if(pg!==undefined) copiasPg=pg;
-  var fA  = (document.getElementById('fc-area')  ||{}).value||'';
-  var fSb = (document.getElementById('fc-sub')   ||{}).value||'';
-  var fEst= (document.getElementById('fc-estado')||{}).value||'';
-  var q   = ((document.getElementById('fc-q')    ||{}).value||'').toLowerCase();
 
-  var fAEl = document.getElementById('fc-area');
-  var fSbEl= document.getElementById('fc-sub');
+  var fA  = _ccSelectedArea||'';
+  var fSb = _ccSelectedSub||'';
+  var fEst= _ccEstadoFiltro||((document.getElementById('fc-estado')||{}).value||'');
+  var q   = ((document.getElementById('fc-q')||{}).value||'').toLowerCase().trim();
 
-  // Poblar estados usando el estado real de cada copia (cruzado con Listado Maestro)
+  // Poblar dropdown de estados
   var fEstEl=document.getElementById('fc-estado');
   if(fEstEl){
     var ve=fEstEl.value;
@@ -4808,88 +4843,86 @@ function renderCopias(pg) {
       +estados.map(function(e){return '<option'+(e===ve?' selected':'')+'>'+e+'</option>';}).join('');
   }
 
-  // Poblar áreas
-  if(fAEl){
-    var va=fAEl.value;
-    fAEl.innerHTML='<option value="">Todas las áreas</option>'
-      +[...new Set(copiasEmpresa().map(function(x){return x.area;}))].filter(Boolean).sort()
-       .map(function(a){return '<option'+(a===va?' selected':'')+'>'+a+'</option>';}).join('');
-  }
+  // Renderizar árbol
+  ccRenderTree();
 
-  // Poblar subáreas SOLO del área seleccionada (si hay área filtrada)
-  if(fSbEl){
-    var vs=fSbEl.value;
-    var fuenteSub=fA
-      ? copiasEmpresa().filter(function(x){return x.area===fA;})
-      : copiasEmpresa();
-    var subsDisp=[...new Set(fuenteSub.map(function(x){return x.subarea;}))].filter(Boolean).sort();
-    // Si la subárea seleccionada ya no está disponible, resetear
-    if(vs&&subsDisp.indexOf(vs)<0) vs='';
-    fSbEl.innerHTML='<option value="">Todas las subáreas</option>'
-      +subsDisp.map(function(s){return '<option'+(s===vs?' selected':'')+'>'+s+'</option>';}).join('');
-    if(vs) fSbEl.value=vs;
-  }
-
-  //  Filtro: árbol + búsqueda
-  var fA  = (typeof _ccSelectedArea !== 'undefined' && _ccSelectedArea) ? _ccSelectedArea : '';
-  var fSb = (typeof _ccSelectedSub  !== 'undefined' && _ccSelectedSub)  ? _ccSelectedSub  : '';
-  var fEst= (typeof _ccEstadoFiltro !== 'undefined' && _ccEstadoFiltro) ? _ccEstadoFiltro
-            : ((document.getElementById('fc-estado')||{}).value||'');
-  var q   = ((document.getElementById('fc-q')||{}).value||'').toLowerCase();
-
-  var lista = copiasEmpresa().filter(function(x){
-    return (!fA   || x.area===fA)
-        && (!fSb  || x.subarea===fSb)
-        && (!fEst || ccEstadoReal(x)===fEst)
-        && (!q    || (x.codigo||'').toLowerCase().indexOf(q)>=0 || (x.responsable||'').toLowerCase().indexOf(q)>=0);
-  });
-
-  // Update state strip counters
-  var listaBase=copiasEmpresa().filter(function(x){
-    return (!fA||x.area===fA)&&(!fSb||x.subarea===fSb)&&(!q||(x.codigo||'').toLowerCase().indexOf(q)>=0||(x.responsable||'').toLowerCase().indexOf(q)>=0);
-  });
-  var cntV=listaBase.filter(function(x){return ccEstadoReal(x)==='Vigente';}).length;
-  var cntD=listaBase.filter(function(x){return ccEstadoReal(x)==='Ver. desactualizada';}).length;
-  var cntO=listaBase.filter(function(x){return ccEstadoReal(x)==='Obsoleto';}).length;
-  var elV=document.getElementById('cc-cnt-vig');if(elV)elV.textContent=cntV;
-  var elD=document.getElementById('cc-cnt-desc');if(elD)elD.textContent=cntD;
-  var elO=document.getElementById('cc-cnt-obs');if(elO)elO.textContent=cntO;
+  // Estado vacío: si no hay selección ni búsqueda, mostrar pantalla en blanco
+  var hayFiltro = fA || fSb || q || fEst;
+  var tb=document.getElementById('copias-tb');
   var titleEl=document.getElementById('cc-detail-title');
-  if(titleEl)titleEl.textContent=fA?(fSb?fA+' / '+fSb:fA):'Todas las áreas';
   var cntEl=document.getElementById('cc-detail-count');
-  if(cntEl)cntEl.textContent=lista.length+' copia'+(lista.length!==1?'s':'');
-  if(typeof ccRenderTree==='function') ccRenderTree();
 
+  if(!hayFiltro){
+    if(tb) tb.innerHTML='<tr><td colspan="9"><div class="emp" style="padding:48px 20px;flex-direction:column;gap:10px"><div style="font-size:32px">📋</div><div style="font-size:13px;font-weight:700;color:var(--tx);margin-top:4px">Selecciona un área en el árbol izquierdo</div><div style="font-size:11px;color:var(--tx3)">o busca un código específico en el campo de búsqueda</div></div></td></tr>';
+    if(titleEl) titleEl.textContent='Todas las áreas';
+    if(cntEl) cntEl.textContent='';
+    ccActualizarBanner([]);
+    return;
+  }
+
+  // Lista base (sin filtro de estado) — para el banner
+  var listaBase=copiasEmpresa().filter(function(x){
+    return (!fA||x.area===fA)
+        && (!fSb||x.subarea===fSb)
+        && (!q||(x.codigo||'').toLowerCase().indexOf(q)>=0||(x.responsable||'').toLowerCase().indexOf(q)>=0);
+  });
+
+  // Lista final con filtro de estado
+  var lista=fEst ? listaBase.filter(function(x){return ccEstadoReal(x)===fEst;}) : listaBase;
+
+  // Actualizar banner con la lista base (sin filtro estado)
+  ccActualizarBanner(listaBase);
+
+  // Actualizar topbar
+  if(titleEl) titleEl.textContent=q?('Resultados para "'+q+'"'):fA?(fSb?fA+' / '+fSb:fA):'Búsqueda activa';
+  if(cntEl) cntEl.textContent=lista.length+' copia'+(lista.length!==1?'s':'');
+
+  var total=lista.length, pages=Math.max(1,Math.ceil(total/copiasPgSz));
   if(copiasPg>pages) copiasPg=1;
   var slice=lista.slice((copiasPg-1)*copiasPgSz, copiasPg*copiasPgSz);
-  var frag = document.createDocumentFragment();
-  if (!slice.length) {var r=document.createElement('tr');r.innerHTML='<td colspan="9"><div class="emp"><div style="font-size:12px">Sin copias. Usa Registrar o Importar Excel.</div></div></td>';frag.appendChild(r);}
-  else slice.forEach(function(x) {
-    var dRef = docsEmpresa().find(function(d){return d.codigoActual===x.codigo;});
+  var frag=document.createDocumentFragment();
 
-var isObs = dRef && (function(){
-  var o=String(dRef.obsoleto||'').toUpperCase().trim();
-  var e=String(dRef.estado||'').toUpperCase().trim();
-  return o==='X'||o==='SI'||o==='SÍ'||o==='YES'||o==='1'||o==='S'||e==='OBSOLETO';
-})();
-var verCam = dRef && parseInt(dRef.version,10)!==parseInt(x.version,10) && !isObs;
-
-    var sb = isObs?'<span class="b ob" style="font-size:10px">OBSOLETO</span>':verCam?'<span class="b rv" style="font-size:10px">Ver. desactualizada</span>':'<span class="b ap" style="font-size:10px">Vigente</span>';
-    var r = document.createElement('tr');
-    if (isObs) r.style.background='rgba(214,59,59,.04)';
-    else if (verCam) r.style.background='rgba(224,138,0,.04)';
-    r.innerHTML='<td><span class="cd">'+x.codigo+'</span></td><td style="font-size:10px;color:var(--tx3)">'+(x.subarea||'-')+'</td><td style="font-size:11px">'+(x.responsable||'-')+'</td><td style="font-size:10px;color:var(--tx3)">'+(x.correo||'-')+'</td><td style="font-size:11px">'+(x.proceso||'-')+'</td><td style="text-align:center;font-weight:600;color:'+(verCam?'var(--A)':isObs?'var(--R)':'var(--tx)')+'">'+fVer(x.version)+'</td><td style="text-align:center;font-weight:600;color:'+(dRef?(isObs?'var(--R)':'var(--G)'):'var(--tx3)')+'">'+( dRef?fVer(dRef.version):'—')+'</td><td>'+sb+'</td><td><div style="display:flex;gap:3px"><button class="btn gh sm" onclick="editCopia(\''+x.id+'\')">✏️</button><button class="btn dn sm" onclick="delCop(\''+x.id+'\')">✕</button></div></td>';
+  if(!slice.length){
+    var r=document.createElement('tr');
+    r.innerHTML='<td colspan="9"><div class="emp"><div style="font-size:22px">🔍</div><div style="font-size:12px;margin-top:6px;color:var(--tx3)">Sin copias para los filtros aplicados</div></div></td>';
     frag.appendChild(r);
-  });
+  } else {
+    slice.forEach(function(x){
+      var dRef=docsEmpresa().find(function(d){return d.codigoActual===x.codigo;});
+      var isObs=dRef&&(function(){
+        var o=String(dRef.obsoleto||'').toUpperCase().trim();
+        var e=String(dRef.estado||'').toUpperCase().trim();
+        return o==='X'||o==='SI'||o==='SÍ'||o==='YES'||o==='1'||o==='S'||e==='OBSOLETO';
+      })();
+      var verCam=dRef&&parseInt(dRef.version,10)!==parseInt(x.version,10)&&!isObs;
+      var sb=isObs?'<span class="b ob" style="font-size:10px">OBSOLETO</span>'
+               :verCam?'<span class="b rv" style="font-size:10px">Ver. desactualizada</span>'
+               :'<span class="b ap" style="font-size:10px">Vigente</span>';
+      var r=document.createElement('tr');
+      if(isObs) r.style.background='rgba(214,59,59,.04)';
+      else if(verCam) r.style.background='rgba(224,138,0,.04)';
+      r.innerHTML='<td><span class="cd">'+x.codigo+'</span></td>'
+        +'<td style="font-size:10px;color:var(--tx3)">'+(x.subarea||'-')+'</td>'
+        +'<td style="font-size:11px">'+(x.responsable||'-')+'</td>'
+        +'<td style="font-size:10px;color:var(--tx3)">'+(x.correo||'-')+'</td>'
+        +'<td style="font-size:11px">'+(x.proceso||'-')+'</td>'
+        +'<td style="text-align:center;font-weight:600;color:'+(verCam?'var(--A)':isObs?'var(--R)':'var(--tx)')+'">'+fVer(x.version)+'</td>'
+        +'<td style="text-align:center;font-weight:600;color:'+(dRef?(isObs?'var(--R)':'var(--G)'):'var(--tx3)')+'">'+( dRef?fVer(dRef.version):'—')+'</td>'
+        +'<td>'+sb+'</td>'
+        +'<td><div style="display:flex;gap:3px">'
+          +'<button class="btn gh sm" onclick="editCopia(\''+x.id+'\')">✏️</button>'
+          +'<button class="btn dn sm" onclick="delCop(\''+x.id+'\')">✕</button>'
+        +'</div></td>';
+      frag.appendChild(r);
+    });
+  }
 
-
-
-  var tb = document.getElementById('copias-tb'); tb.innerHTML=''; tb.appendChild(frag);
+  if(tb){ tb.innerHTML=''; tb.appendChild(frag); }
 
   // Paginación
   var pgCtrl=document.getElementById('copias-pg');
   if(pgCtrl){
-    var info='<span style="font-size:11px;color:var(--tx3)">'+total+' cop'+(total!==1?'ias':'ia')+' · Página '+copiasPg+' de '+pages+'</span>';
+    var info='<span style="font-size:11px;color:var(--tx3)">'+total+' copia'+(total!==1?'s':'')+' · Página '+copiasPg+' de '+pages+'</span>';
     var nav='';
     if(pages>1){
       nav='<div class="pgnav">';
@@ -4904,25 +4937,6 @@ var verCam = dRef && parseInt(dRef.version,10)!==parseInt(x.version,10) && !isOb
     }
     pgCtrl.innerHTML=info+nav;
   }
-
-  // Alertas
-
-var obsN = copiasEmpresa().filter(function(x){
-  var d=docs.find(function(dd){return dd.codigoActual===x.codigo;});
-  return d&&(d.obsoleto==='X'||d.obsoleto==='Si'||d.obsoleto==='Sí');
-}).length;
-var actN = copiasEmpresa().filter(function(x){
-  var d=docs.find(function(dd){return dd.codigoActual===x.codigo;});
-  return d
-    && parseInt(d.version,10)!==parseInt(x.version,10)
-    && d.obsoleto!=='X'&&d.obsoleto!=='Si'&&d.obsoleto!=='Sí';
-}).length;
-
-var aDiv = document.getElementById('cop-alerts'); if(!aDiv) return;
-  var html = '';
-  if (obsN>0) html+='<div class="al rd" onclick="showCopAlert(\'obs\',\'\')"><span>Alerta:</span><div><strong>'+obsN+' cop'+(obsN>1?'ias':'ia')+' de documentos OBSOLETOS deben ser recogidas.</strong> Clic para ver detalle y generar acta.</div></div>';
-  if (actN>0) html+='<div class="al am" onclick="showCopAlert(\'act\',\'\')"><span>Aviso:</span><div><strong>'+actN+' cop'+(actN>1?'ias':'ia')+' requieren actualizacion de version.</strong> Clic para ver detalle y generar acta.</div></div>';
-  aDiv.innerHTML = html;
 }
 
 function alertarCopiasDoc(cod, total, isObs, isExt) {
@@ -16451,13 +16465,13 @@ tbody tr:last-child td{border-bottom:none}
         </div>
         <!-- Strip de estado -->
         <div class="cc-state-strip" id="cc-state-strip">
-          <div class="cc-state-cell" style="background:#e1f5ee" onclick="ccFilterByEstado('Vigente')">
-            <div><div class="cc-state-num" style="color:#0F6E56" id="cc-cnt-vig">0</div><div class="cc-state-lbl" style="color:#0F6E56">Vigentes</div></div>
+          <div class="cc-state-cell" style="background:#e1f5ee;cursor:default">
+            <div><div class="cc-state-num" style="color:#0F6E56" id="cc-cnt-vig">0</div><div class="cc-state-lbl" style="color:#0F6E56">Total listado</div></div>
           </div>
-          <div class="cc-state-cell" style="background:#faeeda" onclick="ccFilterByEstado('Ver. desactualizada')">
-            <div><div class="cc-state-num" style="color:#854F0B" id="cc-cnt-desc">0</div><div class="cc-state-lbl" style="color:#854F0B">Ver. desact.</div></div>
+          <div class="cc-state-cell" style="background:#faeeda;cursor:default">
+            <div><div class="cc-state-num" style="color:#854F0B" id="cc-cnt-desc">0</div><div class="cc-state-lbl" style="color:#854F0B">Total copias</div></div>
           </div>
-          <div class="cc-state-cell" style="background:#fcebeb" onclick="ccFilterByEstado('Obsoleto')">
+          <div class="cc-state-cell" style="background:#fcebeb" onclick="ccFilterByEstado('Obsoleto')" style="cursor:pointer">
             <div><div class="cc-state-num" style="color:#A32D2D" id="cc-cnt-obs">0</div><div class="cc-state-lbl" style="color:#A32D2D">Obsoletas</div></div>
           </div>
         </div>
@@ -18417,7 +18431,7 @@ function getSaludo(){var h=new Date().getHours();if(h>=5&&h<12)return'Buenos dia
 // ============================================================
 
 var PT={dash:'Inicio',kpi:'KPIs',docs:'Documentos',copias:'Copias Controladas',entregacc:'Entrega de Copias',insp:'Inspecciones Rutinarias',procs:'Mapa de Procesos',usrs:'Usuarios',notif:'Notificaciones',audit:'Auditoria',rep:'Reportes',cfg:'Configuracion',extvigor:'Extender Vigencia',marobs:'Marcar Obsoleto',docsrel:'Documentos Relacionados',pdfbarcode:'Estampar Código de Barras en PDF',revdoc:'Revisión de Documentos',validacion:'Informe de Validación IQ/OQ/PQ',fextvig:'F-Extensión de Vigencia',rutabor:'Ruta de Borrador',novedad:'Novedad de Documento F-SOP-0001-5'};
-var PR={dash:renderDash,kpi:function(){renderKPI();},docs:renderDocs,venc:renderVenc,copias:renderCopias,entregacc:function(){renderEntregaCC();},insp:function(){renderInsp();checkInspAlerts();},procs:renderProcs,usrs:renderUsrs,notif:renderNotif,audit:renderAudit,rep:renderRep,correos:renderCorreos,cfg:renderCfg,extvigor:renderExtVigor,marobs:renderMarObs,docsrel:renderDocsRel,pdfbarcode:renderPdfBarcode,revdoc:renderRevDoc,validacion:renderValidacion,fextvig:function(){renderFExtVig();},rutabor:function(){rbRender();},novedad:function(){nfInit();}};
+var PR={dash:renderDash,kpi:function(){renderKPI();},docs:renderDocs,venc:renderVenc,copias:function(){_ccSelectedArea=null;_ccSelectedSub=null;_ccEstadoFiltro=null;var q=document.getElementById('fc-q');if(q)q.value='';ccRenderTree();var tb=document.getElementById('copias-tb');if(tb)tb.innerHTML='<tr><td colspan="9"><div class="emp" style="padding:48px 20px;flex-direction:column;gap:10px"><div style="font-size:32px">📋</div><div style="font-size:13px;font-weight:700;color:var(--tx);margin-top:4px">Selecciona un área en el árbol izquierdo</div><div style="font-size:11px;color:var(--tx3)">o busca un código específico en el campo de búsqueda</div></div></td></tr>';var c=document.getElementById('cc-detail-title');if(c)c.textContent='Todas las áreas';},entregacc:function(){renderEntregaCC();},insp:function(){renderInsp();checkInspAlerts();},procs:renderProcs,usrs:renderUsrs,notif:renderNotif,audit:renderAudit,rep:renderRep,correos:renderCorreos,cfg:renderCfg,extvigor:renderExtVigor,marobs:renderMarObs,docsrel:renderDocsRel,pdfbarcode:renderPdfBarcode,revdoc:renderRevDoc,validacion:renderValidacion,fextvig:function(){renderFExtVig();},rutabor:function(){rbRender();},novedad:function(){nfInit();}};
 
 function nav(p,el){
   console.log('nav a:', p, '| modulos:', JSON.stringify(currentUser?currentUser.modulos:[]));
