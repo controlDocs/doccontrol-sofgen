@@ -2846,7 +2846,7 @@ function getSaludo(){var h=new Date().getHours();if(h>=5&&h<12)return'Buenos dia
 // ============================================================
 
 var PT={dash:'Inicio',kpi:'KPIs',docs:'Documentos',flujos:'Flujos',copias:'Copias Controladas',entregacc:'Entrega de Copias',insp:'Inspecciones Rutinarias',procs:'Mapa de Procesos',usrs:'Usuarios',notif:'Notificaciones',audit:'Auditoria',rep:'Reportes',cfg:'Configuracion',extvigor:'Extender Vigencia',marobs:'Marcar Obsoleto',docsrel:'Documentos Relacionados',pdfbarcode:'Estampar Código de Barras en PDF',revdoc:'Revisión de Documentos',validacion:'Informe de Validación IQ/OQ/PQ',fextvig:'F-Extensión de Vigencia',rutabor:'Ruta de Borrador',novedad:'Novedad de Documento F-SOP-0001-5'};
-var PR={dash:renderDash,kpi:function(){renderKPI();},kpi:function(){renderKPI();},docs:renderDocs,venc:renderVenc,flujos:renderFlujos,copias:renderCopias,entregacc:function(){renderEntregaCC();},insp:function(){renderInsp();checkInspAlerts();},procs:renderProcs,usrs:renderUsrs,notif:renderNotif,audit:renderAudit,rep:renderRep,correos:renderCorreos,cfg:renderCfg,extvigor:renderExtVigor,marobs:renderMarObs,docsrel:renderDocsRel,pdfbarcode:renderPdfBarcode,revdoc:renderRevDoc,validacion:renderValidacion,fextvig:function(){renderFExtVig();},rutabor:function(){rbRender();},novedad:function(){nfInit();}};
+var PR={dash:renderDash,kpi:function(){renderKPI();},docs:renderDocs,venc:renderVenc,flujos:renderFlujos,copias:renderCopias,entregacc:function(){renderEntregaCC();},insp:function(){renderInsp();checkInspAlerts();},procs:renderProcs,usrs:renderUsrs,notif:renderNotif,audit:renderAudit,rep:renderRep,correos:renderCorreos,cfg:renderCfg,extvigor:renderExtVigor,marobs:renderMarObs,docsrel:renderDocsRel,pdfbarcode:renderPdfBarcode,revdoc:renderRevDoc,validacion:renderValidacion,fextvig:function(){renderFExtVig();},rutabor:function(){rbRender();},novedad:function(){nfInit();}};
 
 function nav(p,el){
   console.log('nav a:', p, '| modulos:', JSON.stringify(currentUser?currentUser.modulos:[]));
@@ -2871,7 +2871,7 @@ function nav(p,el){
         hdr.className='mod-header';
         hdr.innerHTML='<img class="mod-header-logo" src="'+window._MOD_LOGO_SRC+'" alt="Sofgen Pharma">'
           +'<span class="mod-header-title">'+(PT[p]||p)+'</span>'
-          +'<button class="mod-header-back" onclick="nav('dash',document.querySelector('[data-p=dash]'))">← Inicio</button>';
+          +'<button class="mod-header-back" onclick="nav(\'dash\',document.querySelector(\'[data-p=dash]\'))">← Inicio</button>';
         pg.insertBefore(hdr, pg.firstChild);
       } else {
         existHdr.querySelector('.mod-header-title').textContent=PT[p]||p;
@@ -18435,7 +18435,7 @@ function getSaludo(){var h=new Date().getHours();if(h>=5&&h<12)return'Buenos dia
 // ============================================================
 
 var PT={dash:'Inicio',kpi:'KPIs',docs:'Documentos',flujos:'Flujos',copias:'Copias Controladas',entregacc:'Entrega de Copias',insp:'Inspecciones Rutinarias',procs:'Mapa de Procesos',usrs:'Usuarios',notif:'Notificaciones',audit:'Auditoria',rep:'Reportes',cfg:'Configuracion',extvigor:'Extender Vigencia',marobs:'Marcar Obsoleto',docsrel:'Documentos Relacionados',pdfbarcode:'Estampar Código de Barras en PDF',revdoc:'Revisión de Documentos',validacion:'Informe de Validación IQ/OQ/PQ',fextvig:'F-Extensión de Vigencia',rutabor:'Ruta de Borrador',novedad:'Novedad de Documento F-SOP-0001-5'};
-var PR={dash:renderDash,docs:renderDocs,venc:renderVenc,flujos:renderFlujos,copias:renderCopias,entregacc:function(){renderEntregaCC();},insp:function(){renderInsp();checkInspAlerts();},procs:renderProcs,usrs:renderUsrs,notif:renderNotif,audit:renderAudit,rep:renderRep,correos:renderCorreos,cfg:renderCfg,extvigor:renderExtVigor,marobs:renderMarObs,docsrel:renderDocsRel,pdfbarcode:renderPdfBarcode,revdoc:renderRevDoc,validacion:renderValidacion,fextvig:function(){renderFExtVig();},rutabor:function(){rbRender();},novedad:function(){nfInit();}};
+var PR={dash:renderDash,kpi:function(){renderKPI();},docs:renderDocs,venc:renderVenc,flujos:renderFlujos,copias:renderCopias,entregacc:function(){renderEntregaCC();},insp:function(){renderInsp();checkInspAlerts();},procs:renderProcs,usrs:renderUsrs,notif:renderNotif,audit:renderAudit,rep:renderRep,correos:renderCorreos,cfg:renderCfg,extvigor:renderExtVigor,marobs:renderMarObs,docsrel:renderDocsRel,pdfbarcode:renderPdfBarcode,revdoc:renderRevDoc,validacion:renderValidacion,fextvig:function(){renderFExtVig();},rutabor:function(){rbRender();},novedad:function(){nfInit();}};
 
 function nav(p,el){
   console.log('nav a:', p, '| modulos:', JSON.stringify(currentUser?currentUser.modulos:[]));
@@ -18460,7 +18460,7 @@ function nav(p,el){
         hdr.className='mod-header';
         hdr.innerHTML='<img class="mod-header-logo" src="'+window._MOD_LOGO_SRC+'" alt="Sofgen Pharma">'
           +'<span class="mod-header-title">'+(PT[p]||p)+'</span>'
-          +'<button class="mod-header-back" onclick="nav('dash',document.querySelector('[data-p=dash]'))">← Inicio</button>';
+          +'<button class="mod-header-back" onclick="nav(\'dash\',document.querySelector(\'[data-p=dash]\'))">← Inicio</button>';
         pg.insertBefore(hdr, pg.firstChild);
       } else {
         existHdr.querySelector('.mod-header-title').textContent=PT[p]||p;
