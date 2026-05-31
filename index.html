@@ -15,7 +15,7 @@
 :root{--T:#00A99E;--T2:#008880;--T3:#006860;--tl:rgba(0,169,158,.10);--tlx:rgba(0,169,158,.04);--tb:rgba(0,169,158,.28);--bg:#f0f5f5;--bg3:#f5f9f9;--bg4:#e8f0f0;--brd:#c8dede;--brd2:#b0cecd;--tx:#0a2828;--tx2:#336666;--tx3:#5e9090;--G:#1ab87a;--A:#e08a00;--R:#d63b3b;--r:8px;--rl:14px;--fn:'Inter',sans-serif;--sh:0 1px 4px rgba(0,0,0,.06),0 4px 14px rgba(0,0,0,.04)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:14px;min-height:100vh}
-.sb{position:fixed;left:0;top:0;bottom:0;width:236px;background:var(--T3);display:flex;flex-direction:column;z-index:100;overflow-y:auto}
+.sb{display:none!important}
 .sb-logo{padding:16px 14px 12px;border-bottom:1px solid rgba(255,255,255,.12)}
 .sb-lw{display:flex;align-items:center;gap:10px}
 .sb-ic{width:40px;height:40px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -30,7 +30,7 @@ body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:14px;m
 .nic{width:15px;text-align:center;font-size:13px;flex-shrink:0}
 .nb{margin-left:auto;font-size:9px;font-weight:700;border-radius:99px;padding:1px 6px}
 .nb.r{background:#d63b3b;color:#fff}.nb.a{background:#e08a00;color:#fff}.nb.t{background:rgba(255,255,255,.22);color:#fff}
-.mn{margin-left:236px;min-height:100vh;display:block;}
+.mn{margin-left:0;min-height:100vh;display:block;}
 .topb{background:#fff;border-bottom:1px solid var(--brd);padding:11px 22px;display:flex;align-items:center;gap:11px;position:sticky;top:0;z-index:50;box-shadow:0 1px 3px rgba(0,0,0,.04)}
 .topb-t{font-size:15px;font-weight:600;color:var(--tx);flex:1}
 .srch{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:6px 11px;color:var(--tx);font-family:var(--fn);font-size:12px;width:200px;outline:none;transition:border .12s}
@@ -151,6 +151,46 @@ tbody tr:last-child td{border-bottom:none}
 @media(max-width:768px){.sb{display:none}.mn{margin-left:0}.fg,.fg3,.fg4{grid-template-columns:1fr}}
 @keyframes pulse{0%{opacity:1}50%{opacity:.4}100%{opacity:1}}
 .dash-area-lbl:hover{background:var(--bg3);}
+/* ── COPIAS CONTROLADAS SPLIT VIEW ──────────────────────────────────── */
+.cc-split{display:grid;grid-template-columns:200px 1fr;gap:12px;align-items:start}
+.cc-tree{background:#fff;border:1px solid var(--brd);border-radius:var(--rl);box-shadow:var(--sh);overflow:hidden;position:sticky;top:8px}
+.cc-tree-header{background:var(--T3);color:#fff;padding:8px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px}
+.cc-tree-area{cursor:pointer;user-select:none}
+.cc-tree-area-hdr{display:flex;align-items:center;gap:7px;padding:8px 10px;border-top:0.5px solid var(--brd);transition:background .1s}
+.cc-tree-area-hdr:hover{background:var(--tlx)}
+.cc-tree-area-hdr.cc-active{background:var(--tl);border-left:2px solid var(--T)}
+.cc-tree-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cc-tree-name{font-size:11px;font-weight:600;color:var(--tx);flex:1}
+.cc-tree-cnt{font-size:9px;font-weight:700;padding:1px 6px;border-radius:99px}
+.cc-tree-sub{padding:0 0 3px 22px;border-top:0.5px solid var(--brd);background:var(--bg3)}
+.cc-tree-sub-item{padding:5px 10px;font-size:10px;color:var(--tx3);cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:color .1s}
+.cc-tree-sub-item:hover{color:var(--T3)}
+.cc-tree-sub-item.cc-sub-active{color:var(--T3);font-weight:600}
+.cc-tree-divider{height:0.5px;background:var(--brd);margin:6px 10px}
+.cc-tree-action{padding:6px 10px;font-size:10px;color:var(--tx3);cursor:pointer;display:flex;align-items:center;gap:6px}
+.cc-tree-action:hover{color:var(--T3);background:var(--tlx)}
+.cc-detail{background:#fff;border:1px solid var(--brd);border-radius:var(--rl);box-shadow:var(--sh);overflow:hidden}
+.cc-detail-topbar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--brd);background:var(--bg3)}
+.cc-state-strip{display:flex;gap:0;border-bottom:0.5px solid var(--brd)}
+.cc-state-cell{flex:1;padding:8px 14px;display:flex;align-items:center;gap:6px;cursor:pointer;transition:opacity .12s;border-right:0.5px solid var(--brd)}
+.cc-state-cell:last-child{border-right:none}
+.cc-state-num{font-size:18px;font-weight:700;line-height:1}
+.cc-state-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+
+/* ── MODULE HEADER (logo + back to home) ──────────────────────────── */
+.mod-header{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--T3);margin-bottom:14px;border-radius:var(--rl);box-shadow:var(--sh)}
+.mod-header-logo{height:32px;width:auto;object-fit:contain;flex-shrink:0;filter:brightness(10)}
+.mod-header-title{font-size:14px;font-weight:700;color:#fff;flex:1}
+.mod-header-back{font-size:11px;padding:5px 12px;border-radius:var(--r);border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);color:#fff;cursor:pointer;white-space:nowrap;transition:background .12s}
+.mod-header-back:hover{background:rgba(255,255,255,.22)}
+/* ── HOME MODULE GRID ──────────────────────────────────────────────── */
+.home-modules-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.home-mod-card{background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:16px 14px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s,box-shadow .15s;text-align:center}
+.home-mod-card:hover{border-color:var(--T);box-shadow:0 4px 16px rgba(0,169,158,.14)}
+.home-mod-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.home-mod-name{font-size:11px;font-weight:700;color:var(--tx);line-height:1.3}
+.home-mod-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;background:#e1f5ee;color:var(--T3)}
+
 /* ── DOCS COMMAND PALETTE (Variante 1) ─────────────────────────── */
 .dcp-empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 120px);gap:14px;padding:40px}
 .dcp-empty-icon{width:52px;height:52px;border-radius:var(--rl);background:#fff;border:1px solid var(--brd);display:flex;align-items:center;justify-content:center;font-size:24px}
@@ -388,38 +428,40 @@ tbody tr:last-child td{border-bottom:none}
       </div>
     </div>
 
-    <!-- ── GRID: Accesos rápidos + Mis tareas ── -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+    <!-- ── GRID: Todos los módulos + Mis tareas ── -->
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:14px">
 
-      <!-- Accesos rápidos a módulos -->
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--tx3);padding:0 2px">Accesos rápidos</div>
-        <div onclick="nav('docs',document.querySelector('[data-p=docs]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
-          <div style="width:34px;height:34px;border-radius:7px;background:#e1f5ee;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">📄</div>
-          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--tx)">Documentos</div><div style="font-size:10px;color:var(--tx3)">Consulta y gestiona el archivo documental</div></div>
-          <span style="font-size:16px;color:var(--tx3)">›</span>
-        </div>
-        <div onclick="nav('rutabor',document.querySelector('[data-p=rutabor]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
-          <div style="width:34px;height:34px;border-radius:7px;background:#faeeda;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">🗂️</div>
-          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--tx)">Ruta de borrador</div><div style="font-size:10px;color:var(--tx3)">Gestiona solicitudes en proceso</div></div>
-          <span style="font-size:16px;color:var(--tx3)">›</span>
-        </div>
-        <div onclick="nav('flujos',document.querySelector('[data-p=flujos]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
-          <div style="width:34px;height:34px;border-radius:7px;background:#e6f1fb;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">🔀</div>
-          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--tx)">Flujos de aprobación</div><div style="font-size:10px;color:var(--tx3)">Revisa y aprueba documentos pendientes</div></div>
-          <span style="font-size:16px;color:var(--tx3)">›</span>
-        </div>
-        <div onclick="nav('venc',document.querySelector('[data-p=venc]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
-          <div style="width:34px;height:34px;border-radius:7px;background:#fcebeb;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">⚠️</div>
-          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--tx)">Control de vencimientos</div><div style="font-size:10px;color:var(--tx3)">Documentos próximos a vencer o vencidos</div></div>
-          <span style="font-size:16px;color:var(--tx3)">›</span>
-        </div>
-        <div onclick="nav('audit',document.querySelector('[data-p=audit]'))" style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='var(--T)'" onmouseout="this.style.borderColor='var(--brd)'">
-          <div style="width:34px;height:34px;border-radius:7px;background:#e1f5ee;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">🛡️</div>
-          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--tx)">Auditoría</div><div style="font-size:10px;color:var(--tx3)">Registro de actividades del sistema</div></div>
-          <span style="font-size:16px;color:var(--tx3)">›</span>
+      <!-- Grid completo de todos los módulos -->
+      <div>
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--tx3);margin-bottom:8px">Módulos del sistema</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px">
+          <div class="home-mod-card" onclick="nav('docs',document.querySelector('[data-p=docs]'))"><div class="home-mod-icon" style="background:#e1f5ee">📄</div><div class="home-mod-name">Documentos</div></div>
+          <div class="home-mod-card" onclick="nav('kpi',document.querySelector('[data-p=kpi]'))"><div class="home-mod-icon" style="background:#e1f5ee">📊</div><div class="home-mod-name">KPIs</div></div>
+          <div class="home-mod-card" onclick="nav('rutabor',document.querySelector('[data-p=rutabor]'))"><div class="home-mod-icon" style="background:#faeeda">🗂️</div><div class="home-mod-name">Ruta Borrador</div></div>
+          <div class="home-mod-card" onclick="nav('flujos',document.querySelector('[data-p=flujos]'))"><div class="home-mod-icon" style="background:#e6f1fb">🔀</div><div class="home-mod-name">Flujos</div></div>
+          <div class="home-mod-card" onclick="nav('venc',document.querySelector('[data-p=venc]'))"><div class="home-mod-icon" style="background:#fcebeb">⚠️</div><div class="home-mod-name">Vencimientos</div></div>
+          <div class="home-mod-card" onclick="nav('copias',document.querySelector('[data-p=copias]'))"><div class="home-mod-icon" style="background:#e0f5f3">📤</div><div class="home-mod-name">Copias Controladas</div></div>
+          <div class="home-mod-card" onclick="nav('entregacc',document.querySelector('[data-p=entregacc]'))"><div class="home-mod-icon" style="background:#f3e8fb">📦</div><div class="home-mod-name">Entrega Copias</div></div>
+          <div class="home-mod-card" onclick="nav('insp',document.querySelector('[data-p=insp]'))"><div class="home-mod-icon" style="background:#faeeda">🔍</div><div class="home-mod-name">Inspecciones</div></div>
+          <div class="home-mod-card" onclick="nav('novedad',document.querySelector('[data-p=novedad]'))"><div class="home-mod-icon" style="background:#f3e8fb">📢</div><div class="home-mod-name">Novedad Doc.</div></div>
+          <div class="home-mod-card" onclick="nav('extvigor',document.querySelector('[data-p=extvigor]'))"><div class="home-mod-icon" style="background:#e1f5ee">📅</div><div class="home-mod-name">Ext. Vigencia</div></div>
+          <div class="home-mod-card" onclick="nav('fextvig',document.querySelector('[data-p=fextvig]'))"><div class="home-mod-icon" style="background:#e6f1fb">📋</div><div class="home-mod-name">F-Ext. Vigencia</div></div>
+          <div class="home-mod-card" onclick="nav('docsrel',document.querySelector('[data-p=docsrel]'))"><div class="home-mod-icon" style="background:#faeeda">🔗</div><div class="home-mod-name">Docs Relacionados</div></div>
+          <div class="home-mod-card" onclick="nav('revdoc',document.querySelector('[data-p=revdoc]'))"><div class="home-mod-icon" style="background:#e0f5f3">🔎</div><div class="home-mod-name">Revisión Docs</div></div>
+          <div class="home-mod-card" onclick="nav('pdfbarcode',document.querySelector('[data-p=pdfbarcode]'))"><div class="home-mod-icon" style="background:#fcebeb">🖨️</div><div class="home-mod-name">Estampar PDF</div></div>
+          <div class="home-mod-card" onclick="nav('marobs',document.querySelector('[data-p=marobs]'))"><div class="home-mod-icon" style="background:#fcebeb">🚫</div><div class="home-mod-name">Marcar Obsoleto</div></div>
+          <div class="home-mod-card" onclick="nav('notif',document.querySelector('[data-p=notif]'))"><div class="home-mod-icon" style="background:#e6f1fb">✉️</div><div class="home-mod-name">Notificaciones</div></div>
+          <div class="home-mod-card" onclick="nav('audit',document.querySelector('[data-p=audit]'))"><div class="home-mod-icon" style="background:#e1f5ee">🛡️</div><div class="home-mod-name">Auditoría</div></div>
+          <div class="home-mod-card" onclick="nav('rep',document.querySelector('[data-p=rep]'))"><div class="home-mod-icon" style="background:#e1f5ee">📈</div><div class="home-mod-name">Reportes</div></div>
+          <div class="home-mod-card" onclick="nav('usrs',document.querySelector('[data-p=usrs]'))"><div class="home-mod-icon" style="background:#e8f0fb">👥</div><div class="home-mod-name">Usuarios</div></div>
+          <div class="home-mod-card" onclick="nav('correos',document.querySelector('[data-p=correos]'))"><div class="home-mod-icon" style="background:#e8f0fb">📧</div><div class="home-mod-name">Correos</div></div>
+          <div class="home-mod-card" onclick="nav('cfg',document.querySelector('[data-p=cfg]'))"><div class="home-mod-icon" style="background:#f0f0f0">⚙️</div><div class="home-mod-name">Configuración</div></div>
+          <div class="home-mod-card" onclick="nav('procs',document.querySelector('[data-p=procs]'))"><div class="home-mod-icon" style="background:#e1f5ee">🗺️</div><div class="home-mod-name">Mapa Procesos</div></div>
+          <div class="home-mod-card" onclick="nav('validacion',document.querySelector('[data-p=validacion]'))"><div class="home-mod-icon" style="background:#e8f0fb">🧪</div><div class="home-mod-name">Validación IQ/OQ</div></div>
+          <div class="home-mod-card" onclick="nav('procs',document.querySelector('[data-p=procs]'))"><div class="home-mod-icon" style="background:#e6f1fb">📝</div><div class="home-mod-name">Mapa de Procesos</div></div>
         </div>
       </div>
+
 
       <!-- Mis tareas del día -->
       <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);box-shadow:var(--sh);display:flex;flex-direction:column;overflow:hidden">
@@ -801,26 +843,56 @@ tbody tr:last-child td{border-bottom:none}
   </div>
 
   <div class="pg" id="pg-copias">
-    <div id="cop-alerts"></div>
-    <div class="card">
-      <div class="sh"><div class="st">Copias controladas</div>
-       
- <div style="display:flex;gap:7px">
-          <button class="btn gh sm" onclick="copCargarDesdeOD(this)" style="background:#e0f5f3;border-color:var(--T);color:var(--T3)">☁️ Cargar desde OneDrive</button>
-          <button class="btn gh sm" onclick="openMo('mo-impcop')">📥 Importar Excel</button>
-          <button class="btn sm" onclick="openNewCopia()">+ Registrar</button>
+    <div id="cop-alerts" style="margin-bottom:6px"></div>
+    <div id="cop-od-status" style="display:none;background:var(--tl);border:1px solid var(--tb);border-radius:var(--r);padding:8px 12px;margin-bottom:10px;font-size:11px;color:var(--T3)"></div>
+
+    <!-- Barra de acciones + búsqueda -->
+    <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 14px;margin-bottom:12px;box-shadow:var(--sh);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <input class="srch" type="text" id="fc-q" placeholder="🔍 Buscar código..." oninput="ccRenderTree();renderCopias()" style="width:150px;font-size:11px">
+      <select class="fsel" id="fc-estado" onchange="ccRenderTree();renderCopias()" title="Filtrar por estado" style="font-size:11px;width:130px"><option value="">Todos los estados</option></select>
+      <button class="btn gh sm" onclick="ccLimpiarFiltros()" style="white-space:nowrap">✕ Limpiar</button>
+      <!-- Hidden selects for compat -->
+      <select id="fc-area" style="display:none"><option value="">Todas las áreas</option></select>
+      <select id="fc-sub" style="display:none"><option value="">Todas las subáreas</option></select>
+      <div style="margin-left:auto;display:flex;gap:7px">
+        <button class="btn gh sm" onclick="copCargarDesdeOD(this)" style="background:#e0f5f3;border-color:var(--T);color:var(--T3)">☁️ OneDrive</button>
+        <button class="btn gh sm" onclick="openMo('mo-impcop')">📥 Importar</button>
+        <button class="btn sm" onclick="openNewCopia()">+ Registrar</button>
+      </div>
+    </div>
+
+    <!-- Split: árbol + tabla -->
+    <div class="cc-split">
+      <!-- Árbol de áreas/subáreas -->
+      <div class="cc-tree">
+        <div class="cc-tree-header">Áreas</div>
+        <div id="cc-tree-body" style="max-height:calc(100vh - 220px);overflow-y:auto"></div>
+        <div class="cc-tree-divider"></div>
+        <div class="cc-tree-action" onclick="openMo('mo-acta')">📋 Generar acta de entrega</div>
+        <div class="cc-tree-action" onclick="nav('entregacc',document.querySelector('[data-p=entregacc]'))">📷 Verificar copias QR</div>
+      </div>
+
+      <!-- Panel detalle: estado strip + tabla filtrada -->
+      <div class="cc-detail">
+        <div class="cc-detail-topbar">
+          <span id="cc-detail-title" style="font-size:13px;font-weight:700;color:var(--tx);flex:1">Todas las áreas</span>
+          <span id="cc-detail-count" style="font-size:11px;color:var(--tx3)"></span>
         </div>
+        <!-- Strip de estado -->
+        <div class="cc-state-strip" id="cc-state-strip">
+          <div class="cc-state-cell" style="background:#e1f5ee" onclick="ccFilterByEstado('Vigente')">
+            <div><div class="cc-state-num" style="color:#0F6E56" id="cc-cnt-vig">0</div><div class="cc-state-lbl" style="color:#0F6E56">Vigentes</div></div>
+          </div>
+          <div class="cc-state-cell" style="background:#faeeda" onclick="ccFilterByEstado('Ver. desactualizada')">
+            <div><div class="cc-state-num" style="color:#854F0B" id="cc-cnt-desc">0</div><div class="cc-state-lbl" style="color:#854F0B">Ver. desact.</div></div>
+          </div>
+          <div class="cc-state-cell" style="background:#fcebeb" onclick="ccFilterByEstado('Obsoleto')">
+            <div><div class="cc-state-num" style="color:#A32D2D" id="cc-cnt-obs">0</div><div class="cc-state-lbl" style="color:#A32D2D">Obsoletas</div></div>
+          </div>
+        </div>
+        <div class="tw"><table><thead><tr><th>Código</th><th>Subárea</th><th>Responsable</th><th>Correo</th><th>Proceso</th><th style="text-align:center">Ver. copia</th><th style="text-align:center">Ver. LM</th><th>Estado</th><th></th></tr></thead><tbody id="copias-tb"></tbody></table></div>
+        <div class="pgctrl" id="copias-pg"></div>
       </div>
-      <div id="cop-od-status" style="display:none;background:var(--tl);border:1px solid var(--tb);border-radius:var(--r);padding:8px 12px;margin-bottom:10px;font-size:11px;color:var(--T3)"></div>
-      <div style="display:flex;justify-content:flex-end;flex-wrap:wrap;gap:6px;margin-bottom:11px;align-items:center">
-        <button class="btn gh sm" onclick="ccLimpiarFiltros()" style="white-space:nowrap;order:-1">✕ Limpiar</button>
-        <input class="srch" type="text" id="fc-q" placeholder="Código..." oninput="renderCopias()" style="width:110px;font-size:11px" title="Buscar por código">
-        <select class="fsel" id="fc-estado" onchange="renderCopias()" title="Filtrar por estado" style="font-size:11px;width:120px"><option value="">Todos los estados</option></select>
-        <select class="fsel" id="fc-area" onchange="renderCopias()" style="font-size:11px"><option value="">Todas las áreas</option></select>
-        <select class="fsel" id="fc-sub" onchange="renderCopias()" style="font-size:11px"><option value="">Todas las subáreas</option></select>
-      </div>
-      <div class="tw"><table><thead><tr><th>Área</th><th>Subárea</th><th>Código</th><th>Ver.</th><th>Responsable</th><th>Correo</th><th>Proceso</th><th>Estado</th><th></th></tr></thead><tbody id="copias-tb"></tbody></table></div>
-      <div class="pgctrl" id="copias-pg"></div>
     </div>
   </div>
 
@@ -2791,17 +2863,31 @@ function nav(p,el){
     pg.style.display='block';
     pg.style.minHeight='calc(100vh - 60px)';
     pg.style.width='100%';
+    // ── Inject module header (logo + back button) for non-home pages ──
+    if(p!=='dash'){
+      var existHdr=pg.querySelector('.mod-header');
+      if(!existHdr){
+        var hdr=document.createElement('div');
+        hdr.className='mod-header';
+        hdr.innerHTML='<img class="mod-header-logo" src="'+window._MOD_LOGO_SRC+'" alt="Sofgen Pharma">'
+          +'<span class="mod-header-title">'+(PT[p]||p)+'</span>'
+          +'<button class="mod-header-back" onclick="nav('dash',document.querySelector('[data-p=dash]'))">← Inicio</button>';
+        pg.insertBefore(hdr, pg.firstChild);
+      } else {
+        existHdr.querySelector('.mod-header-title').textContent=PT[p]||p;
+      }
+    }
   }
 
-if(p==='pdfbarcode'||p==='revdoc'||p==='validacion'||p==='rutabor'||p==='novedad'){
-  pg.style.position='fixed';
-  pg.style.top='60px';
-  pg.style.left='236px';
-  pg.style.right='0';
-  pg.style.bottom='0';
-  pg.style.overflowY='auto';
-  pg.style.zIndex='200';
-  pg.style.background='var(--bg)';
+  if(p==='pdfbarcode'||p==='revdoc'||p==='validacion'||p==='rutabor'||p==='novedad'){
+    pg.style.position='fixed';
+    pg.style.top='60px';
+    pg.style.left='0';
+    pg.style.right='0';
+    pg.style.bottom='0';
+    pg.style.overflowY='auto';
+    pg.style.zIndex='200';
+    pg.style.background='var(--bg)';
   }
 
   if(el)el.classList.add('act');
@@ -2810,11 +2896,9 @@ if(p==='pdfbarcode'||p==='revdoc'||p==='validacion'||p==='rutabor'||p==='novedad
   if(PR[p])PR[p]();
   updBadges();
   window.scrollTo(0,0);
-  setTimeout(function(){
-    var pg2=document.getElementById('pg-'+p);
-    if(pg2) console.log('pg-'+p+' offsetHeight después:', pg2.offsetHeight);
-  },100);
 }
+// Store logo src for module headers
+window._MOD_LOGO_SRC = document.querySelector('.sb-logo img') ? document.querySelector('.sb-logo img').src : '';
 
 function updBadges(){
 
@@ -4595,6 +4679,83 @@ async function copCargarDesdeOD(btn){
 
 var copiasPg=1, copiasPgSz=25;
 // Obtener el estado real de una copia cruzando con el Listado Maestro
+
+/* ── COPIAS CONTROLADAS: árbol + estado strip ──────────────────────── */
+var _ccSelectedArea = null;
+var _ccSelectedSub  = null;
+var _ccEstadoFiltro = null;
+
+function ccFilterByEstado(est){
+  _ccEstadoFiltro = _ccEstadoFiltro===est ? null : est;
+  renderCopias();
+  // Highlight strip
+  document.querySelectorAll('.cc-state-cell').forEach(function(el){
+    el.style.opacity = (!_ccEstadoFiltro || el.onclick.toString().indexOf("'"+_ccEstadoFiltro+"'")>=0) ? '1' : '0.5';
+  });
+}
+
+function ccRenderTree(){
+  var treeEl = document.getElementById('cc-tree-body');
+  if(!treeEl) return;
+  var lista = copiasEmpresa();
+  // Build area → subarea map
+  var areas = {};
+  lista.forEach(function(x){
+    var a = x.area||'(Sin área)';
+    if(!areas[a]) areas[a] = {total:0,obs:0,desc:0,subs:{}};
+    areas[a].total++;
+    var est = ccEstadoReal(x);
+    if(est==='Obsoleto') areas[a].obs++;
+    else if(est==='Ver. desactualizada') areas[a].desc++;
+    var s = x.subarea||'';
+    if(s){
+      if(!areas[a].subs[s]) areas[a].subs[s]=0;
+      areas[a].subs[s]++;
+    }
+  });
+  var html = '';
+  Object.keys(areas).sort().forEach(function(a){
+    var info=areas[a];
+    var isAct=_ccSelectedArea===a;
+    var dotColor=info.obs>0?'var(--R)':info.desc>0?'var(--A)':'var(--G)';
+    var cntColor=info.obs>0?'#A32D2D':info.desc>0?'#854F0B':'#085041';
+    var cntBg=info.obs>0?'#fcebeb':info.desc>0?'#faeeda':'#e1f5ee';
+    html+='<div class="cc-tree-area">'
+      +'<div class="cc-tree-area-hdr'+(isAct?' cc-active':'')+'" onclick="ccSelectArea(\''+a.replace(/'/g,"\\'")+'\')">'
+        +'<span class="cc-tree-dot" style="background:'+dotColor+'"></span>'
+        +'<span class="cc-tree-name">'+a+'</span>'
+        +'<span class="cc-tree-cnt" style="background:'+cntBg+';color:'+cntColor+'">'+info.total+'</span>'
+      +'</div>';
+    if(isAct){
+      var subs=Object.keys(info.subs).sort();
+      if(subs.length){
+        html+='<div class="cc-tree-sub">';
+        subs.forEach(function(s){
+          var isSubAct=_ccSelectedSub===s;
+          html+='<div class="cc-tree-sub-item'+(isSubAct?' cc-sub-active':'')+'" onclick="ccSelectSub(\''+s.replace(/'/g,"\\'")+'\')">'
+            +s+'<span style="font-size:9px">'+info.subs[s]+'</span></div>';
+        });
+        html+='</div>';
+      }
+    }
+    html+='</div>';
+  });
+  treeEl.innerHTML=html;
+}
+
+function ccSelectArea(a){
+  if(_ccSelectedArea===a){ _ccSelectedArea=null; _ccSelectedSub=null; }
+  else { _ccSelectedArea=a; _ccSelectedSub=null; }
+  ccRenderTree();
+  renderCopias();
+}
+
+function ccSelectSub(s){
+  _ccSelectedSub = _ccSelectedSub===s ? null : s;
+  ccRenderTree();
+  renderCopias();
+}
+
 function ccEstadoReal(x){
   // Si ya está cacheado y docs no ha cambiado, usar el cache
   if(x._estCache) return x._estCache;
@@ -4633,9 +4794,10 @@ function ccLimpiarFiltros(){
     var el=document.getElementById(id);if(el)el.selectedIndex=0;
   });
   var eq=document.getElementById('fc-q');if(eq)eq.value='';
+  if(typeof _ccSelectedArea!=='undefined'){ _ccSelectedArea=null; _ccSelectedSub=null; _ccEstadoFiltro=null; }
+  if(typeof ccRenderTree==='function') ccRenderTree();
   renderCopias();
 }
-
 function renderCopias(pg) {
   if(pg!==undefined) copiasPg=pg;
   var fA  = (document.getElementById('fc-area')  ||{}).value||'';
@@ -4679,16 +4841,36 @@ function renderCopias(pg) {
     if(vs) fSbEl.value=vs;
   }
 
-  //  Filtro: incluye condición de subárea 
+  //  Filtro: árbol + búsqueda
+  var fA  = (typeof _ccSelectedArea !== 'undefined' && _ccSelectedArea) ? _ccSelectedArea : '';
+  var fSb = (typeof _ccSelectedSub  !== 'undefined' && _ccSelectedSub)  ? _ccSelectedSub  : '';
+  var fEst= (typeof _ccEstadoFiltro !== 'undefined' && _ccEstadoFiltro) ? _ccEstadoFiltro
+            : ((document.getElementById('fc-estado')||{}).value||'');
+  var q   = ((document.getElementById('fc-q')||{}).value||'').toLowerCase();
 
-  
   var lista = copiasEmpresa().filter(function(x){
     return (!fA   || x.area===fA)
         && (!fSb  || x.subarea===fSb)
         && (!fEst || ccEstadoReal(x)===fEst)
         && (!q    || (x.codigo||'').toLowerCase().indexOf(q)>=0);
   });
-  var total=lista.length, pages=Math.max(1,Math.ceil(total/copiasPgSz));
+
+  // Update state strip counters
+  var listaBase=copiasEmpresa().filter(function(x){
+    return (!fA||x.area===fA)&&(!fSb||x.subarea===fSb)&&(!q||(x.codigo||'').toLowerCase().indexOf(q)>=0);
+  });
+  var cntV=listaBase.filter(function(x){return ccEstadoReal(x)==='Vigente';}).length;
+  var cntD=listaBase.filter(function(x){return ccEstadoReal(x)==='Ver. desactualizada';}).length;
+  var cntO=listaBase.filter(function(x){return ccEstadoReal(x)==='Obsoleto';}).length;
+  var elV=document.getElementById('cc-cnt-vig');if(elV)elV.textContent=cntV;
+  var elD=document.getElementById('cc-cnt-desc');if(elD)elD.textContent=cntD;
+  var elO=document.getElementById('cc-cnt-obs');if(elO)elO.textContent=cntO;
+  var titleEl=document.getElementById('cc-detail-title');
+  if(titleEl)titleEl.textContent=fA?(fSb?fA+' / '+fSb:fA):'Todas las áreas';
+  var cntEl=document.getElementById('cc-detail-count');
+  if(cntEl)cntEl.textContent=lista.length+' copia'+(lista.length!==1?'s':'');
+  if(typeof ccRenderTree==='function') ccRenderTree();
+
   if(copiasPg>pages) copiasPg=1;
   var slice=lista.slice((copiasPg-1)*copiasPgSz, copiasPg*copiasPgSz);
   var frag = document.createDocumentFragment();
@@ -4707,7 +4889,7 @@ var verCam = dRef && parseInt(dRef.version,10)!==parseInt(x.version,10) && !isOb
     var r = document.createElement('tr');
     if (isObs) r.style.background='rgba(214,59,59,.04)';
     else if (verCam) r.style.background='rgba(224,138,0,.04)';
-    r.innerHTML='<td style="font-size:11px">'+(x.area||'-')+'</td><td style="font-size:11px;color:var(--tx3)">'+(x.subarea||'-')+'</td><td><span class="cd">'+x.codigo+'</span></td><td style="text-align:center;font-weight:600">'+fVer(x.version)+'</td><td style="font-size:11px">'+(x.responsable||'-')+'</td><td style="font-size:10px;color:var(--tx2)">'+(x.correo||'-')+'</td><td style="font-size:11px">'+(x.proceso||'-')+'</td><td>'+sb+'</td><td><div style="display:flex;gap:3px"><button class="btn gh sm" onclick="editCopia(\''+x.id+'\')">Editar</button><button class="btn dn sm" onclick="delCop(\''+x.id+'\')">X</button></div></td>';
+    r.innerHTML='<td><span class="cd">'+x.codigo+'</span></td><td style="font-size:10px;color:var(--tx3)">'+(x.subarea||'-')+'</td><td style="font-size:11px">'+(x.responsable||'-')+'</td><td style="font-size:10px;color:var(--tx3)">'+(x.correo||'-')+'</td><td style="font-size:11px">'+(x.proceso||'-')+'</td><td style="text-align:center;font-weight:600;color:'+(verCam?'var(--A)':isObs?'var(--R)':'var(--tx)')+'">'+fVer(x.version)+'</td><td style="text-align:center;font-weight:600;color:'+(dRef?(isObs?'var(--R)':'var(--G)'):'var(--tx3)')+'">'+( dRef?fVer(dRef.version):'—')+'</td><td>'+sb+'</td><td><div style="display:flex;gap:3px"><button class="btn gh sm" onclick="editCopia(\''+x.id+'\')">✏️</button><button class="btn dn sm" onclick="delCop(\''+x.id+'\')">✕</button></div></td>';
     frag.appendChild(r);
   });
 
@@ -13295,19 +13477,20 @@ function loginOnEnter(e){if(e.key==='Enter')doLogin();}
 // ============================================================
 // ── NOMBRES DE ARCHIVOS DE LA CARPETA DocControl_Sofgen ───────
 var OD_ARCHIVOS = {
-  lm:           'ListadoMaestro.xlsx',       // Listado Maestro + Usuarios
-  copias:       'CopiaControladas.xlsx',     // Copias Controladas + Actas
-  solicitudes:  'Solicitudes.xlsx',          // Solicitudes + Codigo_Doc_Nuevos
-  inspecciones: 'Inspecciones.xlsx',         // Programa Inspecciones
-  colaboradores:'Colaboradores.xlsx'         // Listado de Colaboradores
+  lm:           'ListadoMaestro.xlsx',
+  copias:       'CopiaControladas.xlsx',
+  solicitudes:  'Solicitudes.xlsx',
+  inspecciones: 'Inspecciones.xlsx',
+  colaboradores:'Colaboradores.xlsx',
+  actividades:  'Actividades del dia.xlsx'
 };
 
 var OD = {
   fileHandle:    null,   // archivo principal (ListadoMaestro.xlsx) — retro-compat
   carpetaHandle: null,   // handle de la carpeta DocControl_Sofgen
-  handles: {             // handle de cada archivo
+  handles: {
     lm: null, copias: null, solicitudes: null,
-    inspecciones: null, colaboradores: null
+    inspecciones: null, colaboradores: null, actividades: null
   },
   syncActivo:    false,
   syncTimer:     null,
@@ -16249,26 +16432,56 @@ tbody tr:last-child td{border-bottom:none}
   </div>
 
   <div class="pg" id="pg-copias">
-    <div id="cop-alerts"></div>
-    <div class="card">
-      <div class="sh"><div class="st">Copias controladas</div>
-       
- <div style="display:flex;gap:7px">
-          <button class="btn gh sm" onclick="copCargarDesdeOD(this)" style="background:#e0f5f3;border-color:var(--T);color:var(--T3)">☁️ Cargar desde OneDrive</button>
-          <button class="btn gh sm" onclick="openMo('mo-impcop')">📥 Importar Excel</button>
-          <button class="btn sm" onclick="openNewCopia()">+ Registrar</button>
+    <div id="cop-alerts" style="margin-bottom:6px"></div>
+    <div id="cop-od-status" style="display:none;background:var(--tl);border:1px solid var(--tb);border-radius:var(--r);padding:8px 12px;margin-bottom:10px;font-size:11px;color:var(--T3)"></div>
+
+    <!-- Barra de acciones + búsqueda -->
+    <div style="background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:10px 14px;margin-bottom:12px;box-shadow:var(--sh);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <input class="srch" type="text" id="fc-q" placeholder="🔍 Buscar código..." oninput="ccRenderTree();renderCopias()" style="width:150px;font-size:11px">
+      <select class="fsel" id="fc-estado" onchange="ccRenderTree();renderCopias()" title="Filtrar por estado" style="font-size:11px;width:130px"><option value="">Todos los estados</option></select>
+      <button class="btn gh sm" onclick="ccLimpiarFiltros()" style="white-space:nowrap">✕ Limpiar</button>
+      <!-- Hidden selects for compat -->
+      <select id="fc-area" style="display:none"><option value="">Todas las áreas</option></select>
+      <select id="fc-sub" style="display:none"><option value="">Todas las subáreas</option></select>
+      <div style="margin-left:auto;display:flex;gap:7px">
+        <button class="btn gh sm" onclick="copCargarDesdeOD(this)" style="background:#e0f5f3;border-color:var(--T);color:var(--T3)">☁️ OneDrive</button>
+        <button class="btn gh sm" onclick="openMo('mo-impcop')">📥 Importar</button>
+        <button class="btn sm" onclick="openNewCopia()">+ Registrar</button>
+      </div>
+    </div>
+
+    <!-- Split: árbol + tabla -->
+    <div class="cc-split">
+      <!-- Árbol de áreas/subáreas -->
+      <div class="cc-tree">
+        <div class="cc-tree-header">Áreas</div>
+        <div id="cc-tree-body" style="max-height:calc(100vh - 220px);overflow-y:auto"></div>
+        <div class="cc-tree-divider"></div>
+        <div class="cc-tree-action" onclick="openMo('mo-acta')">📋 Generar acta de entrega</div>
+        <div class="cc-tree-action" onclick="nav('entregacc',document.querySelector('[data-p=entregacc]'))">📷 Verificar copias QR</div>
+      </div>
+
+      <!-- Panel detalle: estado strip + tabla filtrada -->
+      <div class="cc-detail">
+        <div class="cc-detail-topbar">
+          <span id="cc-detail-title" style="font-size:13px;font-weight:700;color:var(--tx);flex:1">Todas las áreas</span>
+          <span id="cc-detail-count" style="font-size:11px;color:var(--tx3)"></span>
         </div>
+        <!-- Strip de estado -->
+        <div class="cc-state-strip" id="cc-state-strip">
+          <div class="cc-state-cell" style="background:#e1f5ee" onclick="ccFilterByEstado('Vigente')">
+            <div><div class="cc-state-num" style="color:#0F6E56" id="cc-cnt-vig">0</div><div class="cc-state-lbl" style="color:#0F6E56">Vigentes</div></div>
+          </div>
+          <div class="cc-state-cell" style="background:#faeeda" onclick="ccFilterByEstado('Ver. desactualizada')">
+            <div><div class="cc-state-num" style="color:#854F0B" id="cc-cnt-desc">0</div><div class="cc-state-lbl" style="color:#854F0B">Ver. desact.</div></div>
+          </div>
+          <div class="cc-state-cell" style="background:#fcebeb" onclick="ccFilterByEstado('Obsoleto')">
+            <div><div class="cc-state-num" style="color:#A32D2D" id="cc-cnt-obs">0</div><div class="cc-state-lbl" style="color:#A32D2D">Obsoletas</div></div>
+          </div>
+        </div>
+        <div class="tw"><table><thead><tr><th>Código</th><th>Subárea</th><th>Responsable</th><th>Correo</th><th>Proceso</th><th style="text-align:center">Ver. copia</th><th style="text-align:center">Ver. LM</th><th>Estado</th><th></th></tr></thead><tbody id="copias-tb"></tbody></table></div>
+        <div class="pgctrl" id="copias-pg"></div>
       </div>
-      <div id="cop-od-status" style="display:none;background:var(--tl);border:1px solid var(--tb);border-radius:var(--r);padding:8px 12px;margin-bottom:10px;font-size:11px;color:var(--T3)"></div>
-      <div style="display:flex;justify-content:flex-end;flex-wrap:wrap;gap:6px;margin-bottom:11px;align-items:center">
-        <button class="btn gh sm" onclick="ccLimpiarFiltros()" style="white-space:nowrap;order:-1">✕ Limpiar</button>
-        <input class="srch" type="text" id="fc-q" placeholder="Código..." oninput="renderCopias()" style="width:110px;font-size:11px" title="Buscar por código">
-        <select class="fsel" id="fc-estado" onchange="renderCopias()" title="Filtrar por estado" style="font-size:11px;width:120px"><option value="">Todos los estados</option></select>
-        <select class="fsel" id="fc-area" onchange="renderCopias()" style="font-size:11px"><option value="">Todas las áreas</option></select>
-        <select class="fsel" id="fc-sub" onchange="renderCopias()" style="font-size:11px"><option value="">Todas las subáreas</option></select>
-      </div>
-      <div class="tw"><table><thead><tr><th>Área</th><th>Subárea</th><th>Código</th><th>Ver.</th><th>Responsable</th><th>Correo</th><th>Proceso</th><th>Estado</th><th></th></tr></thead><tbody id="copias-tb"></tbody></table></div>
-      <div class="pgctrl" id="copias-pg"></div>
     </div>
   </div>
 
@@ -18239,17 +18452,31 @@ function nav(p,el){
     pg.style.display='block';
     pg.style.minHeight='calc(100vh - 60px)';
     pg.style.width='100%';
+    // ── Inject module header (logo + back button) for non-home pages ──
+    if(p!=='dash'){
+      var existHdr=pg.querySelector('.mod-header');
+      if(!existHdr){
+        var hdr=document.createElement('div');
+        hdr.className='mod-header';
+        hdr.innerHTML='<img class="mod-header-logo" src="'+window._MOD_LOGO_SRC+'" alt="Sofgen Pharma">'
+          +'<span class="mod-header-title">'+(PT[p]||p)+'</span>'
+          +'<button class="mod-header-back" onclick="nav('dash',document.querySelector('[data-p=dash]'))">← Inicio</button>';
+        pg.insertBefore(hdr, pg.firstChild);
+      } else {
+        existHdr.querySelector('.mod-header-title').textContent=PT[p]||p;
+      }
+    }
   }
 
-if(p==='pdfbarcode'||p==='revdoc'||p==='validacion'||p==='rutabor'||p==='novedad'){
-  pg.style.position='fixed';
-  pg.style.top='60px';
-  pg.style.left='236px';
-  pg.style.right='0';
-  pg.style.bottom='0';
-  pg.style.overflowY='auto';
-  pg.style.zIndex='200';
-  pg.style.background='var(--bg)';
+  if(p==='pdfbarcode'||p==='revdoc'||p==='validacion'||p==='rutabor'||p==='novedad'){
+    pg.style.position='fixed';
+    pg.style.top='60px';
+    pg.style.left='0';
+    pg.style.right='0';
+    pg.style.bottom='0';
+    pg.style.overflowY='auto';
+    pg.style.zIndex='200';
+    pg.style.background='var(--bg)';
   }
 
   if(el)el.classList.add('act');
@@ -18258,11 +18485,9 @@ if(p==='pdfbarcode'||p==='revdoc'||p==='validacion'||p==='rutabor'||p==='novedad
   if(PR[p])PR[p]();
   updBadges();
   window.scrollTo(0,0);
-  setTimeout(function(){
-    var pg2=document.getElementById('pg-'+p);
-    if(pg2) console.log('pg-'+p+' offsetHeight después:', pg2.offsetHeight);
-  },100);
 }
+// Store logo src for module headers
+window._MOD_LOGO_SRC = document.querySelector('.sb-logo img') ? document.querySelector('.sb-logo img').src : '';
 
 function updBadges(){
 
@@ -32591,8 +32816,62 @@ var _homeTasks = [];
 function homeLoadTasks(){
   try{ _homeTasks = JSON.parse(localStorage.getItem('home_tasks')||'[]'); }catch(e){ _homeTasks=[]; }
 }
+
+/* ══════════════════════════════════════════════════════════
+   ACTIVIDADES DEL DÍA — guardado en Excel separado
+   ══════════════════════════════════════════════════════════ */
+async function odGuardarActividades(){
+  if(!OD.carpetaHandle) return;
+  try{
+    var wb;
+    // Intentar abrir archivo existente
+    try{
+      var fh=await OD.carpetaHandle.getFileHandle(OD_ARCHIVOS.actividades,{create:false});
+      var file=await fh.getFile();
+      var buf=await file.arrayBuffer();
+      wb=XLSX.read(buf,{type:'array'});
+    }catch(e){
+      wb=XLSX.utils.book_new();
+    }
+    // Escribir hoja Actividades del dia
+    var HOJA='Actividades del dia';
+    var headers=['ID','Titulo','Descripcion','Prioridad','Estado','Hora Completada','Fecha'];
+    var rows=[headers];
+    var hoy=new Date().toISOString().split('T')[0];
+    (_homeTasks||[]).forEach(function(t){
+      rows.push([
+        String(t.id||''),
+        t.title||'',
+        t.desc||'',
+        t.prio||'',
+        t.done?'Completada':'Pendiente',
+        t.doneAt||'',
+        hoy
+      ]);
+    });
+    var ws=XLSX.utils.aoa_to_sheet(rows);
+    // Ancho de columnas
+    ws['!cols']=[{wch:14},{wch:35},{wch:40},{wch:10},{wch:12},{wch:16},{wch:12}];
+    var idx=wb.SheetNames.indexOf(HOJA);
+    if(idx>=0) wb.Sheets[HOJA]=ws; else XLSX.utils.book_append_sheet(wb,ws,HOJA);
+    // Guardar
+    var buf2=XLSX.write(wb,{type:'array',bookType:'xlsx'});
+    var fhW=await OD.carpetaHandle.getFileHandle(OD_ARCHIVOS.actividades,{create:true});
+    var w=await fhW.createWritable();
+    await w.write(buf2); await w.close();
+    console.log('[OD] Actividades del dia guardadas OK');
+  }catch(e){
+    console.warn('[OD] Error guardando Actividades del dia:',e);
+  }
+}
+
 function homeSaveTasks(){
   try{ localStorage.setItem('home_tasks', JSON.stringify(_homeTasks)); }catch(e){}
+  // Guardar en Excel Actividades del dia (sin debounce, es rápido)
+  if(OD.carpetaHandle){
+    clearTimeout(window._actSaveTimer);
+    window._actSaveTimer=setTimeout(function(){ odGuardarActividades(); },1500);
+  }
 }
 
 function homeInit(){
