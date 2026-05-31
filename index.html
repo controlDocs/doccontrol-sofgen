@@ -351,7 +351,7 @@ tbody tr:last-child td{border-bottom:none}
     <div class="ni" data-p="copias" onclick="nav('copias',this)"><span class="nic">📤</span>Copias controladas</div>
     <div class="ni" data-p="entregacc" onclick="nav('entregacc',this)"><span class="nic">📦</span>Entrega de Copias</div>
    
-<div class="ni" data-p="insp" onclick="nav('insp',this)"><span class="nic">🔍</span>Inspecciones<span class="nb r" id="bi">0</span></div>
+<div class="ni" data-p="insp" onclick="nav('insp',this)"><span class="nic">🔬</span>Prog. Inspecciones<span class="nb r" id="bi">0</span></div>
     
 
   
@@ -441,7 +441,7 @@ tbody tr:last-child td{border-bottom:none}
           <div class="home-mod-card" onclick="nav('venc',document.querySelector('[data-p=venc]'))"><div class="home-mod-icon" style="background:#fcebeb">⚠️</div><div class="home-mod-name">Vencimientos</div></div>
           <div class="home-mod-card" onclick="nav('copias',document.querySelector('[data-p=copias]'))"><div class="home-mod-icon" style="background:#e0f5f3">📤</div><div class="home-mod-name">Copias Controladas</div></div>
           <div class="home-mod-card" onclick="nav('entregacc',document.querySelector('[data-p=entregacc]'))"><div class="home-mod-icon" style="background:#f3e8fb">📦</div><div class="home-mod-name">Entrega Copias</div></div>
-          <div class="home-mod-card" onclick="nav('insp',document.querySelector('[data-p=insp]'))"><div class="home-mod-icon" style="background:#faeeda">🔍</div><div class="home-mod-name">Inspecciones</div></div>
+          <div class="home-mod-card" onclick="nav('insp',document.querySelector('[data-p=insp]'))"><div class="home-mod-icon" style="background:#faeeda">🔍</div><div class="home-mod-name">Prog. Inspecciones</div></div>
           <div class="home-mod-card" onclick="nav('novedad',document.querySelector('[data-p=novedad]'))"><div class="home-mod-icon" style="background:#f3e8fb">📢</div><div class="home-mod-name">Novedad Doc.</div></div>
           <div class="home-mod-card" onclick="nav('extvigor',document.querySelector('[data-p=extvigor]'))"><div class="home-mod-icon" style="background:#e1f5ee">📅</div><div class="home-mod-name">Ext. Vigencia</div></div>
           <div class="home-mod-card" onclick="nav('fextvig',document.querySelector('[data-p=fextvig]'))"><div class="home-mod-icon" style="background:#e6f1fb">📋</div><div class="home-mod-name">F-Ext. Vigencia</div></div>
@@ -455,9 +455,8 @@ tbody tr:last-child td{border-bottom:none}
           <div class="home-mod-card" onclick="nav('usrs',document.querySelector('[data-p=usrs]'))"><div class="home-mod-icon" style="background:#e8f0fb">👥</div><div class="home-mod-name">Usuarios</div></div>
           <div class="home-mod-card" onclick="nav('correos',document.querySelector('[data-p=correos]'))"><div class="home-mod-icon" style="background:#e8f0fb">📧</div><div class="home-mod-name">Correos</div></div>
           <div class="home-mod-card" onclick="nav('cfg',document.querySelector('[data-p=cfg]'))"><div class="home-mod-icon" style="background:#f0f0f0">⚙️</div><div class="home-mod-name">Configuración</div></div>
-          <div class="home-mod-card" onclick="nav('procs',document.querySelector('[data-p=procs]'))"><div class="home-mod-icon" style="background:#e1f5ee">🗺️</div><div class="home-mod-name">Mapa Procesos</div></div>
+          <div class="home-mod-card" onclick="nav('procs',document.querySelector('[data-p=procs]'))"><div class="home-mod-icon" style="background:#e1f5ee">🗺️</div><div class="home-mod-name">Mapa de Procesos</div></div>
           <div class="home-mod-card" onclick="nav('validacion',document.querySelector('[data-p=validacion]'))"><div class="home-mod-icon" style="background:#e8f0fb">🧪</div><div class="home-mod-name">Validación IQ/OQ</div></div>
-          <div class="home-mod-card" onclick="nav('procs',document.querySelector('[data-p=procs]'))"><div class="home-mod-icon" style="background:#e6f1fb">📝</div><div class="home-mod-name">Mapa de Procesos</div></div>
         </div>
       </div>
 
@@ -2842,11 +2841,10 @@ function getSaludo(){var h=new Date().getHours();if(h>=5&&h<12)return'Buenos dia
 // NAV
 // ============================================================
 
-var PT={dash:'Inicio',kpi:'KPIs',docs:'Documentos',copias:'Copias Controladas',entregacc:'Entrega de Copias',insp:'Inspecciones Rutinarias',procs:'Mapa de Procesos',usrs:'Usuarios',notif:'Notificaciones',audit:'Auditoria',rep:'Reportes',cfg:'Configuracion',extvigor:'Extender Vigencia',marobs:'Marcar Obsoleto',docsrel:'Documentos Relacionados',pdfbarcode:'Estampar Código de Barras en PDF',revdoc:'Revisión de Documentos',validacion:'Informe de Validación IQ/OQ/PQ',fextvig:'F-Extensión de Vigencia',rutabor:'Ruta de Borrador',novedad:'Novedad de Documento F-SOP-0001-5'};
+var PT={dash:'Inicio',kpi:'KPIs',docs:'Documentos',copias:'Copias Controladas',entregacc:'Entrega de Copias',insp:'Programa de Inspecciones Rutinarias',procs:'Mapa de Procesos',usrs:'Usuarios',notif:'Notificaciones',audit:'Auditoria',rep:'Reportes',cfg:'Configuracion',extvigor:'Extender Vigencia',marobs:'Marcar Obsoleto',docsrel:'Documentos Relacionados',pdfbarcode:'Estampar Código de Barras en PDF',revdoc:'Revisión de Documentos',validacion:'Informe de Validación IQ/OQ/PQ',fextvig:'F-Extensión de Vigencia',rutabor:'Ruta de Borrador',novedad:'Novedad de Documento F-SOP-0001-5'};
 var PR={dash:renderDash,kpi:function(){renderKPI();},docs:renderDocs,venc:renderVenc,copias:function(){_ccSelectedArea=null;_ccSelectedSub=null;_ccEstadoFiltro=null;var q=document.getElementById('fc-q');if(q)q.value='';ccRenderTree();var tb=document.getElementById('copias-tb');if(tb)tb.innerHTML='<tr><td colspan="9"><div class="emp" style="padding:48px 20px;flex-direction:column;gap:10px"><div style="font-size:32px">📋</div><div style="font-size:13px;font-weight:700;color:var(--tx);margin-top:4px">Selecciona un área en el árbol izquierdo</div><div style="font-size:11px;color:var(--tx3)">o busca un código específico en el campo de búsqueda</div></div></td></tr>';var c=document.getElementById('cc-detail-title');if(c)c.textContent='Todas las áreas';},entregacc:function(){renderEntregaCC();},insp:function(){renderInsp();checkInspAlerts();},procs:renderProcs,usrs:renderUsrs,notif:renderNotif,audit:renderAudit,rep:renderRep,correos:renderCorreos,cfg:renderCfg,extvigor:renderExtVigor,marobs:renderMarObs,docsrel:renderDocsRel,pdfbarcode:renderPdfBarcode,revdoc:renderRevDoc,validacion:renderValidacion,fextvig:function(){renderFExtVig();},rutabor:function(){rbRender();},novedad:function(){nfInit();}};
 
 function nav(p,el){
-  console.log('nav a:', p, '| modulos:', JSON.stringify(currentUser?currentUser.modulos:[]));
   document.querySelectorAll('.pg').forEach(function(x){
     x.classList.remove('act');
     x.style.display='';
@@ -4675,20 +4673,28 @@ var _ccSelectedSub   = null;   // subárea seleccionada
 var _ccEstadoFiltro  = null;   // filtro por estado (strip)
 var _ccBuscandoCod   = false;  // true = búsqueda por código activa
 
-function ccEstadoReal(x){
-  // No cache — always recalculate to avoid stale results after edits
-  var dRef=(docs||[]).find(function(d){
-    return d.codigoActual&&x.codigo&&
-      d.codigoActual.toUpperCase().trim()===x.codigo.toUpperCase().trim();
-  });
-  var est='Vigente';
-  if(dRef){
-    var o=String(dRef.obsoleto||'').toUpperCase().trim();
-    var e=String(dRef.estado||'').toUpperCase().trim();
-    if(o==='X'||o==='SI'||o==='SÍ'||o==='YES'||o==='1'||o==='S'||e==='OBSOLETO') est='Obsoleto';
-    else if(parseInt(dRef.version,10)!==parseInt(x.version,10)) est='Ver. desactualizada';
+var _ccDocsMap = null;
+var _ccDocsMapLen = 0;
+function ccGetDocsMap(){
+  // Rebuild map only when docs array changes
+  if(!_ccDocsMap || _ccDocsMapLen !== (docs||[]).length){
+    _ccDocsMap = {};
+    (docs||[]).forEach(function(d){
+      if(d.codigoActual) _ccDocsMap[d.codigoActual.toUpperCase().trim()] = d;
+    });
+    _ccDocsMapLen = (docs||[]).length;
   }
-  return est;
+  return _ccDocsMap;
+}
+function ccEstadoReal(x){
+  var map = ccGetDocsMap();
+  var dRef = x.codigo ? map[x.codigo.toUpperCase().trim()] : null;
+  if(!dRef) return 'Vigente';
+  var o=String(dRef.obsoleto||'').toUpperCase().trim();
+  var e=String(dRef.estado||'').toUpperCase().trim();
+  if(o==='X'||o==='SI'||o==='SÍ'||o==='YES'||o==='1'||o==='S'||e==='OBSOLETO') return 'Obsoleto';
+  if(parseInt(dRef.version,10)!==parseInt(x.version,10)) return 'Ver. desactualizada';
+  return 'Vigente';
 }
 
 function ccLimpiarFiltros(){
@@ -4811,13 +4817,13 @@ function ccSelectSub(s){
 }
 
 function ccActualizarBanner(lista){
-  // Total listado = total copias en el listado (filtradas por área/sub/q)
-  // Total copias  = mismo total del listado
-  // Obsoletas     = solo las que tienen estado Obsoleto
-  var total  = lista.length;
-  var cntObs = lista.filter(function(x){ return ccEstadoReal(x)==='Obsoleto'; }).length;
-  var cntVig = lista.filter(function(x){ return ccEstadoReal(x)==='Vigente'; }).length;
-  var elV=document.getElementById('cc-cnt-vig'); if(elV) elV.textContent=total;
+  // Banner siempre muestra los totales de TODAS las copias (sin filtrar)
+  // No importa si hay un área/subárea seleccionada — siempre muestra el universo completo
+  var todas = copiasEmpresa();
+  var cntTotal = todas.length;
+  var cntObs   = todas.filter(function(x){ return ccEstadoReal(x)==='Obsoleto'; }).length;
+  var cntVig   = todas.filter(function(x){ return ccEstadoReal(x)==='Vigente'; }).length;
+  var elV=document.getElementById('cc-cnt-vig'); if(elV) elV.textContent=cntTotal;
   var elD=document.getElementById('cc-cnt-desc'); if(elD) elD.textContent=cntVig;
   var elO=document.getElementById('cc-cnt-obs'); if(elO) elO.textContent=cntObs;
 }
@@ -4850,11 +4856,13 @@ function renderCopias(pg){
   var titleEl=document.getElementById('cc-detail-title');
   var cntEl=document.getElementById('cc-detail-count');
 
+  // ALWAYS show totals in banner, even when no filter active
+  ccActualizarBanner(copiasEmpresa());
+
   if(!hayFiltro){
     if(tb) tb.innerHTML='<tr><td colspan="9"><div class="emp" style="padding:48px 20px;flex-direction:column;gap:10px"><div style="font-size:32px">📋</div><div style="font-size:13px;font-weight:700;color:var(--tx);margin-top:4px">Selecciona un área en el árbol izquierdo</div><div style="font-size:11px;color:var(--tx3)">o busca un código específico en el campo de búsqueda</div></div></td></tr>';
     if(titleEl) titleEl.textContent='Todas las áreas';
     if(cntEl) cntEl.textContent='';
-    ccActualizarBanner([]);
     return;
   }
 
@@ -4868,8 +4876,7 @@ function renderCopias(pg){
   // Lista final con filtro de estado
   var lista=fEst ? listaBase.filter(function(x){return ccEstadoReal(x)===fEst;}) : listaBase;
 
-  // Actualizar banner con la lista base (sin filtro estado)
-  ccActualizarBanner(listaBase);
+  // Banner ya actualizado arriba con totales globales
 
   // Actualizar topbar
   if(titleEl) titleEl.textContent=q?('Resultados para "'+q+'"'):fA?(fSb?fA+' / '+fSb:fA):'Búsqueda activa';
@@ -15943,7 +15950,7 @@ tbody tr:last-child td{border-bottom:none}
     <div class="ni" data-p="copias" onclick="nav('copias',this)"><span class="nic">📤</span>Copias controladas</div>
     <div class="ni" data-p="entregacc" onclick="nav('entregacc',this)"><span class="nic">📦</span>Entrega de Copias</div>
    
-<div class="ni" data-p="insp" onclick="nav('insp',this)"><span class="nic">🔍</span>Inspecciones<span class="nb r" id="bi">0</span></div>
+<div class="ni" data-p="insp" onclick="nav('insp',this)"><span class="nic">🔬</span>Prog. Inspecciones<span class="nb r" id="bi">0</span></div>
     
 
   
@@ -18428,11 +18435,10 @@ function getSaludo(){var h=new Date().getHours();if(h>=5&&h<12)return'Buenos dia
 // NAV
 // ============================================================
 
-var PT={dash:'Inicio',kpi:'KPIs',docs:'Documentos',copias:'Copias Controladas',entregacc:'Entrega de Copias',insp:'Inspecciones Rutinarias',procs:'Mapa de Procesos',usrs:'Usuarios',notif:'Notificaciones',audit:'Auditoria',rep:'Reportes',cfg:'Configuracion',extvigor:'Extender Vigencia',marobs:'Marcar Obsoleto',docsrel:'Documentos Relacionados',pdfbarcode:'Estampar Código de Barras en PDF',revdoc:'Revisión de Documentos',validacion:'Informe de Validación IQ/OQ/PQ',fextvig:'F-Extensión de Vigencia',rutabor:'Ruta de Borrador',novedad:'Novedad de Documento F-SOP-0001-5'};
+var PT={dash:'Inicio',kpi:'KPIs',docs:'Documentos',copias:'Copias Controladas',entregacc:'Entrega de Copias',insp:'Programa de Inspecciones Rutinarias',procs:'Mapa de Procesos',usrs:'Usuarios',notif:'Notificaciones',audit:'Auditoria',rep:'Reportes',cfg:'Configuracion',extvigor:'Extender Vigencia',marobs:'Marcar Obsoleto',docsrel:'Documentos Relacionados',pdfbarcode:'Estampar Código de Barras en PDF',revdoc:'Revisión de Documentos',validacion:'Informe de Validación IQ/OQ/PQ',fextvig:'F-Extensión de Vigencia',rutabor:'Ruta de Borrador',novedad:'Novedad de Documento F-SOP-0001-5'};
 var PR={dash:renderDash,kpi:function(){renderKPI();},docs:renderDocs,venc:renderVenc,copias:function(){_ccSelectedArea=null;_ccSelectedSub=null;_ccEstadoFiltro=null;var q=document.getElementById('fc-q');if(q)q.value='';ccRenderTree();var tb=document.getElementById('copias-tb');if(tb)tb.innerHTML='<tr><td colspan="9"><div class="emp" style="padding:48px 20px;flex-direction:column;gap:10px"><div style="font-size:32px">📋</div><div style="font-size:13px;font-weight:700;color:var(--tx);margin-top:4px">Selecciona un área en el árbol izquierdo</div><div style="font-size:11px;color:var(--tx3)">o busca un código específico en el campo de búsqueda</div></div></td></tr>';var c=document.getElementById('cc-detail-title');if(c)c.textContent='Todas las áreas';},entregacc:function(){renderEntregaCC();},insp:function(){renderInsp();checkInspAlerts();},procs:renderProcs,usrs:renderUsrs,notif:renderNotif,audit:renderAudit,rep:renderRep,correos:renderCorreos,cfg:renderCfg,extvigor:renderExtVigor,marobs:renderMarObs,docsrel:renderDocsRel,pdfbarcode:renderPdfBarcode,revdoc:renderRevDoc,validacion:renderValidacion,fextvig:function(){renderFExtVig();},rutabor:function(){rbRender();},novedad:function(){nfInit();}};
 
 function nav(p,el){
-  console.log('nav a:', p, '| modulos:', JSON.stringify(currentUser?currentUser.modulos:[]));
   document.querySelectorAll('.pg').forEach(function(x){
     x.classList.remove('act');
     x.style.display='';
@@ -19736,27 +19742,17 @@ async function copCargarDesdeOD(btn){
 var copiasPg=1, copiasPgSz=25;
 // Obtener el estado real de una copia cruzando con el Listado Maestro
 function ccEstadoReal(x){
-  // No cache — always recalculate
-  var dRef=(docs||[]).find(function(d){
-    return d.codigoActual&&x.codigo&&
-      d.codigoActual.toUpperCase()===x.codigo.toUpperCase();
-  });
-  var estado='Vigente';
-  if(!dRef){
-    estado=x.estado||'Vigente';
-  } else {
-    var obsStr=String(dRef.obsoleto||'').toUpperCase().trim();
-    var estStr=String(dRef.estado||'').toUpperCase().trim();
-    var isObs=obsStr==='X'||obsStr==='SI'||obsStr==='SÍ'||obsStr==='YES'||obsStr==='1'||obsStr==='S'||estStr==='OBSOLETO';
-    if(isObs){
-      estado='Obsoleto';
-    } else {
-      var verCop=parseInt(x.version,10)||0;
-      var verDoc=parseInt(dRef.version,10)||0;
-      estado=(verCop!==verDoc&&verCop>0&&verDoc>0)?'Ver. desactualizada':'Vigente';
-    }
-  }
-  return estado;
+  // Use O(1) map lookup from first instance
+  var map = (typeof ccGetDocsMap === 'function') ? ccGetDocsMap() : {};
+  var dRef = x.codigo ? map[x.codigo.toUpperCase().trim()] : null;
+  if(!dRef){ return x.estado||'Vigente'; }
+  var o=String(dRef.obsoleto||'').toUpperCase().trim();
+  var e=String(dRef.estado||'').toUpperCase().trim();
+  if(o==='X'||o==='SI'||o==='SÍ'||o==='YES'||o==='1'||o==='S'||e==='OBSOLETO') return 'Obsoleto';
+  var verCop=parseInt(x.version,10)||0;
+  var verDoc=parseInt(dRef.version,10)||0;
+  if(verCop!==verDoc&&verCop>0&&verDoc>0) return 'Ver. desactualizada';
+  return 'Vigente';
 }
 
 // Limpiar cache de estado de todas las copias (llamar cuando cambia el Listado Maestro)
@@ -19786,18 +19782,19 @@ function renderCopias(pg){
   var titleEl=document.getElementById('cc-detail-title');
   var cntEl=document.getElementById('cc-detail-count');
   var hayFiltro=fA||fSb||q||fEst;
+  // Always show global totals in banner
+  if(typeof ccActualizarBanner==='function') ccActualizarBanner(copiasEmpresa());
+
   if(!hayFiltro){
     if(tb) tb.innerHTML='<tr><td colspan="9"><div class="emp" style="padding:48px 20px;flex-direction:column;gap:10px"><div style="font-size:32px">📋</div><div style="font-size:13px;font-weight:700;color:var(--tx);margin-top:4px">Selecciona un área en el árbol izquierdo</div><div style="font-size:11px;color:var(--tx3)">o busca un código específico en el campo de búsqueda</div></div></td></tr>';
     if(titleEl) titleEl.textContent='Todas las áreas';
     if(cntEl) cntEl.textContent='';
-    if(typeof ccActualizarBanner==='function') ccActualizarBanner([]);
     return;
   }
   var listaBase=copiasEmpresa().filter(function(x){
     return (!fA||x.area===fA)&&(!fSb||x.subarea===fSb)&&(!q||(x.codigo||'').toLowerCase().indexOf(q)>=0||(x.responsable||'').toLowerCase().indexOf(q)>=0);
   });
   var lista=fEst?listaBase.filter(function(x){return ccEstadoReal(x)===fEst;}):listaBase;
-  if(typeof ccActualizarBanner==='function') ccActualizarBanner(listaBase);
   if(titleEl) titleEl.textContent=q?('Resultados para "'+q+'"'):fA?(fSb?fA+' / '+fSb:fA):'Búsqueda activa';
   if(cntEl) cntEl.textContent=lista.length+' copia'+(lista.length!==1?'s':'');
   var total=lista.length,pages=Math.max(1,Math.ceil(total/copiasPgSz));
